@@ -25,5 +25,5 @@
 			"Mero\\Bundle\\BaseBundle" : ""
 		}
 	},
-	"target-dir" : "Mero/Bundle/BaseBundle",
+	"target-dir" : "Mero/Bundle/BaseBundle"
 }
