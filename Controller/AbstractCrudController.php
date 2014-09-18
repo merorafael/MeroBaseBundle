@@ -6,6 +6,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Mero\BaseBundle\Entity\AbstractEntity;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Classe abstrata para criação de CRUD simples
+ *
+ * @package Mero\BaseBundle\Controller
+ * @author Rafael Mello <merorafael@gmail.com>
+ * @copyright Copyright (c) 2014 - Rafael Mello
+ * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE BSD license
+ */
 abstract class AbstractCrudController extends Controller
 {
     

@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Classe abstrata para entidades
  *
- * @package BaseBundle\Entity
+ * @package Mero\BaseBundle\Entity
  * @author Rafael Mello <merorafael@gmail.com>
  * @copyright Copyright (c) 2014 - Rafael Mello
  * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE BSD license
