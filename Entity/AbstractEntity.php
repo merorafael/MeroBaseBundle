@@ -1,5 +1,5 @@
 <?php
-namespace Mero\Bundle\BaseBundle\Entity;
+namespace Mero\BaseBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -10,31 +10,36 @@ use Doctrine\ORM\Mapping as ORM;
  * @author Rafael Mello <merorafael@gmail.com>
  * @copyright Copyright (c) 2014 - Rafael Mello
  * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE BSD license
- *         
+ *
  * @ORM\MappedSuperclass
  * @ORM\HasLifecycleCallbacks
  */
-abstract class EntidadeAbstrata
+abstract class AbstractEntity
 {
+    
     /**
-     * @var integer 
+     * Primary Key na tabela do banco de dados
      * 
-     * @ORM\Column(type="integer", nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
-
+    
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * Data de criação dos dados
+     * 
+     * @ORM\Column(type="datetime")
      */
     protected $created;
-
+    
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * Data da ultima alteração dos dados
+     * 
+     * @ORM\Column(type="datetime")
      */
     protected $updated;
-
+    
     public function __construct()
     {
         $this->created = new \DateTime('now');
@@ -57,16 +62,32 @@ abstract class EntidadeAbstrata
         return $this->created;
     }
 
+    public function setCreated(\DateTime $created)
+    {
+        $this->created = $created;
+        return $this;
+    }
+
     public function getUpdated()
     {
         return $this->updated;
     }
-    
+
+    public function setUpdated(\DateTime $updated)
+    {
+        $this->updated = $updated;
+        return $this;
+    }
+
     /**
+     * Responsável por alterar valor de updated antes de cada
+     * atualização.
+     * 
      * @ORM\PreUpdate
      */
     public function updated()
     {
-    	$this->updated = new \DateTime('now');
+        $this->setUpdated(new \DateTime('now'));
     }
+    
 }

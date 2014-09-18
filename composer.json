@@ -2,7 +2,7 @@
 	"name" : "mero/base-bundle",
 	"type" : "symfony-bundle",
 	"description" : "Bundle base para ser utilizado em demais bundles em projetos Symfony 2",
-	"keywords": [
+	"keywords" : [
 		"symfony2",
 		"doctrine",
 		"mero",
@@ -11,9 +11,10 @@
 	"homepage" : "https://github.com/merorafael/MeroBaseBundle",
 	"license" : "BSD",
 	"authors" : [{
-    	"name" : "Rafael Mello",
-    	"homepage" : "https://github.com/merorafael"
-	}],
+			"name" : "Rafael Mello",
+			"homepage" : "https://github.com/merorafael"
+		}
+	],
 	"require" : {
 		"php" : ">=5.3.3",
 		"symfony/framework-bundle" : "~2.0",
@@ -22,8 +23,8 @@
 	},
 	"autoload" : {
 		"psr-0" : {
-			"Mero\\Bundle\\BaseBundle" : ""
+			"Mero\\BaseBundle" : ""
 		}
 	},
-	"target-dir" : "Mero/Bundle/BaseBundle"
+	"target-dir" : "Mero/BaseBundle"
 }
