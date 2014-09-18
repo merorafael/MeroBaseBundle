@@ -116,7 +116,8 @@ abstract class AbstractCrudController extends Controller
         $entities = $entity_qb
             ->getQuery()
             ->useResultCache(true, 120)
-            ->getResult();
+            ->getResult()
+        ;
         
         
         $total_entities = count($entities);
@@ -133,7 +134,8 @@ abstract class AbstractCrudController extends Controller
                 ->setMaxResults($limit)
                 ->getQuery()
                 ->useResultCache(true, 120)
-                ->getResult();
+                ->getResult()
+            ;
         }
         
         return $this->render("{$this->getBundleName()}:{$this->getEntityName()}:index.html.twig", array(
