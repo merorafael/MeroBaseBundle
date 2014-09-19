@@ -22,21 +22,21 @@ abstract class AbstractEntity
      * 
      * @ORM\Id
      * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     protected $id;
     
     /**
      * Data de criação dos dados
      * 
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     protected $created;
     
     /**
      * Data da ultima alteração dos dados
      * 
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     protected $updated;
     
