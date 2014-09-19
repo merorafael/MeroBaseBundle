@@ -143,40 +143,18 @@ abstract class AbstractCrudController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $page = $request->query->get('page') ? $request->query->get('page') : 0;
+        $page = $request->query->get('page') ? $request->query->get('page') : 1;
         $limit = $request->query->get('limit') ? $request->query->get('limit') : 10;
-        $sort = $request->query->get('sort') ? $request->query->get('sort') : $this->defaultSort();
-        $order = $request->query->get('order') ? $request->query->get('order') : 'DESC';
         
         $em = $this->getEm();
-        $entity_qb = $em->createQueryBuilder()
+        $entity_q = $em->createQueryBuilder()
             ->select('e')
             ->from("{$this->getBundleName()}:{$this->getEntityName()}", 'e')
-            ->orderBy('e.'.$sort, $order)
-        ;
-        $entities = $entity_qb
             ->getQuery()
-            ->useResultCache(true, 120)
-            ->getResult()
         ;
         
-        $total_entities = count($entities);
-        if ($page >= 0 && $limit > 0) {
-            $max_page = ceil($total_entities / $limit);
-            if ($page > $max_page)
-                $page = $max_page;
-            $start = $limit * $page - $limit;
-            if ($start < 0) {
-                $start = 0;
-            }
-            $entities = $entity_qb
-                ->setFirstResult($start)
-                ->setMaxResults($limit)
-                ->getQuery()
-                ->useResultCache(true, 120)
-                ->getResult()
-            ;
-        }
+        //Recurso dependente do KnpPaginatorBundle
+        $entities = $this->get('knp_paginator')->paginate($entity_q, $page, $limit);
         
         return $this->render("{$this->getBundleName()}:{$this->getEntityName()}:index.html.twig", array(
             'entities' => $entities
