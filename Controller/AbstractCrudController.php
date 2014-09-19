@@ -32,13 +32,6 @@ abstract class AbstractCrudController extends Controller
      */
     abstract public function getBundleName();
     
-    /**
-     * Retorna nome da rota informada.
-     * 
-     * @param string $action
-     */
-    abstract public function getRouteName($action);
-    
     protected function defaultSort()
     {
         return 'created';
@@ -63,7 +56,7 @@ abstract class AbstractCrudController extends Controller
     protected function getInsertForm(AbstractEntity $entity)
     {
         $form = $this->createForm($this->getType(), $entity, array(
-            'action' => $this->generateUrl($this->getAddRouteName()),
+            'action' => $this->generateUrl(addRoute),
             'method' => 'POST'
         ));
         $form->add('submit', 'submit');
@@ -79,7 +72,7 @@ abstract class AbstractCrudController extends Controller
     protected function getUpdateForm(AbstractEntity $entity)
     {
         $form = $this->createForm($this->getType(), $entity, array(
-            'action' => $this->generateUrl($this->getEditRouteName(), array(
+            'action' => $this->generateUrl(editRoute, array(
                 'id' => $entity->getId()
             )),
             'method' => 'PUT'
@@ -118,7 +111,6 @@ abstract class AbstractCrudController extends Controller
             ->useResultCache(true, 120)
             ->getResult()
         ;
-        
         
         $total_entities = count($entities);
         if ($page >= 0 && $limit > 0) {
@@ -166,12 +158,11 @@ abstract class AbstractCrudController extends Controller
                 $this->get('session')
                     ->getFlashBag()
                     ->add('success', 'Operação realizada com sucesso.');
-                return $this->redirect($this->generateUrl($this->getRouteName(__METHOD__)));
+                return $this->redirect($this->generateUrl(indexRoute));
             } else {
-                $this->get('danger')
+                $this->get('session')
                     ->getFlashBag()
-                    ->add('success', 'Falha ao realizar operação.');
-                return $this->redirect($this->generateUrl($this->getRouteName(__METHOD__)));
+                    ->add('danger', 'Falha ao realizar operação.');
             }
         }
         return $this->render("{$this->getBundleName()}:{$this->getEntityName()}:add.html.twig", array(
@@ -195,7 +186,7 @@ abstract class AbstractCrudController extends Controller
             $this->get('session')
                 ->getFlashBag()
                 ->add('danger', 'Registro não encontrado.');
-            return $this->redirect($this->generateUrl($this->getRouteName('indexAction')));
+            return $this->redirect($this->generateUrl(indexRoute));
         }
         $form = $this->getUpdateForm($entity);
         if ($request->isMethod('PUT')) {
@@ -206,12 +197,11 @@ abstract class AbstractCrudController extends Controller
                 $this->get('session')
                     ->getFlashBag()
                     ->add('success', 'Operação realizada com sucesso.');
-                return $this->redirect($this->generateUrl($this->getRouteName(__METHOD__)));
+                return $this->redirect($this->generateUrl(indexRoute));
             } else {
                 $this->get('session')
                     ->getFlashBag()
                     ->add('danger', 'Falha ao realizar operação.');
-                return $this->redirect($this->generateUrl($this->getRouteName(__METHOD__)));
             }
         }
         return $this->render("{$this->getBundleName()}:{$this->getEntityName()}:edit.html.twig", array(
@@ -241,6 +231,6 @@ abstract class AbstractCrudController extends Controller
                 ->getFlashBag()
                 ->add('success', 'Operação realizada com sucesso.');
         }
-        return $this->redirect($this->generateUrl($this->getRouteName('indexAction')));
+        return $this->redirect($this->generateUrl(indexRoute));
     }
 }
