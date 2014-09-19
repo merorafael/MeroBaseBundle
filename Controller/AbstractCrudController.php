@@ -44,7 +44,7 @@ abstract class AbstractCrudController extends Controller
      */
     protected function getEm()
     {
-        return $this->getDoctrine()->getEntityManager();
+        return $this->getDoctrine()->getManager();
     }
     
     /**
