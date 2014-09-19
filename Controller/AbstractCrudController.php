@@ -71,7 +71,7 @@ abstract class AbstractCrudController extends Controller
      * 
      * @param AbstractEntity $entity
      */
-    protected function dataManager($entity) {
+    protected function dataManager(AbstractEntity $entity) {
         return $entity;
     }
     
