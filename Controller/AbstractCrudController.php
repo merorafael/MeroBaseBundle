@@ -162,6 +162,26 @@ abstract class AbstractCrudController extends Controller
     }
     
     /**
+     * Action para exibir detalhes de registro especifico
+     * 
+     * @param integer $id
+     */
+    public function detailsAction($id)
+    {
+        $em = $this->getEm();
+        $entity = $em->getRepository("{$this->getBundleName()}:{$this->getEntityName()}")->find($id);
+        if (!$entity) {
+            $this->get('session')
+                ->getFlashBag()
+                ->add('danger', 'Registro não encontrado.');
+            return $this->redirect($this->generateUrl(static::indexRoute));
+        }
+        return $this->render("{$this->getBundleName()}:{$this->getEntityName()}:details.html.twig", array(
+            'entity' => $entity
+        ));
+    }
+    
+    /**
      * Action para adicionar novos registros
      * 
      * @param Request $request
