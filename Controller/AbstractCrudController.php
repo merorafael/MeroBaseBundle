@@ -71,9 +71,22 @@ abstract class AbstractCrudController extends Controller
      * 
      * @param AbstractEntity $entity
      */
-    protected function dataManager(AbstractEntity $entity) {
+    protected function dataManager(AbstractEntity $entity) 
+    {
         return $entity;
     }
+    
+    /**
+     * Método utilizado em classes extendidas para manipular
+     * o Query Builder padrão.
+     * 
+     * @param \Doctrine\ORM\QueryBuilder $entity_q
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    protected function indexQueryBuilder(\Doctrine\ORM\QueryBuilder $entity_q)
+    {
+        return $entity_q;
+    } 
     
     /**
      * Retorna campo padrão utilizado para ordenação de dados.
@@ -150,11 +163,12 @@ abstract class AbstractCrudController extends Controller
         $entity_q = $em->createQueryBuilder()
             ->select('e')
             ->from("{$this->getBundleName()}:{$this->getEntityName()}", 'e')
-            ->getQuery()
         ;
         
+        $entity_q = $this->indexQueryBuilder($entity_q);
+        
         //Recurso dependente do KnpPaginatorBundle
-        $entities = $this->get('knp_paginator')->paginate($entity_q, $page, $limit);
+        $entities = $this->get('knp_paginator')->paginate($entity_q->getQuery(), $page, $limit);
         
         return $this->render("{$this->getBundleName()}:{$this->getEntityName()}:index.html.twig", array(
             'entities' => $entities
