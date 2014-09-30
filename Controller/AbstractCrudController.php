@@ -152,9 +152,10 @@ abstract class AbstractCrudController extends Controller
      * order - Como será ordernado o campo sort(padrão DESC)
      * 
      * @param Request $request
+     * @param integer $id
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request, $id = null)
     {
         $page = $request->query->get('page') ? $request->query->get('page') : 1;
         $limit = $request->query->get('limit') ? $request->query->get('limit') : 10;
@@ -170,8 +171,17 @@ abstract class AbstractCrudController extends Controller
         //Recurso dependente do KnpPaginatorBundle
         $entities = $this->get('knp_paginator')->paginate($entity_q->getQuery(), $page, $limit);
         
-        return $this->render("{$this->getBundleName()}:{$this->getEntityName()}:index.html.twig", array(
-            'entities' => $entities
+        //Adiciona formulário de CRUD(adicionar ou editar de acordo com a identificação informada).
+        $crud = !empty($id) ? $this->editData($request, $id) : $this->addData($request);
+        if (!is_array($crud)) {
+            return $crud;
+        }
+        
+        return $this->render("{$this->getBundleName()}:{$this->getEntityName()}:index.html.twig", array_merge(
+            $crud,
+            array(
+                'entities' => $entities
+            )
         ));
     }
     
@@ -196,12 +206,12 @@ abstract class AbstractCrudController extends Controller
     }
     
     /**
-     * Action para adicionar novos registros
+     * Método responsável por adicionar novos registros
      * 
      * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return multitype:\Symfony\Component\Form\Form Ambigous <unknown, AbstractEntity>
      */
-    public function addAction(Request $request)
+    private function addData(Request $request)
     {
         $entity_class = "{$this->getEntityNamespace()}\\{$this->getEntityName()}";
         if (!class_exists($entity_class)) {
@@ -226,10 +236,65 @@ abstract class AbstractCrudController extends Controller
                     ->add('danger', 'Falha ao realizar operação.');
             }
         }
-        return $this->render("{$this->getBundleName()}:{$this->getEntityName()}:add.html.twig", array(
+        return array(
             'entity' => $entity,
             'form' => $form->createView()
-        ));
+        );
+    }
+    
+    /**
+     * Action para adicionar novos registros
+     * 
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
+    public function addAction(Request $request)
+    {
+        $crud  = $this->addData($request);
+        if (!is_array($crud)) {
+            return $crud;
+        }
+        return $this->render("{$this->getBundleName()}:{$this->getEntityName()}:add.html.twig", $crud);
+    }
+    
+    /**
+     * Método responsável por editar registros
+     * 
+     * @param Request $request
+     * @param integer $id
+     * @return multitype:NULL AbstractEntity
+     */
+    private function editData(Request $request, $id)
+    {
+        $em = $this->getEm();
+        $entity = $em->getRepository("{$this->getBundleName()}:{$this->getEntityName()}")->find($id);
+        if (!$entity) {
+            $this->get('session')
+            ->getFlashBag()
+            ->add('danger', 'Registro não encontrado.');
+            return $this->redirect($this->generateUrl(static::indexRoute));
+        }
+        $form = $this->getUpdateForm($entity);
+        if ($request->isMethod('PUT')) {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $entity = $this->dataManager($entity);
+                $em->persist($entity);
+                $em->flush();
+                $this->get('session')
+                ->getFlashBag()
+                ->add('success', 'Operação realizada com sucesso.');
+                return $this->redirect($this->generateUrl(static::indexRoute));
+            } else {
+                $this->get('session')
+                ->getFlashBag()
+                ->add('danger', 'Falha ao realizar operação.');
+            }
+        }
+        return array(
+            'entity' => $entity,
+            'form' => $form->createView()
+        );
     }
     
     /**
@@ -241,35 +306,11 @@ abstract class AbstractCrudController extends Controller
      */
     public function editAction(Request $request, $id)
     {
-        $em = $this->getEm();
-        $entity = $em->getRepository("{$this->getBundleName()}:{$this->getEntityName()}")->find($id);
-        if (!$entity) {
-            $this->get('session')
-                ->getFlashBag()
-                ->add('danger', 'Registro não encontrado.');
-            return $this->redirect($this->generateUrl(static::indexRoute));
+        $crud = $this->editData($request, $id);
+        if (!is_array($crud)) {
+            return $crud;
         }
-        $form = $this->getUpdateForm($entity);
-        if ($request->isMethod('PUT')) {
-            $form->handleRequest($request);
-            if ($form->isValid()) {
-                $entity = $this->dataManager($entity);
-                $em->persist($entity);
-                $em->flush();
-                $this->get('session')
-                    ->getFlashBag()
-                    ->add('success', 'Operação realizada com sucesso.');
-                return $this->redirect($this->generateUrl(static::indexRoute));
-            } else {
-                $this->get('session')
-                    ->getFlashBag()
-                    ->add('danger', 'Falha ao realizar operação.');
-            }
-        }
-        return $this->render("{$this->getBundleName()}:{$this->getEntityName()}:edit.html.twig", array(
-            'entity' => $entity,
-            'form' => $form->createView()
-        ));
+        return $this->render("{$this->getBundleName()}:{$this->getEntityName()}:edit.html.twig", $crud);
     }
     
     /**
