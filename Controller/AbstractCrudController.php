@@ -16,54 +16,101 @@ use Symfony\Component\HttpFoundation\Request;
  */
 abstract class AbstractCrudController extends Controller
 {
-
+    
     /**
      * Nome da rota para indexAction
      *
      * @var string
      */
-    const indexRoute = 'index';
+    abstract protected $indexRoute = 'index';
     
     /**
      * Nome da rota para addAction
      *
      * @var string
      */
-    const addRoute = 'add';
+    abstract protected $addRoute = 'add';
     
     /**
      * Nome da rota para editAction
      *
      * @var string
      */
-    const editRoute = 'edit';
+    abstract protected $editRoute = 'edit';
     
     /**
-     * Nome da rota para removeAction
+     * Nome da rota para redirecionamento pós-inserção.
      * 
      * @var string
      */
-    const removeRoute = 'remove';
+    protected $createdRoute = 'index';
     
     /**
-     * Retorna classe referente ao tipo de formulário
+     * Nome da rota para redirecionamento pós-atualização.
+     *
+     * @var string
      */
-    abstract public function getType();
+    protected $updatedRoute = 'index';
     
     /**
-     * Retorna namespace referente a entidade
+     * Nome da rota para redirecionamento pós-exclusão.
+     *
+     * @var string
      */
-    abstract public function getEntityNamespace();
+    protected $removedRoute = 'index';
     
     /**
-     * Retorna nome referente a entidade
+     * Namespace referente a classe da entidade.
+     *
+     * @var string
      */
-    abstract public function getEntityName();
+    protected $entityNamespace = __NAMESPACE__;
     
     /**
-     * Retorna nome do bundle
+     * Classe referente a entidade.
+     * 
+     * @var string
      */
-    abstract public function getBundleName();
+    abstract protected $entityName = '';
+    
+    /**
+     * Nome referente ao bundle.
+     * 
+     * @var string
+     */
+    abstract protected $bundleName = '';
+    
+    /**
+     * Alias de $this->getDoctrine()->getEntityManager()
+     * 
+     * @return \Doctrine\ORM\EntityManager
+     */
+    protected function getEm()
+    {
+        return $this->getDoctrine()->getManager();
+    }
+    
+    /**
+     * Método utilizado em classes extendidas para manipular
+     * o Query Builder padrão.
+     * 
+     * @param \Doctrine\ORM\QueryBuilder $entity_q
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    protected function indexQueryBuilder(\Doctrine\ORM\QueryBuilder $entity_q)
+    {
+        return $entity_q;
+    }
+    
+    /**
+     * Retorna campo padrão utilizado para ordenação de dados.
+     * 
+     * @return string
+     */
+    protected function defaultSort()
+    {
+        return 'created';
+    }
 
     /**
      * Método utilizado em classes extendidas para manipular dados
@@ -77,38 +124,6 @@ abstract class AbstractCrudController extends Controller
     }
     
     /**
-     * Método utilizado em classes extendidas para manipular
-     * o Query Builder padrão.
-     * 
-     * @param \Doctrine\ORM\QueryBuilder $entity_q
-     * @return \Doctrine\ORM\QueryBuilder
-     */
-    protected function indexQueryBuilder(\Doctrine\ORM\QueryBuilder $entity_q)
-    {
-        return $entity_q;
-    } 
-    
-    /**
-     * Retorna campo padrão utilizado para ordenação de dados.
-     * 
-     * @return string
-     */
-    protected function defaultSort()
-    {
-        return 'created';
-    }
-    
-    /**
-     * Alias de $this->getDoctrine()->getEntityManager()
-     * 
-     * @return \Doctrine\ORM\EntityManager
-     */
-    protected function getEm()
-    {
-        return $this->getDoctrine()->getManager();
-    }
-    
-    /**
      * Cria o formulário de inserção de dados baseado na entidade informada.
      * 
      * @param AbstractEntity $entity
@@ -117,7 +132,7 @@ abstract class AbstractCrudController extends Controller
     protected function getInsertForm(AbstractEntity $entity)
     {
         $form = $this->createForm($this->getType(), $entity, array(
-            'action' => $this->generateUrl(static::addRoute),
+            'action' => $this->generateUrl($this->addRoute),
             'method' => 'POST'
         ));
         $form->add('submit', 'submit');
@@ -133,7 +148,7 @@ abstract class AbstractCrudController extends Controller
     protected function getUpdateForm(AbstractEntity $entity)
     {
         $form = $this->createForm($this->getType(), $entity, array(
-            'action' => $this->generateUrl(static::editRoute, array(
+            'action' => $this->generateUrl($this->editRoute, array(
                 'id' => $entity->getId()
             )),
             'method' => 'PUT'
@@ -163,7 +178,7 @@ abstract class AbstractCrudController extends Controller
         $em = $this->getEm();
         $entity_q = $em->createQueryBuilder()
             ->select('e')
-            ->from("{$this->getBundleName()}:{$this->getEntityName()}", 'e')
+            ->from("{$this->bundleName}:{$this->entityName}", 'e')
         ;
         
         $entity_q = $this->indexQueryBuilder($entity_q);
@@ -177,7 +192,7 @@ abstract class AbstractCrudController extends Controller
             return $crud;
         }
         
-        return $this->render("{$this->getBundleName()}:{$this->getEntityName()}:index.html.twig", array_merge(
+        return $this->render("{$this->bundleName}:{$this->entityName}:index.html.twig", array_merge(
             $crud,
             array(
                 'entities' => $entities
@@ -193,14 +208,14 @@ abstract class AbstractCrudController extends Controller
     public function detailsAction($id)
     {
         $em = $this->getEm();
-        $entity = $em->getRepository("{$this->getBundleName()}:{$this->getEntityName()}")->find($id);
+        $entity = $em->getRepository("{$this->bundleName}:{$this->entityName}")->find($id);
         if (!$entity) {
             $this->get('session')
                 ->getFlashBag()
                 ->add('danger', 'Registro não encontrado.');
-            return $this->redirect($this->generateUrl(static::indexRoute));
+            return $this->redirect($this->generateUrl(static::$this->indexRoute));
         }
-        return $this->render("{$this->getBundleName()}:{$this->getEntityName()}:details.html.twig", array(
+        return $this->render("{$this->bundleName}:{$this->entityName}:details.html.twig", array(
             'entity' => $entity
         ));
     }
@@ -213,7 +228,7 @@ abstract class AbstractCrudController extends Controller
      */
     private function addData(Request $request)
     {
-        $entity_class = "{$this->getEntityNamespace()}\\{$this->getEntityName()}";
+        $entity_class = "{$this->entityNamespace}\\{$this->entityName}";
         if (!class_exists($entity_class)) {
             throw $this->createNotFoundException('Entity not found');
         }
@@ -229,7 +244,7 @@ abstract class AbstractCrudController extends Controller
                 $this->get('session')
                     ->getFlashBag()
                     ->add('success', 'Operação realizada com sucesso.');
-                return $this->redirect($this->generateUrl(static::indexRoute));
+                return $this->redirect($this->generateUrl($this->createdRoute));
             } else {
                 $this->get('session')
                     ->getFlashBag()
@@ -254,7 +269,7 @@ abstract class AbstractCrudController extends Controller
         if (!is_array($crud)) {
             return $crud;
         }
-        return $this->render("{$this->getBundleName()}:{$this->getEntityName()}:add.html.twig", $crud);
+        return $this->render("{$this->bundleName}:{$this->entityName}:add.html.twig", $crud);
     }
     
     /**
@@ -267,12 +282,12 @@ abstract class AbstractCrudController extends Controller
     private function editData(Request $request, $id)
     {
         $em = $this->getEm();
-        $entity = $em->getRepository("{$this->getBundleName()}:{$this->getEntityName()}")->find($id);
+        $entity = $em->getRepository("{$this->bundleName}:{$this->entityName}")->find($id);
         if (!$entity) {
             $this->get('session')
             ->getFlashBag()
             ->add('danger', 'Registro não encontrado.');
-            return $this->redirect($this->generateUrl(static::indexRoute));
+            return $this->redirect($this->generateUrl($this->updatedRoute));
         }
         $form = $this->getUpdateForm($entity);
         if ($request->isMethod('PUT')) {
@@ -284,7 +299,7 @@ abstract class AbstractCrudController extends Controller
                 $this->get('session')
                 ->getFlashBag()
                 ->add('success', 'Operação realizada com sucesso.');
-                return $this->redirect($this->generateUrl(static::indexRoute));
+                return $this->redirect($this->generateUrl($this->updatedRoute));
             } else {
                 $this->get('session')
                 ->getFlashBag()
@@ -310,7 +325,7 @@ abstract class AbstractCrudController extends Controller
         if (!is_array($crud)) {
             return $crud;
         }
-        return $this->render("{$this->getBundleName()}:{$this->getEntityName()}:edit.html.twig", $crud);
+        return $this->render("{$this->bundleName}:{$this->entityName}:edit.html.twig", $crud);
     }
     
     /**
@@ -322,7 +337,7 @@ abstract class AbstractCrudController extends Controller
     public function removeAction($id)
     {
         $em = $this->getEm();
-        $entity = $em->getRepository("{$this->getBundleName()}:{$this->getEntityName()}")->find($id);
+        $entity = $em->getRepository("{$this->bundleName}:{$this->entityName}")->find($id);
         if (!$entity) {
             $this->get('session')
                 ->getFlashBag()
@@ -334,6 +349,13 @@ abstract class AbstractCrudController extends Controller
                 ->getFlashBag()
                 ->add('success', 'Operação realizada com sucesso.');
         }
-        return $this->redirect($this->generateUrl(static::indexRoute));
+        return $this->redirect($this->generateUrl($this->removedRoute));
+    }
+    
+    public function __construct()
+    {
+        $this->createdRoute = $this->indexRoute;
+        $this->updatedRoute = $this->indexRoute;
+        $this->removedRoute = $this->indexRoute;
     }
 }
