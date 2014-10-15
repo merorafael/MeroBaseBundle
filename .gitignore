@@ -25,7 +25,7 @@ local.properties
 .texlipse
 # Outros
 .project
-
+.tern-project
 
 ### NetBeans ###
 nbproject
