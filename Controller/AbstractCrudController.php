@@ -22,63 +22,63 @@ abstract class AbstractCrudController extends Controller
      *
      * @var string
      */
-    abstract protected $indexRoute = 'index';
+    const indexRoute = 'index';
     
     /**
      * Nome da rota para addAction
      *
      * @var string
      */
-    abstract protected $addRoute = 'add';
+    const addRoute = 'add';
     
     /**
      * Nome da rota para editAction
      *
      * @var string
      */
-    abstract protected $editRoute = 'edit';
+    const editRoute = 'edit';
     
     /**
      * Nome da rota para redirecionamento pós-inserção.
      * 
      * @var string
      */
-    protected $createdRoute = 'index';
+    const createdRoute = indexRoute;
     
     /**
      * Nome da rota para redirecionamento pós-atualização.
      *
      * @var string
      */
-    protected $updatedRoute = 'index';
+    const updatedRoute = indexRoute;
     
     /**
      * Nome da rota para redirecionamento pós-exclusão.
      *
      * @var string
      */
-    protected $removedRoute = 'index';
+    const removedRoute = indexRoute;
     
     /**
      * Namespace referente a classe da entidade.
      *
      * @var string
      */
-    protected $entityNamespace = __NAMESPACE__;
+    const entityNamespace = __NAMESPACE__;
     
     /**
      * Classe referente a entidade.
      * 
      * @var string
      */
-    abstract protected $entityName = '';
+    const entityName = '';
     
     /**
      * Nome referente ao bundle.
      * 
      * @var string
      */
-    abstract protected $bundleName = '';
+    const bundleName = '';
     
     /**
      * Alias de $this->getDoctrine()->getEntityManager()
@@ -132,7 +132,7 @@ abstract class AbstractCrudController extends Controller
     protected function getInsertForm(AbstractEntity $entity)
     {
         $form = $this->createForm($this->getType(), $entity, array(
-            'action' => $this->generateUrl($this->addRoute),
+            'action' => $this->generateUrl(static::addRoute),
             'method' => 'POST'
         ));
         $form->add('submit', 'submit');
@@ -148,7 +148,7 @@ abstract class AbstractCrudController extends Controller
     protected function getUpdateForm(AbstractEntity $entity)
     {
         $form = $this->createForm($this->getType(), $entity, array(
-            'action' => $this->generateUrl($this->editRoute, array(
+            'action' => $this->generateUrl(static::editRoute, array(
                 'id' => $entity->getId()
             )),
             'method' => 'PUT'
@@ -178,7 +178,7 @@ abstract class AbstractCrudController extends Controller
         $em = $this->getEm();
         $entity_q = $em->createQueryBuilder()
             ->select('e')
-            ->from("{$this->bundleName}:{$this->entityName}", 'e')
+            ->from(static::bundleName.":".static::entityName, 'e')
         ;
         
         $entity_q = $this->indexQueryBuilder($entity_q);
@@ -192,7 +192,7 @@ abstract class AbstractCrudController extends Controller
             return $crud;
         }
         
-        return $this->render("{$this->bundleName}:{$this->entityName}:index.html.twig", array_merge(
+        return $this->render(static::bundleName.":".static::entityName.":index.html.twig", array_merge(
             $crud,
             array(
                 'entities' => $entities
@@ -208,14 +208,14 @@ abstract class AbstractCrudController extends Controller
     public function detailsAction($id)
     {
         $em = $this->getEm();
-        $entity = $em->getRepository("{$this->bundleName}:{$this->entityName}")->find($id);
+        $entity = $em->getRepository(static::bundleName.":".static::entityName)->find($id);
         if (!$entity) {
             $this->get('session')
                 ->getFlashBag()
                 ->add('danger', 'Registro não encontrado.');
-            return $this->redirect($this->generateUrl(static::$this->indexRoute));
+            return $this->redirect($this->generateUrl(static::indexRoute));
         }
-        return $this->render("{$this->bundleName}:{$this->entityName}:details.html.twig", array(
+        return $this->render(static::bundleName.":".static::entityName.":details.html.twig", array(
             'entity' => $entity
         ));
     }
@@ -228,7 +228,7 @@ abstract class AbstractCrudController extends Controller
      */
     private function addData(Request $request)
     {
-        $entity_class = "{$this->entityNamespace}\\{$this->entityName}";
+        $entity_class = static::entityNamespace."\\".static::entityName;
         if (!class_exists($entity_class)) {
             throw $this->createNotFoundException('Entity not found');
         }
@@ -244,7 +244,7 @@ abstract class AbstractCrudController extends Controller
                 $this->get('session')
                     ->getFlashBag()
                     ->add('success', 'Operação realizada com sucesso.');
-                return $this->redirect($this->generateUrl($this->createdRoute));
+                return $this->redirect($this->generateUrl(static::createdRoute));
             } else {
                 $this->get('session')
                     ->getFlashBag()
@@ -269,7 +269,7 @@ abstract class AbstractCrudController extends Controller
         if (!is_array($crud)) {
             return $crud;
         }
-        return $this->render("{$this->bundleName}:{$this->entityName}:add.html.twig", $crud);
+        return $this->render(static::bundleName.":".static::entityName.":add.html.twig", $crud);
     }
     
     /**
@@ -282,12 +282,12 @@ abstract class AbstractCrudController extends Controller
     private function editData(Request $request, $id)
     {
         $em = $this->getEm();
-        $entity = $em->getRepository("{$this->bundleName}:{$this->entityName}")->find($id);
+        $entity = $em->getRepository(static::bundleName.":".static::entityName)->find($id);
         if (!$entity) {
             $this->get('session')
             ->getFlashBag()
             ->add('danger', 'Registro não encontrado.');
-            return $this->redirect($this->generateUrl($this->updatedRoute));
+            return $this->redirect($this->generateUrl(static::updatedRoute));
         }
         $form = $this->getUpdateForm($entity);
         if ($request->isMethod('PUT')) {
@@ -299,7 +299,7 @@ abstract class AbstractCrudController extends Controller
                 $this->get('session')
                 ->getFlashBag()
                 ->add('success', 'Operação realizada com sucesso.');
-                return $this->redirect($this->generateUrl($this->updatedRoute));
+                return $this->redirect($this->generateUrl(static::updatedRoute));
             } else {
                 $this->get('session')
                 ->getFlashBag()
@@ -325,7 +325,7 @@ abstract class AbstractCrudController extends Controller
         if (!is_array($crud)) {
             return $crud;
         }
-        return $this->render("{$this->bundleName}:{$this->entityName}:edit.html.twig", $crud);
+        return $this->render(static::bundleName.":".static::entityName.":edit.html.twig", $crud);
     }
     
     /**
@@ -337,7 +337,7 @@ abstract class AbstractCrudController extends Controller
     public function removeAction($id)
     {
         $em = $this->getEm();
-        $entity = $em->getRepository("{$this->bundleName}:{$this->entityName}")->find($id);
+        $entity = $em->getRepository(static::bundleName.":".static::entityName)->find($id);
         if (!$entity) {
             $this->get('session')
                 ->getFlashBag()
@@ -349,13 +349,6 @@ abstract class AbstractCrudController extends Controller
                 ->getFlashBag()
                 ->add('success', 'Operação realizada com sucesso.');
         }
-        return $this->redirect($this->generateUrl($this->removedRoute));
-    }
-    
-    public function __construct()
-    {
-        $this->createdRoute = $this->indexRoute;
-        $this->updatedRoute = $this->indexRoute;
-        $this->removedRoute = $this->indexRoute;
+        return $this->redirect($this->generateUrl(static::removedRoute));
     }
 }
