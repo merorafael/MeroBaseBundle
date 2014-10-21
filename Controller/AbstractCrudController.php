@@ -19,6 +19,11 @@ abstract class AbstractCrudController extends Controller
 {
     
     /**
+     * @var Doctrine\ORM\EntityManager
+     */
+    protected $em;
+    
+    /**
      * Nome da rota para indexAction
      *
      * @var string
@@ -89,13 +94,28 @@ abstract class AbstractCrudController extends Controller
     abstract protected function getType();
     
     /**
-     * Alias de $this->getDoctrine()->getEntityManager()
+     * Retorna gerenciador de entidades(Entity Manager)
+     * do Doctrine.
      * 
      * @return \Doctrine\ORM\EntityManager
      */
-    protected function getEm()
+    public function getDoctrineManager()
     {
-        return $this->getDoctrine()->getManager();
+        if (is_null($this->em)) {
+            $this->em = $this->getDoctrine()->getManager();
+        }
+        return $this->em;
+    }
+    
+    /**
+     * Define gerenciador de entidades(Entity Manager)
+     * do Doctrine.
+     * 
+     * @param \Doctrine\ORM\EntityManager $em
+     */
+    public function setDoctrineManager(\Doctrine\ORM\EntityManager $em)
+    {
+        $this->em = $em;
     }
     
     /**
@@ -182,12 +202,16 @@ abstract class AbstractCrudController extends Controller
     {
         $page = $request->query->get('page') ? $request->query->get('page') : 1;
         $limit = $request->query->get('limit') ? $request->query->get('limit') : 10;
+        $sort = $request->query->get('sort') ? null : $this->defaultSort();
         
-        $em = $this->getEm();
+        $em = $this->getDoctrineManager();
         $entity_q = $em->createQueryBuilder()
             ->select('e')
             ->from($this->getBundleName().":".$this->getEntityName(), 'e')
         ;
+        if (!$request->query->get('sort')) {
+            $entity_q->orderBy("e.{$this->defaultSort()}", "DESC");
+        }
         
         $entity_q = $this->indexQueryBuilder($entity_q);
         
@@ -215,7 +239,7 @@ abstract class AbstractCrudController extends Controller
      */
     public function detailsAction($id)
     {
-        $em = $this->getEm();
+        $em = $this->getDoctrineManager();
         $entity = $em->getRepository($this->getBundleName().":".$this->getEntityName())->find($id);
         if (!$entity) {
             $this->get('session')
@@ -246,7 +270,7 @@ abstract class AbstractCrudController extends Controller
             $form->handleRequest($request);
             if ($form->isValid()) {
                 $entity = $this->dataManager($entity);
-                $em = $this->getEm();
+                $em = $this->getDoctrineManager();
                 $em->persist($entity);
                 $em->flush();
                 $this->get('session')
@@ -289,7 +313,7 @@ abstract class AbstractCrudController extends Controller
      */
     private function editData(Request $request, $id)
     {
-        $em = $this->getEm();
+        $em = $this->getDoctrineManager();
         $entity = $em->getRepository($this->getBundleName().":".$this->getEntityName())->find($id);
         if (!$entity) {
             $this->get('session')
@@ -344,7 +368,7 @@ abstract class AbstractCrudController extends Controller
      */
     public function removeAction($id)
     {
-        $em = $this->getEm();
+        $em = $this->getDoctrineManager();
         $entity = $em->getRepository($this->getBundleName().":".$this->getEntityName())->find($id);
         if (!$entity) {
             $this->get('session')
