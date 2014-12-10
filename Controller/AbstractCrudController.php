@@ -64,7 +64,7 @@ abstract class AbstractCrudController extends Controller
     }
     
     /**
-     * Classe referente a entidade.
+     * Retorna nome da classe referente a entidade.
      * 
      * @return string
      */
@@ -92,10 +92,7 @@ abstract class AbstractCrudController extends Controller
      * 
      * @return string
      */
-    public function getRoute($action = null)
-    {
-        //return strtolower(str_replace('Controller', '', get_class($this))).strtolower(str_replace('Action', '', $action));
-    }
+    abstract protected function getRoutePrefix();
     
     /**
      * Retorna gerenciador de entidades(Entity Manager) do Doctrine.
@@ -136,7 +133,7 @@ abstract class AbstractCrudController extends Controller
      * Método utilizado em classes extendidas para manipular dados da entidade que não 
      * correspondem a um CRUD simples.
      * 
-     * @param \Mero\BaseBundle\Entity\AbstractEntity $entity Entity referente ao CRUD
+     * @param \Mero\BaseBundle\Entity\AbstractEntity $entity Entidade referente ao CRUD
      */
     protected function dataManager(AbstractEntity $entity) 
     {
@@ -144,9 +141,20 @@ abstract class AbstractCrudController extends Controller
     }
     
     /**
+     * Retorna nome da rota referente a action desejada.
+     * 
+     * @param string $action Nome da action
+     * @return string Nome da rota
+     */
+    protected function getActionRoute($action = null)
+    {
+        return $this->getRoutePrefix()."_".$action;
+    }
+    
+    /**
      * Cria o formulário de inserção de dados baseado na entidade informada.
      * 
-     * @param \Mero\BaseBundle\Entity\AbstractEntity $entity Entity referente ao CRUD
+     * @param \Mero\BaseBundle\Entity\AbstractEntity $entity Entidade referente ao CRUD
      * @return \Symfony\Component\Form\Form Formulário do Symfony
      */
     protected function getInsertForm(AbstractEntity $entity)
