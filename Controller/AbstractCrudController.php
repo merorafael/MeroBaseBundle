@@ -2,21 +2,23 @@
 
 namespace Mero\BaseBundle\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\HttpFoundation\Request;
+use Mero\BaseBundle\Entity\AbstractEntity;
+
 /**
  * Classe abstrata para criação de CRUD simples
  *
  * @package Mero\BaseBundle\Controller
  * @author Rafael Mello <merorafael@gmail.com>
+ * @link https://github.com/merorafael/MeroBaseBundle Repositório do projeto
  * @copyright Copyright (c) 2014 - Rafael Mello
  * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE BSD license
  */
-abstract class AbstractCrudController extends \Symfony\Bundle\FrameworkBundle\Controller\Controller
+abstract class AbstractCrudController extends Controller
 {
-    
-    /**
-     * @var Doctrine\ORM\EntityManager Entity manager do Doctrine
-     */
-    protected $em;
     
     /**
      * @var string Nome da rota para indexAction
@@ -49,11 +51,17 @@ abstract class AbstractCrudController extends \Symfony\Bundle\FrameworkBundle\Co
     const removedRoute = null;
     
     /**
-     * Namespace referente a classe da entidade.
+     * Retorna namespace relacionada a entidade.
+     * Sobreescreva este método caso o namespace seja diferente do padrão.
+     * 
+     * Namespace padrão: \<Namespace do bundle>\Entity
      *
-     * @return string
+     * @return string Namespace da entidade
      */
-    abstract protected function getEntityNamespace();
+    protected function getEntityNamespace()
+    {
+        return '\\'.str_replace('\Controller', '\Entity', __NAMESPACE__);
+    }
     
     /**
      * Classe referente a entidade.
@@ -63,18 +71,31 @@ abstract class AbstractCrudController extends \Symfony\Bundle\FrameworkBundle\Co
     abstract protected function getEntityName();
     
     /**
-     * Nome referente ao bundle.
+     * Retorna nome referente ao bundle.
      * 
-     * @return string
+     * @return string Nome do bundle
      */
-    abstract protected function getBundleName();
+    protected function getBundleName()
+    {
+        return $this->getRequest()->attributes->get('_template')->get('bundle');
+    }
     
     /**
-     * Nome referente ao tipo de formulario
+     * Retorna objeto relacionado ao Type do formulário.
+     * 
+     * @return \Symfony\Component\Form\AbstractType Objeto do tipo do formulário
+     */
+    abstract protected function getFormType();
+    
+    /**
+     * Retorna prefixo a ser usado para a rota.
      * 
      * @return string
      */
-    abstract protected function getType();
+    public function getRoute($action = null)
+    {
+        //return strtolower(str_replace('Controller', '', get_class($this))).strtolower(str_replace('Action', '', $action));
+    }
     
     /**
      * Retorna gerenciador de entidades(Entity Manager) do Doctrine.
@@ -87,6 +108,16 @@ abstract class AbstractCrudController extends \Symfony\Bundle\FrameworkBundle\Co
     }
     
     /**
+     * Retorna campo padrão utilizado para ordenação de dados.
+     * 
+     * @return string Campo da entity
+     */
+    protected function defaultSort()
+    {
+        return 'created';
+    }
+    
+    /**
      * Método utilizado em classes extendidas para alterar Query Builder padrão
      * utilizado pelo método indexAction.
      * 
@@ -96,19 +127,9 @@ abstract class AbstractCrudController extends \Symfony\Bundle\FrameworkBundle\Co
      * @param \Doctrine\ORM\QueryBuilder $entity_q Entrada do Query Builder em indexAction
      * @return \Doctrine\ORM\QueryBuilder Query Builder processado pelo método
      */
-    protected function indexQueryBuilder(\Doctrine\ORM\QueryBuilder $entity_q)
+    protected function indexQueryBuilder(QueryBuilder $entity_q)
     {
         return $entity_q;
-    }
-    
-    /**
-     * Retorna campo padrão utilizado para ordenação de dados.
-     * 
-     * @return string Campo da entity
-     */
-    protected function defaultSort()
-    {
-        return 'created';
     }
 
     /**
@@ -117,7 +138,7 @@ abstract class AbstractCrudController extends \Symfony\Bundle\FrameworkBundle\Co
      * 
      * @param \Mero\BaseBundle\Entity\AbstractEntity $entity Entity referente ao CRUD
      */
-    protected function dataManager(\Mero\BaseBundle\Entity\AbstractEntity $entity) 
+    protected function dataManager(AbstractEntity $entity) 
     {
         return $entity;
     }
@@ -128,10 +149,10 @@ abstract class AbstractCrudController extends \Symfony\Bundle\FrameworkBundle\Co
      * @param \Mero\BaseBundle\Entity\AbstractEntity $entity Entity referente ao CRUD
      * @return \Symfony\Component\Form\Form Formulário do Symfony
      */
-    protected function getInsertForm(\Mero\BaseBundle\Entity\AbstractEntity $entity)
+    protected function getInsertForm(AbstractEntity $entity)
     {
         $form = $this->createForm($this->getType(), $entity, array(
-            'action' => $this->generateUrl(static::addRoute),
+            'action' => $this->generateUrl(),
             'method' => 'POST'
         ));
         $form->add('submit', 'submit');
@@ -144,7 +165,7 @@ abstract class AbstractCrudController extends \Symfony\Bundle\FrameworkBundle\Co
      * @param \Mero\BaseBundle\Entity\AbstractEntity $entity Entity referente ao CRUD
      * @return \Symfony\Component\Form\Form Formulário do Symfony
      */
-    protected function getUpdateForm(\Mero\BaseBundle\Entity\AbstractEntity $entity)
+    protected function getUpdateForm(AbstractEntity $entity)
     {
         $form = $this->createForm($this->getType(), $entity, array(
             'action' => $this->generateUrl(static::editRoute, array(
@@ -154,6 +175,83 @@ abstract class AbstractCrudController extends \Symfony\Bundle\FrameworkBundle\Co
         ));
         $form->add('submit', 'submit');
         return $form;
+    }
+    
+    /**
+     * Método responsável por adicionar novos registros
+     * 
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return array
+     */
+    private function addData(Request $request)
+    {
+        $entity_class = $this->getEntityNamespace()."\\".$this->getEntityName();
+        if (!class_exists($entity_class)) {
+            throw $this->createNotFoundException('Entity not found');
+        }
+        $entity = new $entity_class();
+        $form = $this->getInsertForm($entity);
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $entity = $this->dataManager($entity);
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($entity);
+                $em->flush();
+                $this->get('session')
+                    ->getFlashBag()
+                    ->add('success', 'Operação realizada com sucesso.');
+                return $this->redirect($this->generateUrl(is_null(static::createdRoute) ? static::indexRoute : static::createdRoute));
+            } else {
+                $this->get('session')
+                    ->getFlashBag()
+                    ->add('danger', 'Falha ao realizar operação.');
+            }
+        }
+        return array(
+            'entity' => $entity,
+            'form' => $form->createView()
+        );
+    }
+    
+    /**
+     * Método responsável por alterar registros
+     * 
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param integer $id Identificação do registro
+     * @return array
+     */
+    private function editData(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $entity = $em->getRepository($this->getBundleName().":".$this->getEntityName())->find($id);
+        if (!$entity) {
+            $this->get('session')
+            ->getFlashBag()
+            ->add('danger', 'Registro não encontrado.');
+            return $this->redirect($this->generateUrl(is_null(static::updatedRoute) ? static::indexRoute : static::updatedRoute));
+        }
+        $form = $this->getUpdateForm($entity);
+        if ($request->isMethod('PUT')) {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $entity = $this->dataManager($entity);
+                $em->persist($entity);
+                $em->flush();
+                $this->get('session')
+                    ->getFlashBag()
+                    ->add('success', 'Operação realizada com sucesso.');
+                return $this->redirect($this->generateUrl(is_null(static::updatedRoute) ? static::indexRoute : static::updatedRoute));
+            } else {
+                $this->get('session')
+                    ->getFlashBag()
+                    ->add('danger', 'Falha ao realizar operação.');
+            }
+        }
+        return array(
+            'entity' => $entity,
+            'form' => $form->createView()
+        );
     }
     
     /**
@@ -168,12 +266,13 @@ abstract class AbstractCrudController extends \Symfony\Bundle\FrameworkBundle\Co
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @param integer $id Utilizado para editar um registro na indexAction caso informado
      * @return \Symfony\Component\HttpFoundation\Response
+     * 
+     * @Route("/{id}", defaults={"id": null}, requirements={"id": "\d+"})
      */
-    public function indexAction(\Symfony\Component\HttpFoundation\Request $request, $id = null)
+    public function indexAction(Request $request, $id)
     {
         $page = $request->query->get('page') ? $request->query->get('page') : 1;
         $limit = $request->query->get('limit') ? $request->query->get('limit') : 10;
-        $sort = $request->query->get('sort') ? null : $this->defaultSort();
         
         $em = $this->getDoctrine()->getManager();
         $entity_q = $em->createQueryBuilder()
@@ -207,6 +306,8 @@ abstract class AbstractCrudController extends \Symfony\Bundle\FrameworkBundle\Co
      * Action para exibir detalhes de registro especifico
      * 
      * @param integer $id Identificação do registro
+     * 
+     * @Route("/detalhes/{id}", requirements={"id": "\d+"})
      */
     public function detailsAction($id)
     {
@@ -224,95 +325,20 @@ abstract class AbstractCrudController extends \Symfony\Bundle\FrameworkBundle\Co
     }
     
     /**
-     * Método responsável por adicionar novos registros
-     * 
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @return array
-     */
-    private function addData(\Symfony\Component\HttpFoundation\Request $request)
-    {
-        $entity_class = $this->getEntityNamespace()."\\".$this->getEntityName();
-        if (!class_exists($entity_class)) {
-            throw $this->createNotFoundException('Entity not found');
-        }
-        $entity = new $entity_class();
-        $form = $this->getInsertForm($entity);
-        if ($request->isMethod('POST')) {
-            $form->handleRequest($request);
-            if ($form->isValid()) {
-                $entity = $this->dataManager($entity);
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($entity);
-                $em->flush();
-                $this->get('session')
-                    ->getFlashBag()
-                    ->add('success', 'Operação realizada com sucesso.');
-                return $this->redirect($this->generateUrl(is_null(static::createdRoute) ? static::indexRoute : static::createdRoute));
-            } else {
-                $this->get('session')
-                    ->getFlashBag()
-                    ->add('danger', 'Falha ao realizar operação.');
-            }
-        }
-        return array(
-            'entity' => $entity,
-            'form' => $form->createView()
-        );
-    }
-    
-    /**
      * Action para adicionar novos registros
      * 
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * 
+     * @Route("/add")
      */
-    public function addAction(\Symfony\Component\HttpFoundation\Request $request)
+    public function addAction(Request $request)
     {
-        $crud  = $this->addData($request);
+        $crud = $this->addData($request);
         if (!is_array($crud)) {
             return $crud;
         }
         return $this->render($this->getBundleName().":".$this->getEntityName().":add.html.twig", $crud);
-    }
-    
-    /**
-     * Método responsável por alterar registros
-     * 
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param integer $id Identificação do registro
-     * @return array
-     */
-    private function editData(\Symfony\Component\HttpFoundation\Request $request, $id)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository($this->getBundleName().":".$this->getEntityName())->find($id);
-        if (!$entity) {
-            $this->get('session')
-            ->getFlashBag()
-            ->add('danger', 'Registro não encontrado.');
-            return $this->redirect($this->generateUrl(is_null(static::updatedRoute) ? static::indexRoute : static::updatedRoute));
-        }
-        $form = $this->getUpdateForm($entity);
-        if ($request->isMethod('PUT')) {
-            $form->handleRequest($request);
-            if ($form->isValid()) {
-                $entity = $this->dataManager($entity);
-                $em->persist($entity);
-                $em->flush();
-                $this->get('session')
-                ->getFlashBag()
-                ->add('success', 'Operação realizada com sucesso.');
-                return $this->redirect($this->generateUrl(is_null(static::updatedRoute) ? static::indexRoute : static::updatedRoute));
-            } else {
-                $this->get('session')
-                ->getFlashBag()
-                ->add('danger', 'Falha ao realizar operação.');
-            }
-        }
-        return array(
-            'entity' => $entity,
-            'form' => $form->createView()
-        );
     }
     
     /**
@@ -321,8 +347,10 @@ abstract class AbstractCrudController extends \Symfony\Bundle\FrameworkBundle\Co
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @param integer $id Identificação do registro
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * 
+     * @Route("/edit/{id}", requirements={"id": "\d+"})
      */
-    public function editAction(\Symfony\Component\HttpFoundation\Request $request, $id)
+    public function editAction(Request $request, $id)
     {
         $crud = $this->editData($request, $id);
         if (!is_array($crud)) {
@@ -336,6 +364,8 @@ abstract class AbstractCrudController extends \Symfony\Bundle\FrameworkBundle\Co
      * 
      * @param integer $id Identificação do registro
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * 
+     * @Route("/remove/{id}", requirements={"id": "\d+"})
      */
     public function removeAction($id)
     {

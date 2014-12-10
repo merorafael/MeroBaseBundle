@@ -6,6 +6,7 @@ namespace Mero\BaseBundle\Entity;
  *
  * @package Mero\BaseBundle\Entity
  * @author Rafael Mello <merorafael@gmail.com>
+ * @link https://github.com/merorafael/MeroBaseBundle Repositório do projeto
  * @copyright Copyright (c) 2014 - Rafael Mello
  * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE BSD license
  *
