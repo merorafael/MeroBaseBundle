@@ -21,21 +21,6 @@ abstract class AbstractCrudController extends Controller
 {
     
     /**
-     * @var string Nome da rota para indexAction
-     */
-    const indexRoute = 'index';
-    
-    /**
-     * @var string Nome da rota para addAction
-     */
-    const addRoute = 'add';
-    
-    /**
-     * @var string Nome da rota para editAction
-     */
-    const editRoute = 'edit';
-    
-    /**
      * @var string Nome da rota para redirecionamento pós-inserção.
      */
     const createdRoute = null;
