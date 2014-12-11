@@ -45,25 +45,15 @@ abstract class AbstractCrudController extends Controller
      */
     protected function getEntityNamespace()
     {
-        return '\\'.str_replace('\Controller', '\Entity', __NAMESPACE__);
+        return '\\'.str_replace('\Controller', '\Entity', substr(get_class($this), 0, strrpos(get_class($this), '\\')));
     }
     
     /**
      * Retorna nome da classe referente a entidade.
      * 
-     * @return string
+     * @return string Nome da entidade
      */
     abstract protected function getEntityName();
-    
-    /**
-     * Retorna nome referente ao bundle.
-     * 
-     * @return string Nome do bundle
-     */
-    protected function getBundleName()
-    {
-        return $this->getRequest()->attributes->get('_template')->get('bundle');
-    }
     
     /**
      * Retorna objeto relacionado ao Type do formulário.
@@ -73,20 +63,76 @@ abstract class AbstractCrudController extends Controller
     abstract protected function getFormType();
     
     /**
+     * Retorna nome referente ao bundle.
+     * 
+     * @return string Nome do bundle
+     */
+    protected function getBundleName()
+    {
+        $this->getRoutePrefix();
+        $namespace_explode = explode("\\", get_class($this));
+        (String) $bundle_name = "";
+        foreach ($namespace_explode as $value) {
+            $find_bundlekey = strpos($value, "Bundle");
+            if (($find_bundlekey == 0) && is_int($find_bundlekey)) {
+                continue;
+            }
+            $bundle_name = $bundle_name.$value;
+            if (($find_bundlekey != 0) && is_int($find_bundlekey)) {
+                break;
+            }
+        }
+        return $bundle_name;
+    }
+    
+    /**
+     * Retorna nome da view a ser renderizado.
+     * 
+     * Por padrão o nome da view é o mesmo da entidade, caso
+     * a controller não utilize esse padrão, sobrescreva este método. 
+     * 
+     * @return string Nome da view
+     */
+    protected function getViewName()
+    {
+        return $this->getEntityName();
+    }
+    
+    /**
      * Retorna prefixo a ser usado para a rota.
      * 
-     * @return string
+     * Reescreva este método caso o prefixo da rota não seja o utilizado
+     * como padrão.
+     * 
+     * @return string Prefixo para a rota
      */
-    abstract protected function getRoutePrefix();
+    protected function getRoutePrefix()
+    {
+        $request_route = $this->getRequest()->attributes->get('_route');
+        $route_prefix = str_replace(strrchr($request_route, '_'), '', $request_route);
+        return $route_prefix;
+    }
+    
+    /**
+     * Retorna nome da rota referente a action desejada.
+     * 
+     * @param string $action Nome da action
+     * @return string Nome da rota
+     */
+    protected function getActionRoute($action = null)
+    {
+        return $this->getRoutePrefix()."_".$action;
+    }
     
     /**
      * Retorna gerenciador de entidades(Entity Manager) do Doctrine.
      * 
+     * @param string name Nome do objeto gerenciador(null para retornar o padrão)
      * @return \Doctrine\ORM\EntityManager Entity Manager do Doctrine
      */
-    public function getDoctrineManager()
+    public function getEm($name = null)
     {
-        return $this->getDoctrine()->getManager();
+        return $this->getDoctrine()->getManager($name);
     }
     
     /**
@@ -126,17 +172,6 @@ abstract class AbstractCrudController extends Controller
     }
     
     /**
-     * Retorna nome da rota referente a action desejada.
-     * 
-     * @param string $action Nome da action
-     * @return string Nome da rota
-     */
-    protected function getActionRoute($action = null)
-    {
-        return $this->getRoutePrefix()."_".$action;
-    }
-    
-    /**
      * Cria o formulário de inserção de dados baseado na entidade informada.
      * 
      * @param \Mero\BaseBundle\Entity\AbstractEntity $entity Entidade referente ao CRUD
@@ -144,8 +179,9 @@ abstract class AbstractCrudController extends Controller
      */
     protected function getInsertForm(AbstractEntity $entity)
     {
-        $form = $this->createForm($this->getType(), $entity, array(
-            'action' => $this->generateUrl(),
+        $route = strstr($this->getRequest()->attributes->get('_controller'), 'indexAction') ? $this->getActionRoute('index') :  $this->getActionRoute('add');
+        $form = $this->createForm($this->getFormType(), $entity, array(
+            'action' => $this->generateUrl($route),
             'method' => 'POST'
         ));
         $form->add('submit', 'submit');
@@ -160,8 +196,9 @@ abstract class AbstractCrudController extends Controller
      */
     protected function getUpdateForm(AbstractEntity $entity)
     {
-        $form = $this->createForm($this->getType(), $entity, array(
-            'action' => $this->generateUrl(static::editRoute, array(
+        $route = strstr($this->getRequest()->attributes->get('_controller'), 'indexAction') ? $this->getActionRoute('index') :  $this->getActionRoute('edit');
+        $form = $this->createForm($this->getFormType(), $entity, array(
+            'action' => $this->generateUrl($route, array(
                 'id' => $entity->getId()
             )),
             'method' => 'PUT'
@@ -194,7 +231,7 @@ abstract class AbstractCrudController extends Controller
                 $this->get('session')
                     ->getFlashBag()
                     ->add('success', 'Operação realizada com sucesso.');
-                return $this->redirect($this->generateUrl(is_null(static::createdRoute) ? static::indexRoute : static::createdRoute));
+                return $this->redirect($this->generateUrl(is_null(static::createdRoute) ? $this->getActionRoute('index') : static::createdRoute));
             } else {
                 $this->get('session')
                     ->getFlashBag()
@@ -222,7 +259,7 @@ abstract class AbstractCrudController extends Controller
             $this->get('session')
             ->getFlashBag()
             ->add('danger', 'Registro não encontrado.');
-            return $this->redirect($this->generateUrl(is_null(static::updatedRoute) ? static::indexRoute : static::updatedRoute));
+            return $this->redirect($this->generateUrl(is_null(static::updatedRoute) ? $this->getActionRoute('index') : static::updatedRoute));
         }
         $form = $this->getUpdateForm($entity);
         if ($request->isMethod('PUT')) {
@@ -234,7 +271,7 @@ abstract class AbstractCrudController extends Controller
                 $this->get('session')
                     ->getFlashBag()
                     ->add('success', 'Operação realizada com sucesso.');
-                return $this->redirect($this->generateUrl(is_null(static::updatedRoute) ? static::indexRoute : static::updatedRoute));
+                return $this->redirect($this->generateUrl(is_null(static::updatedRoute) ? $this->getActionRoute('index') : static::updatedRoute));
             } else {
                 $this->get('session')
                     ->getFlashBag()
@@ -252,9 +289,7 @@ abstract class AbstractCrudController extends Controller
      * 
      * Os dados exibidos são controlados com parâmetros $_GET
      * page - Qual página está sendo exibida(padrão 0);
-     * limit - Quantidade de registros por página(padrão 10);
-     * sort - Campo a ser utilizado para ordenação(padrão "created")
-     * order - Como será ordernado o campo sort(padrão DESC)
+     * limit - Quantidade de registros por página(padrão 10)
      * 
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @param integer $id Utilizado para editar um registro na indexAction caso informado
@@ -266,7 +301,6 @@ abstract class AbstractCrudController extends Controller
     {
         $page = $request->query->get('page') ? $request->query->get('page') : 1;
         $limit = $request->query->get('limit') ? $request->query->get('limit') : 10;
-        
         $em = $this->getDoctrine()->getManager();
         $entity_q = $em->createQueryBuilder()
             ->select('e')
@@ -287,7 +321,7 @@ abstract class AbstractCrudController extends Controller
             return $crud;
         }
         
-        return $this->render($this->getBundleName().":".$this->getEntityName().":index.html.twig", array_merge(
+        return $this->render($this->getBundleName().":".$this->getViewName().":index.html.twig", array_merge(
             $crud,
             array(
                 'entities' => $entities
@@ -310,9 +344,9 @@ abstract class AbstractCrudController extends Controller
             $this->get('session')
                 ->getFlashBag()
                 ->add('danger', 'Registro não encontrado.');
-            return $this->redirect($this->generateUrl(static::indexRoute));
+            return $this->redirect($this->generateUrl($this->getActionRoute('index')));
         }
-        return $this->render($this->getBundleName().":".$this->getEntityName().":details.html.twig", array(
+        return $this->render($this->getBundleName().":".$this->getViewName().":details.html.twig", array(
             'entity' => $entity
         ));
     }
@@ -331,7 +365,7 @@ abstract class AbstractCrudController extends Controller
         if (!is_array($crud)) {
             return $crud;
         }
-        return $this->render($this->getBundleName().":".$this->getEntityName().":add.html.twig", $crud);
+        return $this->render($this->getBundleName().":".$this->getViewName().":add.html.twig", $crud);
     }
     
     /**
@@ -349,7 +383,7 @@ abstract class AbstractCrudController extends Controller
         if (!is_array($crud)) {
             return $crud;
         }
-        return $this->render($this->getBundleName().":".$this->getEntityName().":edit.html.twig", $crud);
+        return $this->render($this->getBundleName().":".$this->getViewName().":edit.html.twig", $crud);
     }
     
     /**
@@ -375,6 +409,6 @@ abstract class AbstractCrudController extends Controller
                 ->getFlashBag()
                 ->add('success', 'Operação realizada com sucesso.');
         }
-        return $this->redirect($this->generateUrl(is_null(static::removedRoute) ? static::indexRoute : static::removedRoute));
+        return $this->redirect($this->generateUrl(is_null(static::removedRoute) ? $this->getActionRoute('index') : static::removedRoute));
     }
 }
