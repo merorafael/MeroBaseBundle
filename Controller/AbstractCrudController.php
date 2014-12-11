@@ -21,6 +21,11 @@ abstract class AbstractCrudController extends Controller
 {
     
     /**
+     * @var boolean Habilita/Desabilita paginação de conteúdo na index
+     */
+    const pagination = true;
+    
+    /**
      * @var string Nome da rota para redirecionamento pós-inserção.
      */
     const createdRoute = null;
@@ -301,6 +306,7 @@ abstract class AbstractCrudController extends Controller
     {
         $page = $request->query->get('page') ? $request->query->get('page') : 1;
         $limit = $request->query->get('limit') ? $request->query->get('limit') : 10;
+        
         $em = $this->getDoctrine()->getManager();
         $entity_q = $em->createQueryBuilder()
             ->select('e')
@@ -312,8 +318,8 @@ abstract class AbstractCrudController extends Controller
         
         $entity_q = $this->indexQueryBuilder($entity_q);
         
-        //Recurso dependente do KnpPaginatorBundle
-        $entities = $this->get('knp_paginator')->paginate($entity_q->getQuery(), $page, $limit);
+        //Caso a constante "pagination" esteja true, utiliza recurso no knp_paginator para criar paginação.
+        $entities = (static::pagination === true) ? $this->get('knp_paginator')->paginate($entity_q->getQuery(), $page, $limit) : $entity_q->getQuery()->getResult();
         
         //Adiciona formulário de CRUD(adicionar ou editar de acordo com a identificação informada).
         $crud = !empty($id) ? $this->editData($request, $id) : $this->addData($request);
