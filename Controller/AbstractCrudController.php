@@ -1,5 +1,4 @@
 <?php
-
 namespace Mero\BaseBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -50,7 +49,7 @@ abstract class AbstractCrudController extends Controller
      */
     protected function getEntityNamespace()
     {
-        return '\\'.str_replace('\Controller', '\Entity', substr(get_class($this), 0, strrpos(get_class($this), '\\')));
+        return '\\'.strstr(get_class($this), '\Controller', true).'\\Entity';
     }
     
     /**
