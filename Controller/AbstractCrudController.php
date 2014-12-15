@@ -1,4 +1,5 @@
 <?php
+
 namespace Mero\BaseBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -49,7 +50,8 @@ abstract class AbstractCrudController extends Controller
      */
     protected function getEntityNamespace()
     {
-        return '\\'.strstr(get_class($this), '\Controller', true).'\\Entity';
+        return '\\'.str_replace('\Controller', '\Entity', substr(get_class($this), 0, strrpos(get_class($this), '\\')));
+        //return '\\'.strstr(get_class($this), '\Controller', true).'\\Entity';
     }
     
     /**
@@ -99,7 +101,8 @@ abstract class AbstractCrudController extends Controller
      */
     protected function getViewName()
     {
-        return $this->getEntityName();
+        $check_prefix = strstr($this->getEntityNamespace(), "Entity\\");
+        return ($check_prefix !== false) ? str_replace("Entity\\", "", $check_prefix)."\\".$this->getEntityName() : $this->getEntityName();
     }
     
     /**
@@ -258,7 +261,7 @@ abstract class AbstractCrudController extends Controller
     private function editData(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository($this->getBundleName().":".$this->getEntityName())->find($id);
+        $entity = $em->getRepository($this->getEntityNamespace()."\\".$this->getEntityName())->find($id);
         if (!$entity) {
             $this->get('session')
             ->getFlashBag()
@@ -309,7 +312,7 @@ abstract class AbstractCrudController extends Controller
         $em = $this->getDoctrine()->getManager();
         $entity_q = $em->createQueryBuilder()
             ->select('e')
-            ->from($this->getBundleName().":".$this->getEntityName(), 'e')
+            ->from($this->getEntityNamespace()."\\".$this->getEntityName(), 'e')
         ;
         if (!$request->query->get('sort')) {
             $entity_q->orderBy("e.{$this->defaultSort()}", "DESC");
@@ -402,7 +405,7 @@ abstract class AbstractCrudController extends Controller
     public function removeAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository($this->getBundleName().":".$this->getEntityName())->find($id);
+        $entity = $em->getRepository($this->getEntityNamespace()."\\".$this->getEntityName())->find($id);
         if (!$entity) {
             $this->get('session')
                 ->getFlashBag()
