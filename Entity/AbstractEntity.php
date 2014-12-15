@@ -8,7 +8,7 @@ namespace Mero\BaseBundle\Entity;
  * @author Rafael Mello <merorafael@gmail.com>
  * @link https://github.com/merorafael/MeroBaseBundle Repositório do projeto
  * @copyright Copyright (c) 2014 - Rafael Mello
- * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE BSD license
+ * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE MIT license
  *
  * @Doctrine\ORM\Mapping\MappedSuperclass
  * @Doctrine\ORM\Mapping\HasLifecycleCallbacks
