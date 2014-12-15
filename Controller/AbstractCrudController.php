@@ -188,6 +188,30 @@ abstract class AbstractCrudController extends Controller
     }
     
     /**
+     * Método utilizado em classes extendidas para manipular dados da entidade que não 
+     * correspondem a um CRUD simples.
+     * 
+     * @param \Mero\BaseBundle\Entity\AbstractEntity $entity Entidade referente ao CRUD
+     * @return \Mero\BaseBundle\Entity\AbstractEntity
+     */
+    protected function dataManagerAdd(AbstractEntity $entity) 
+    {
+        return $this->dataManager($entity);
+    }
+    
+    /**
+     * Método utilizado em classes extendidas para manipular dados da entidade que não
+     * correspondem a um CRUD simples.
+     *
+     * @param \Mero\BaseBundle\Entity\AbstractEntity $entity Entidade referente ao CRUD
+     * @return \Mero\BaseBundle\Entity\AbstractEntity
+     */
+    protected function dataManagerEdit(AbstractEntity $entity) 
+    {
+        return $this->dataManager($entity);
+    }
+    
+    /**
      * Cria o formulário de inserção de dados baseado na entidade informada.
      * 
      * @param \Mero\BaseBundle\Entity\AbstractEntity $entity Entidade referente ao CRUD
@@ -240,7 +264,7 @@ abstract class AbstractCrudController extends Controller
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
             if ($form->isValid()) {
-                $entity = $this->dataManager($entity);
+                $entity = $this->dataManagerAdd($entity);
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($entity);
                 $em->flush();
@@ -281,7 +305,7 @@ abstract class AbstractCrudController extends Controller
         if ($request->isMethod('PUT')) {
             $form->handleRequest($request);
             if ($form->isValid()) {
-                $entity = $this->dataManager($entity);
+                $entity = $this->dataManagerEdit($entity);
                 $em->persist($entity);
                 $em->flush();
                 $this->get('session')
