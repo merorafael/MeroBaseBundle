@@ -68,7 +68,14 @@ abstract class AbstractCrudController extends Controller
      * 
      * @return \Symfony\Component\Form\AbstractType Objeto do tipo do formulário
      */
-    abstract protected function getFormType();
+    protected function getFormType()
+    {
+        $type_class = str_replace("\Entity\\", "\Form\\", $this->getEntityNamespace())."\\".$this->getEntityName()."Type";
+        if (!class_exists($type_class)) {
+            throw $this->createNotFoundException('FormType not found');
+        }
+        return new $type_class;
+    }
     
     /**
      * Retorna nome referente ao bundle.
