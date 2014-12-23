@@ -177,6 +177,17 @@ abstract class AbstractCrudController extends Controller
     }
 
     /**
+     * Chamado no momento em que uma nova entidade é criada.
+     * 
+     * @param AbstractEntity $entity Entidade referente ao CRUD
+     * @return AbstractEntity Entidade referente ao CRUD
+     */
+    protected function newEntity(AbstractEntity $entity)
+    {
+        return $entity;
+    }
+    
+    /**
      * Método utilizado em classes extendidas para manipular dados da entidade que não 
      * correspondem a um CRUD simples.
      * 
@@ -259,12 +270,12 @@ abstract class AbstractCrudController extends Controller
         if (!class_exists($entity_class)) {
             throw $this->createNotFoundException('Entity not found');
         }
-        $entity = new $entity_class();
+        $entity = $this->newEntity(new $entity_class());
         $form = $this->getInsertForm($entity);
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
-            $entity = $this->dataManagerAdd($entity);
             if ($form->isValid()) {
+                $entity = $this->dataManagerAdd($entity);;
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($entity);
                 $em->flush();
@@ -304,8 +315,8 @@ abstract class AbstractCrudController extends Controller
         $form = $this->getUpdateForm($entity);
         if ($request->isMethod('PUT')) {
             $form->handleRequest($request);
-            $entity = $this->dataManagerEdit($entity);
             if ($form->isValid()) {
+                $entity = $this->dataManagerEdit($entity);
                 $em->persist($entity);
                 $em->flush();
                 $this->get('session')
