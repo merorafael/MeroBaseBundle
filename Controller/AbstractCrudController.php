@@ -263,8 +263,8 @@ abstract class AbstractCrudController extends Controller
         $form = $this->getInsertForm($entity);
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
+            $entity = $this->dataManagerAdd($entity);
             if ($form->isValid()) {
-                $entity = $this->dataManagerAdd($entity);
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($entity);
                 $em->flush();
@@ -304,8 +304,8 @@ abstract class AbstractCrudController extends Controller
         $form = $this->getUpdateForm($entity);
         if ($request->isMethod('PUT')) {
             $form->handleRequest($request);
+            $entity = $this->dataManagerEdit($entity);
             if ($form->isValid()) {
-                $entity = $this->dataManagerEdit($entity);
                 $em->persist($entity);
                 $em->flush();
                 $this->get('session')
