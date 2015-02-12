@@ -70,7 +70,7 @@ abstract class AbstractCrudController extends Controller
      */
     protected function getFormType()
     {
-        $type_class = str_replace("\Entity\\", "\Form\\", $this->getEntityNamespace())."\\".$this->getEntityName()."Type";
+        $type_class = str_replace("\Entity", "\Form", $this->getEntityNamespace())."\\".$this->getEntityName()."Type";
         if (!class_exists($type_class)) {
             throw $this->createNotFoundException('FormType not found');
         }
