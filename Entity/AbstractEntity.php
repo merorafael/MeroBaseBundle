@@ -1,6 +1,8 @@
 <?php
 namespace Mero\BaseBundle\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * Classe abstrata para entidades
  *
@@ -10,38 +12,35 @@ namespace Mero\BaseBundle\Entity;
  * @copyright Copyright (c) 2014 - Rafael Mello
  * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE MIT license
  *
- * @Doctrine\ORM\Mapping\MappedSuperclass
- * @Doctrine\ORM\Mapping\HasLifecycleCallbacks
+ * @ORM\MappedSuperclass
+ * @ORM\HasLifecycleCallbacks
  */
 abstract class AbstractEntity
 {
     
     /**
-     * @var integer Identificação(ID) do registro
+     * @var int Identificação(ID) do registro
      * 
-     * @Doctrine\ORM\Mapping\Id
-     * @Doctrine\ORM\Mapping\Column(type="integer")
-     * @Doctrine\ORM\Mapping\GeneratedValue(strategy="IDENTITY")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     protected $id;
     
     /**
-     * @var \DateTime Data de criação dos dados
+     * @var \DateTime Data de criação do dado
      * 
-     * @Doctrine\ORM\Mapping\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="datetime", nullable=true)
      */
     protected $created;
     
     /**
-     * @var \DateTime Data da ultima alteração dos dados
+     * @var \DateTime Data da ultima alteração do dado
      * 
-     * @Doctrine\ORM\Mapping\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="datetime", nullable=true)
      */
     protected $updated;
-    
-    /**
-     * Método construtor
-     */
+
     public function __construct()
     {
         $this->created = new \DateTime('now');
@@ -51,7 +50,7 @@ abstract class AbstractEntity
     /**
      * Retorna identificação(ID) relacionado ao registro.
      * 
-     * @return integer ID do registro
+     * @return int ID do registro
      */
     public function getId()
     {
@@ -61,8 +60,8 @@ abstract class AbstractEntity
     /**
      * Define identificação(ID) relacionado ao registro.
      * 
-     * @param integer $id Identificação(ID) do registro
-     * @return \Mero\BaseBundle\Entity\AbstractEntity
+     * @param int $id Identificação(ID) do registro
+     * @return AbstractEntity
      */
     public function setId($id)
     {
@@ -73,7 +72,7 @@ abstract class AbstractEntity
     /**
      * Retorna instancia de DateTime relacionada a data de criação do registro.
      * 
-     * @return DateTime Data de criação do registro
+     * @return \DateTime Data de criação do registro
      */
     public function getCreated()
     {
@@ -84,7 +83,7 @@ abstract class AbstractEntity
      * Define instancia de DateTime relacionada a data de criação do registro.
      * 
      * @param \DateTime $created Data de criação do registro
-     * @return \Mero\BaseBundle\Entity\AbstractEntity
+     * @return AbstractEntity
      */
     public function setCreated(\DateTime $created)
     {
@@ -95,7 +94,7 @@ abstract class AbstractEntity
     /**
      * Retorna instancia de DateTime relacionada a data de atualização do registro.
      * 
-     * @return DateTime Data de atualização do registro
+     * @return \DateTime Data de atualização do registro
      */
     public function getUpdated()
     {
@@ -106,7 +105,7 @@ abstract class AbstractEntity
      * Define instancia de DateTime relacionada a data de atualização do registro.
      * 
      * @param \DateTime $updated Data de atualização do registro
-     * @return \Mero\BaseBundle\Entity\AbstractEntity
+     * @return AbstractEntity
      */
     public function setUpdated(\DateTime $updated)
     {
@@ -118,7 +117,7 @@ abstract class AbstractEntity
      * Responsável por alterar valor de updated antes de cada
      * atualização.
      * 
-     * @Doctrine\ORM\Mapping\PreUpdate
+     * @ORM\PreUpdate
      */
     public function updated()
     {

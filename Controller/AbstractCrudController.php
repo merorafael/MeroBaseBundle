@@ -2,11 +2,11 @@
 
 namespace Mero\BaseBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Doctrine\ORM\QueryBuilder;
-use Symfony\Component\HttpFoundation\Request;
 use Mero\BaseBundle\Entity\AbstractEntity;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Classe abstrata para criação de CRUD simples
@@ -14,32 +14,23 @@ use Mero\BaseBundle\Entity\AbstractEntity;
  * @package Mero\BaseBundle\Controller
  * @author Rafael Mello <merorafael@gmail.com>
  * @link https://github.com/merorafael/MeroBaseBundle Repositório do projeto
- * @copyright Copyright (c) 2014 - Rafael Mello
+ * @link http://merorafael.wordpress.com Blog pessoal
+ * @Copyright Copyright (c) 2014~2015 - Rafael Mello
  * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE MIT license
  */
 abstract class AbstractCrudController extends Controller
 {
-    
-    /**
-     * @var boolean Habilita/Desabilita paginação de conteúdo na index
-     */
-    const pagination = true;
-    
-    /**
-     * @var string Nome da rota para redirecionamento pós-inserção.
-     */
-    const createdRoute = null;
-    
-    /**
-     * @var string Nome da rota para redirecionamento pós-atualização.
-     */
-    const updatedRoute = null;
-    
-    /**
-     * @var string Nome da rota para redirecionamento pós-exclusão.
-     */
-    const removedRoute = null;
-    
+
+    const INDEX_CRUD = true;
+
+    const DATA_PAGINATION = true;
+
+    const CREATED_ROUTE = null;
+
+    const UPDATED_ROUTE = null;
+
+    const REMOVED_ROUTE = null;
+
     /**
      * Retorna namespace relacionada a entidade.
      * Sobreescreva este método caso o namespace seja diferente do padrão.
@@ -142,13 +133,12 @@ abstract class AbstractCrudController extends Controller
     
     /**
      * Retorna gerenciador de entidades(Entity Manager) do Doctrine.
-     * 
-     * @param string name Nome do objeto gerenciador(null para retornar o padrão)
+     *
      * @return \Doctrine\ORM\EntityManager Entity Manager do Doctrine
      */
-    public function getEm($name = null)
+    protected function getEm()
     {
-        return $this->getDoctrine()->getManager($name);
+        return $this->getDoctrine()->getManager();
     }
     
     /**
@@ -230,7 +220,7 @@ abstract class AbstractCrudController extends Controller
      */
     protected function getInsertForm(AbstractEntity $entity)
     {
-        $route = strstr($this->getRequest()->attributes->get('_controller'), 'indexAction') ? $this->getActionRoute('index') :  $this->getActionRoute('add');
+        $route = (self::INDEX_CRUD) ? $this->getActionRoute('index') :  $this->getActionRoute('add');
         $form = $this->createForm($this->getFormType(), $entity, array(
             'action' => $this->generateUrl($route),
             'method' => 'POST'
@@ -356,21 +346,25 @@ abstract class AbstractCrudController extends Controller
         $em = $this->getDoctrine()->getManager();
         $entity_q = $em->createQueryBuilder()
             ->select('e')
-            ->from($this->getEntityNamespace()."\\".$this->getEntityName(), 'e')
-        ;
+            ->from($this->getEntityNamespace()."\\".$this->getEntityName(), 'e');
         if (!$request->query->get('sort')) {
             $entity_q->orderBy("e.{$this->defaultSort()}", "DESC");
         }
-        
         $entity_q = $this->indexQueryBuilder($entity_q);
-        
-        //Caso a constante "pagination" esteja true, utiliza recurso no knp_paginator para criar paginação.
-        $entities = (static::pagination === true) ? $this->get('knp_paginator')->paginate($entity_q->getQuery(), $page, $limit) : $entity_q->getQuery()->getResult();
-        
-        //Adiciona formulário de CRUD(adicionar ou editar de acordo com a identificação informada).
-        $crud = !empty($id) ? $this->editData($request, $id) : $this->addData($request);
-        if (!is_array($crud)) {
-            return $crud;
+        $entities = (static::DATA_PAGINATION === true) ?
+            $this
+                ->get('knp_paginator')
+                ->paginate($entity_q->getQuery(), $page, $limit) :
+            $entity_q
+                ->getQuery()
+                ->getResult();
+        if (self::INDEX_CRUD === true) {
+            $crud = !empty($id) ? $this->editData($request, $id) : $this->addData($request);
+            if (!is_array($crud)) {
+                return $crud;
+            }
+        } else {
+
         }
         
         return $this->render($this->getBundleName().":".$this->getViewName().":index.html.twig", array_merge(

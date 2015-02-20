@@ -9,7 +9,7 @@
 		"base"
 	],
 	"homepage" : "https://github.com/merorafael/MeroBaseBundle",
-	"license" : "BSD",
+	"license" : "MIT",
 	"authors" : [{
 			"name" : "Rafael Mello",
 			"homepage" : "https://github.com/merorafael"
