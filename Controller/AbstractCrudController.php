@@ -77,7 +77,7 @@ abstract class AbstractCrudController extends Controller
     {
         $this->getRoutePrefix();
         $namespace_explode = explode("\\", get_class($this));
-        (String) $bundle_name = "";
+        (String) $bundle_name = '';
         foreach ($namespace_explode as $value) {
             $find_bundlekey = strpos($value, "Bundle");
             if (($find_bundlekey == 0) && is_int($find_bundlekey)) {
@@ -102,7 +102,7 @@ abstract class AbstractCrudController extends Controller
     protected function getViewName()
     {
         $check_prefix = strstr($this->getEntityNamespace(), "Entity\\");
-        return ($check_prefix !== false) ? str_replace("Entity\\", "", $check_prefix)."\\".$this->getEntityName() : $this->getEntityName();
+        return ($check_prefix === true) ? str_replace("Entity\\", "", $check_prefix)."\\".$this->getEntityName() : $this->getEntityName();
     }
     
     /**
@@ -115,7 +115,8 @@ abstract class AbstractCrudController extends Controller
      */
     protected function getRoutePrefix()
     {
-        $request_route = $this->getRequest()->attributes->get('_route');
+        $request = new Request();
+        $request_route = $request->attributes->get('_route');
         $route_prefix = str_replace(strrchr($request_route, '_'), '', $request_route);
         return $route_prefix;
     }
@@ -220,7 +221,7 @@ abstract class AbstractCrudController extends Controller
      */
     protected function getInsertForm(AbstractEntity $entity)
     {
-        $route = (self::INDEX_CRUD) ? $this->getActionRoute('index') :  $this->getActionRoute('add');
+        $route = (static::INDEX_CRUD) ? $this->getActionRoute('index') :  $this->getActionRoute('add');
         $form = $this->createForm($this->getFormType(), $entity, array(
             'action' => $this->generateUrl($route),
             'method' => 'POST'
@@ -272,7 +273,7 @@ abstract class AbstractCrudController extends Controller
                 $this->get('session')
                     ->getFlashBag()
                     ->add('success', 'Operação realizada com sucesso.');
-                return $this->redirect($this->generateUrl(is_null(static::createdRoute) ? $this->getActionRoute('index') : static::createdRoute));
+                return $this->redirect($this->generateUrl(is_null(static::CREATED_ROUTE) ? $this->getActionRoute('index') : static::CREATED_ROUTE));
             } else {
                 $this->get('session')
                     ->getFlashBag()
@@ -300,7 +301,7 @@ abstract class AbstractCrudController extends Controller
             $this->get('session')
             ->getFlashBag()
             ->add('danger', 'Registro não encontrado.');
-            return $this->redirect($this->generateUrl(is_null(static::updatedRoute) ? $this->getActionRoute('index') : static::updatedRoute));
+            return $this->redirect($this->generateUrl(is_null(static::UPDATED_ROUTE) ? $this->getActionRoute('index') : static::UPDATED_ROUTE));
         }
         $form = $this->getUpdateForm($entity);
         if ($request->isMethod('PUT')) {
@@ -312,7 +313,7 @@ abstract class AbstractCrudController extends Controller
                 $this->get('session')
                     ->getFlashBag()
                     ->add('success', 'Operação realizada com sucesso.');
-                return $this->redirect($this->generateUrl(is_null(static::updatedRoute) ? $this->getActionRoute('index') : static::updatedRoute));
+                return $this->redirect($this->generateUrl(is_null(static::UPDATED_ROUTE) ? $this->getActionRoute('index') : static::UPDATED_ROUTE));
             } else {
                 $this->get('session')
                     ->getFlashBag()
@@ -351,28 +352,18 @@ abstract class AbstractCrudController extends Controller
             $entity_q->orderBy("e.{$this->defaultSort()}", "DESC");
         }
         $entity_q = $this->indexQueryBuilder($entity_q);
-        $entities = (static::DATA_PAGINATION === true) ?
-            $this
-                ->get('knp_paginator')
-                ->paginate($entity_q->getQuery(), $page, $limit) :
-            $entity_q
-                ->getQuery()
-                ->getResult();
-        if (self::INDEX_CRUD === true) {
+        $entities = (static::DATA_PAGINATION === true) ? $this->get('knp_paginator')->paginate($entity_q->getQuery(), $page, $limit) : $entity_q->getQuery()->getResult();
+        $view_data = array(
+            'entities' => $entities
+        );
+        if (static::INDEX_CRUD === true) {
             $crud = !empty($id) ? $this->editData($request, $id) : $this->addData($request);
             if (!is_array($crud)) {
                 return $crud;
             }
-        } else {
-
+            $view_data = array_merge($view_data, $crud);
         }
-        
-        return $this->render($this->getBundleName().":".$this->getViewName().":index.html.twig", array_merge(
-            $crud,
-            array(
-                'entities' => $entities
-            )
-        ));
+        return $this->render($this->getBundleName().":".$this->getViewName().":index.html.twig", $view_data);
     }
     
     /**
@@ -455,6 +446,6 @@ abstract class AbstractCrudController extends Controller
                 ->getFlashBag()
                 ->add('success', 'Operação realizada com sucesso.');
         }
-        return $this->redirect($this->generateUrl(is_null(static::removedRoute) ? $this->getActionRoute('index') : static::removedRoute));
+        return $this->redirect($this->generateUrl(is_null(static::REMOVED_ROUTE) ? $this->getActionRoute('index') : static::REMOVED_ROUTE));
     }
 }
