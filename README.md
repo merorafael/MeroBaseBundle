@@ -1,3 +1,5 @@
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/4612cf8e-4579-4ad5-a2ca-8e4620da09c8/mini.png)](https://insight.sensiolabs.com/projects/4612cf8e-4579-4ad5-a2ca-8e4620da09c8)
+
 ## Requisitos:
 - Symfony 2.3 ou superior
 - [KnpPaginatorBundle](https://github.com/KnpLabs/KnpPaginatorBundle)
