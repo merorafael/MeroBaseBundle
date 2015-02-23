@@ -102,7 +102,7 @@ abstract class AbstractCrudController extends Controller
     protected function getViewName()
     {
         $check_prefix = strstr($this->getEntityNamespace(), "Entity\\");
-        return ($check_prefix === true) ? str_replace("Entity\\", "", $check_prefix)."\\".$this->getEntityName() : $this->getEntityName();
+        return ($check_prefix !== false) ? str_replace("Entity\\", "", $check_prefix)."\\".$this->getEntityName() : $this->getEntityName();
     }
     
     /**
