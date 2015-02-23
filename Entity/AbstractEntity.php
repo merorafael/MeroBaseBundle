@@ -12,6 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\MappedSuperclass
  * @ORM\HasLifecycleCallbacks
  */
-class AbstractEntity extends StdEntity
+abstract class AbstractEntity extends StdEntity
 {
 }
