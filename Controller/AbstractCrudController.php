@@ -115,7 +115,7 @@ abstract class AbstractCrudController extends Controller
      */
     protected function getRoutePrefix()
     {
-        $request = new Request();
+        $request = $this->getRequest();
         $request_route = $request->attributes->get('_route');
         $route_prefix = str_replace(strrchr($request_route, '_'), '', $request_route);
         return $route_prefix;
