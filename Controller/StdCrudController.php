@@ -3,7 +3,7 @@
 namespace Mero\BaseBundle\Controller;
 
 use Doctrine\ORM\QueryBuilder;
-use Mero\BaseBundle\Entity\StdEntity;
+use Mero\BaseBundle\Entity\AbstractEntity as StdEntity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
