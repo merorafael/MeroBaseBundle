@@ -85,7 +85,7 @@ abstract class StdCrudController extends Controller
     {
         $type_class = str_replace("\Entity", "\Form", "\\".$this->getEntityNamespace())."\\".$this->getEntityName()."Type";
         if (!class_exists($type_class)) {
-            throw $this->createNotFoundException('FormType not found');
+            throw $this->createNotFoundException($this->get('translator')->trans('FormType not found'));
         }
         return new $type_class;
     }
@@ -178,9 +178,6 @@ abstract class StdCrudController extends Controller
     /**
      * Chamado no momento em que uma nova entidade é criada.
      *
-     * @deprecated Este método será substituido pelo método
-     * getNewEntity() na versão 1.1.
-     *
      * @param StdEntity $entity Entidade referente ao CRUD
      * @return StdEntity Entidade referente ao CRUD
      */
@@ -194,7 +191,7 @@ abstract class StdCrudController extends Controller
      *
      * @return StdEntity Nova entidade do Doctrine
      */
-    protected function getNewEntity()
+    private function getNewEntity()
     {
         $entity_class = "\\".$this->getEntityNamespace()."\\".$this->getEntityName();
         if (!class_exists($entity_class)) {
