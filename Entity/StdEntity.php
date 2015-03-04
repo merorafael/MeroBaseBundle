@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @author Rafael Mello <merorafael@gmail.com>
  * @link https://github.com/merorafael/MeroBaseBundle Repositório do projeto
  * @copyright Copyright (c) 2014 - Rafael Mello
- * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE MIT license
+ * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE MIT
  *
  * @ORM\MappedSuperclass
  * @ORM\HasLifecycleCallbacks
@@ -59,7 +59,7 @@ abstract class StdEntity
      * Define identificação(ID) relacionado ao registro.
      * 
      * @param int $id Identificação(ID) do registro
-     * @return AbstractEntity
+     * @return StdEntity
      */
     public function setId($id)
     {
@@ -81,7 +81,7 @@ abstract class StdEntity
      * Define instancia de DateTime relacionada a data de criação do registro.
      * 
      * @param \DateTime $created Data de criação do registro
-     * @return AbstractEntity
+     * @return StdEntity
      */
     public function setCreated(\DateTime $created)
     {
@@ -103,7 +103,7 @@ abstract class StdEntity
      * Define instancia de DateTime relacionada a data de atualização do registro.
      * 
      * @param \DateTime $updated Data de atualização do registro
-     * @return AbstractEntity
+     * @return StdEntity
      */
     public function setUpdated(\DateTime $updated)
     {
