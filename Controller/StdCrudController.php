@@ -179,9 +179,13 @@ abstract class StdCrudController extends Controller
      *
      * @param mixed $entity Entidade referente ao CRUD
      * @return mixed Entidade referente ao CRUD
+     * @throws \Exception Entidade não é objeto
      */
     protected function newEntity($entity)
     {
+        if (!is_object($entity)) {
+            throw new \Exception($this->get('translator')->trans('Entry not found'));
+        }
         return $entity;
     }
 
@@ -209,9 +213,13 @@ abstract class StdCrudController extends Controller
      *
      * @param mixed $entity Entidade referente ao CRUD
      * @return mixed
+     * @throws \Exception Entidade não é objeto
      */
     protected function dataManager($entity)
     {
+        if (!is_object($entity)) {
+            throw new \Exception($this->get('translator')->trans('Entry not found'));
+        }
         return $entity;
     }
 
@@ -221,9 +229,13 @@ abstract class StdCrudController extends Controller
      *
      * @param mixed $entity Entidade referente ao CRUD
      * @return mixed
+     * @throws \Exception Entidade não é objeto
      */
     protected function dataManagerAdd($entity)
     {
+        if (!is_object($entity)) {
+            throw new \Exception($this->get('translator')->trans('Entry not found'));
+        }
         return $this->dataManager($entity);
     }
 
@@ -233,9 +245,13 @@ abstract class StdCrudController extends Controller
      *
      * @param mixed $entity Entidade referente ao CRUD
      * @return mixed
+     * @throws \Exception Entidade não é objeto
      */
     protected function dataManagerEdit($entity)
     {
+        if (!is_object($entity)) {
+            throw new \Exception($this->get('translator')->trans('Entry not found'));
+        }
         return $this->dataManager($entity);
     }
 
@@ -244,9 +260,13 @@ abstract class StdCrudController extends Controller
      *
      * @param mixed $entity Entidade referente ao CRUD
      * @return Form Formulário do Symfony
+     * @throws \Exception Entidade não é objeto
      */
     private function getInsertForm($entity)
     {
+        if (!is_object($entity)) {
+            throw new \Exception($this->get('translator')->trans('Entry not found'));
+        }
         $route = (static::INDEX_CRUD) ? $this->getActionRoute('index') :  $this->getActionRoute('add');
         $form = $this->createForm($this->getFormType(), $entity, array(
             'action' => $this->generateUrl($route),
@@ -261,9 +281,13 @@ abstract class StdCrudController extends Controller
      *
      * @param mixed $entity Entity referente ao CRUD
      * @return Form Formulário do Symfony
+     * @throws \Exception Entidade não é objeto
      */
     private function getUpdateForm($entity)
     {
+        if (!is_object($entity)) {
+            throw new \Exception($this->get('translator')->trans('Entry not found'));
+        }
         $route = (static::INDEX_CRUD) ? $this->getActionRoute('index') :  $this->getActionRoute('edit');
         $form = $this->createForm($this->getFormType(), $entity, array(
             'action' => $this->generateUrl($route, array(
@@ -391,7 +415,8 @@ abstract class StdCrudController extends Controller
     /**
      * Action para exibir detalhes de registro especifico
      *
-     * @param integer $id Identificação do registro
+     * @param int $id Identificação do registro
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      *
      * @Route("/detalhes/{id}", requirements={"id": "\d+"})
      */
