@@ -3,7 +3,6 @@
 namespace Mero\BaseBundle\Controller;
 
 use Doctrine\ORM\QueryBuilder;
-use Mero\BaseBundle\Entity\StdEntity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -178,10 +177,10 @@ abstract class StdCrudController extends Controller
     /**
      * Chamado no momento em que uma nova entidade é criada.
      *
-     * @param StdEntity $entity Entidade referente ao CRUD
-     * @return StdEntity Entidade referente ao CRUD
+     * @param mixed $entity Entidade referente ao CRUD
+     * @return mixed Entidade referente ao CRUD
      */
-    protected function newEntity(StdEntity $entity)
+    protected function newEntity($entity)
     {
         return $entity;
     }
@@ -189,7 +188,7 @@ abstract class StdCrudController extends Controller
     /**
      * Retorna instancia de uma nova entidade do Doctrine.
      *
-     * @return StdEntity Nova entidade do Doctrine
+     * @return mixed Nova entidade do Doctrine
      */
     private function getNewEntity()
     {
@@ -208,10 +207,10 @@ abstract class StdCrudController extends Controller
      * dataManagerAdd() e dataManagerEdit(). O mesmo será removido
      * na versão 1.1.
      *
-     * @param StdEntity $entity Entidade referente ao CRUD
-     * @return StdEntity
+     * @param mixed $entity Entidade referente ao CRUD
+     * @return mixed
      */
-    protected function dataManager(StdEntity $entity)
+    protected function dataManager($entity)
     {
         return $entity;
     }
@@ -220,10 +219,10 @@ abstract class StdCrudController extends Controller
      * Método utilizado em classes extendidas para manipular dados da entidade que não
      * correspondem a um CRUD simples.
      *
-     * @param StdEntity $entity Entidade referente ao CRUD
-     * @return StdEntity
+     * @param mixed $entity Entidade referente ao CRUD
+     * @return mixed
      */
-    protected function dataManagerAdd(StdEntity $entity)
+    protected function dataManagerAdd($entity)
     {
         return $this->dataManager($entity);
     }
@@ -232,10 +231,10 @@ abstract class StdCrudController extends Controller
      * Método utilizado em classes extendidas para manipular dados da entidade que não
      * correspondem a um CRUD simples.
      *
-     * @param StdEntity $entity Entidade referente ao CRUD
-     * @return StdEntity
+     * @param mixed $entity Entidade referente ao CRUD
+     * @return mixed
      */
-    protected function dataManagerEdit(StdEntity $entity)
+    protected function dataManagerEdit($entity)
     {
         return $this->dataManager($entity);
     }
@@ -243,10 +242,10 @@ abstract class StdCrudController extends Controller
     /**
      * Cria o formulário de inserção de dados baseado na entidade informada.
      *
-     * @param StdEntity $entity Entidade referente ao CRUD
+     * @param mixed $entity Entidade referente ao CRUD
      * @return Form Formulário do Symfony
      */
-    private function getInsertForm(StdEntity $entity)
+    private function getInsertForm($entity)
     {
         $route = (static::INDEX_CRUD) ? $this->getActionRoute('index') :  $this->getActionRoute('add');
         $form = $this->createForm($this->getFormType(), $entity, array(
@@ -260,10 +259,10 @@ abstract class StdCrudController extends Controller
     /**
      * Cria o formulário de alteração de dados baseado na entidade informada.
      *
-     * @param StdEntity $entity Entity referente ao CRUD
+     * @param mixed $entity Entity referente ao CRUD
      * @return Form Formulário do Symfony
      */
-    private function getUpdateForm(StdEntity $entity)
+    private function getUpdateForm($entity)
     {
         $route = (static::INDEX_CRUD) ? $this->getActionRoute('index') :  $this->getActionRoute('edit');
         $form = $this->createForm($this->getFormType(), $entity, array(
