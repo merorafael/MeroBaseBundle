@@ -8,16 +8,17 @@ Bundle para desenvolvimento ágil no Symfony 2. Recursos:
 - Layout base com jQuery 1.11.2, Bootstrap 3.3.2, Font-Awesome 4.3.0 embarcados.
 
 ## Requisitos mínimos:
-- PHP 5.3.3
-- Symfony 2.3
-- Doctrine ORM 2.4
-- [KnpPaginatorBundle 2.4](https://github.com/KnpLabs/KnpPaginatorBundle)
+- [php 5.3](http://php.net)
+- [symfony/framework-bundle 2.3](https://packagist.org/packages/symfony/framework-bundle)
+- [doctrine/orm 2.4](https://packagist.org/packages/doctrine/orm)
+- [knplabs/knp-paginator-bundle 2.4](https://packagist.org/packages/knplabs/knp-paginator-bundle)
+- [rhumsaa/uuid 2.8](https://packagist.org/packages/rhumsaa/uuid)
 
 ## Instalação e configuração:
 
 ### Adicione o MeroBaseBundle em seu composer.json
 
-Adicione em seu arquivo composer.json o pacote *mero/base-bundle* em sua versão 1.0.0 ou dev-master.
+Adicione em seu arquivo composer.json o pacote *mero/base-bundle* em sua versão 1.1.* ou dev-master.
 Exemplo:
 
 ```json
@@ -45,9 +46,27 @@ public function registerBundles()
 }
 ```
 
-## Recursos básicos
+## Recursos
 
-### Criando entidades
+StdEntity:
+- getId() / setId(), métodos da primary key da entidade;
+- getCreated() / setCreated(), métodos respectivos a data de criação do registro;
+- getUpdated() / setUpdated(), métodos respectivos a data de ultima alteração do registro.
+
+StdController:
+- getBundleName(), retorna string com o nome do Bundle correspondente a controller;
+- getJsonResponse(), cria resposta em JSON para uma requisição HTTP;
+- createUuid1(), cria um hash UUID na versão 1(baseado na hora);
+- createUuid3($nome, $ns), cria um hash UUID na versão 3(baseado no nome e criptografado em MD5);
+- createUuid4(), cria um hash UUID na versão 4(aletarório);
+- createUuid5($nome, $ns), cria um hash UUID na versão 3(baseado no nome e criptografado em SHA1).
+
+StdCrudController:
+
+
+## Tutoriais
+
+### Criando entidades com StdEntity
 
 Extenda sua classe de StdEntity para criar uma entidade compatível com o MeroBaseBundle. Entidades compatíveis
 já possuem automaticamente os campos id(representando a primary-key da tabela), created e updated. Exemplo:
@@ -78,9 +97,21 @@ class Product extends StdEntity
 
 ```
 
-Tabela relativa a entidade *Product* equivalerá aos campos id, name, price, description, created e updated.
+Tabela relativa a entidade *Product* equivalerá aos campos id, name, price, description, created e updated. Não esqueça
+de chamar o método construtor de StdEntity no correspondente a sua entidade caso exista. Exemplo:
 
-### Criando CRUD
+```php
+
+//...
+public function __construct()
+{
+    parent::__construct();
+}
+//...
+
+```
+
+### Criando CRUD com StdCrudController
 
 Extenda sua classe Controller de StdCrudController para criar uma controller simples do MeroBaseBundle. A classe
 abstrata contem as actions indexAction(), addAction(), editAction(), removeAction(), detailsAction(). Exemplo:
@@ -94,17 +125,3 @@ class ProductController extends StdCrudController
 }
 
 ```
-
-Métodos que poderão ser sobreescritos para tornar sua controller mais ágil ou compativel com o StdCrudController:
-
-- *getEntityNamespace()*, retorna string com o namespace da entidade principal pertencente ao CRUD;
-- *getEntityName()*, retorna string com o nome da classe da entidade;
-- *getFormType()*, retorna o objeto do tipo do formulário relacionado ao CRUD;
-- *getBundleName()*, retorna string com o nome do Bundle;
-- *getViewName()*, retorna string com o nome do arquivo twig;
-- *getActionRoute($action)*,  retorna a rota para a action informada;
-- *getEm()*, retorna EntityManager do Doctrine a ser utilizado no CRUD;
-- *indexQueryBuilder()*, método a ser sobrescrito caso deva adicionar codições ao Query builder;
-- *newEntity()*, método a ser sobrescrito caso deva adicionar parametros no momento em que uma nova entidade é instanciada;
-- *dataManagerAdd()*, método a ser sobrescrito caso deva adicionar parametros no momento em que um registro é adicionado;
-- *dataManagerEdit()*, método a ser sobrescrito caso deva adicionar parametros no momento em que um registro é editado.

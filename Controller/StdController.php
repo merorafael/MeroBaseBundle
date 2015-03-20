@@ -1,6 +1,7 @@
 <?php
 namespace Mero\BaseBundle\Controller;
 
+use Rhumsaa\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -58,6 +59,58 @@ class StdController extends Controller
                 'Content-Type' => 'application/json'
             )
         );
+    }
+
+    /**
+     * Gera string UUID na versão 1(baseada no tempo).
+     *
+     * @return string UUID
+     */
+    protected function createUuid1()
+    {
+        return Uuid::uuid1()->toString();
+    }
+
+    /**
+     * Gera string UUID na versão 3(baseada no nome e criptografada em MD5).
+     * Caso não informe namespace o método o criará.
+     *
+     * @param string $nome Nome
+     * @param string $ns Namespace
+     * @return string UUID
+     */
+    protected function createUuid3($nome, $ns = null)
+    {
+        if ($ns === null) {
+            $ns = Uuid::NAMESPACE_DNS;
+        }
+        return Uuid::uuid3($ns, $nome)->toString();
+    }
+
+    /**
+     * Gera string UUID na versão 4(aleatório).
+     *
+     * @return string UUID
+     */
+    protected function createUuid4()
+    {
+        return Uuid::uuid4()->toString();
+    }
+
+    /**
+     * Gera string UUID na versão 5(baseada no nome e criptografada em SHA1).
+     * Caso não informe namespace o método o criará.
+     *
+     * @param string $nome Nome
+     * @param string $ns Namespace
+     * @return string UUID
+     */
+    protected function createUuid5($nome, $ns = null)
+    {
+        if ($ns === null) {
+            $ns = Uuid::NAMESPACE_DNS;
+        }
+        return Uuid::uuid5($ns, $nome)->toString();
     }
 
 }
