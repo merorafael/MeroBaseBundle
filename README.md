@@ -2,6 +2,7 @@
 
 Bundle para desenvolvimento ágil no Symfony 2. Recursos:
 
+- StdController(Controller com métodos adicionais)
 - StdCrudController(Controller abstrata para CRUD simples)
 - StdEntity(Entidade abstrata contendo campos comuns)
 - Layout base com jQuery 1.11.2, Bootstrap 3.3.2, Font-Awesome 4.3.0 embarcados.

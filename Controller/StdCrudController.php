@@ -5,7 +5,6 @@ namespace Mero\BaseBundle\Controller;
 use Doctrine\ORM\QueryBuilder;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Doctrine\ORM\EntityManager;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -19,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @Copyright Copyright (c) 2014~2015 - Rafael Mello
  * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE MIT
  */
-abstract class StdCrudController extends Controller
+abstract class StdCrudController extends StdController
 {
 
     /**
@@ -87,28 +86,6 @@ abstract class StdCrudController extends Controller
             throw $this->createNotFoundException($this->get('translator')->trans('FormType not found'));
         }
         return new $type_class;
-    }
-
-    /**
-     * Retorna nome referente ao bundle.
-     *
-     * @return string Nome do bundle
-     */
-    protected function getBundleName()
-    {
-        $namespace_explode = explode("\\", get_class($this));
-        $bundle_name = '';
-        foreach ($namespace_explode as $value) {
-            $find_bundlekey = strpos($value, "Bundle");
-            if (($find_bundlekey == 0) && is_int($find_bundlekey)) {
-                continue;
-            }
-            $bundle_name = $bundle_name.$value;
-            if (($find_bundlekey != 0) && is_int($find_bundlekey)) {
-                break;
-            }
-        }
-        return $bundle_name;
     }
 
     /**
