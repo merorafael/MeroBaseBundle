@@ -400,7 +400,7 @@ abstract class StdCrudController extends StdController
     public function detailsAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository($this->getBundleName().":".$this->getEntityName())->find($id);
+        $entity = $em->getRepository("\\".$this->getEntityNamespace()."\\".$this->getEntityName())->find($id);
         if (!$entity) {
             $this->get('session')
                 ->getFlashBag()

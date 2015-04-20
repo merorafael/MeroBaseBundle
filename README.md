@@ -17,7 +17,6 @@ Bundle para desenvolvimento ágil no Symfony 2. Recursos:
 ## Instalação e configuração:
 
 ### Adicione o MeroBaseBundle em seu composer.json
-
 Adicione em seu arquivo composer.json o pacote *mero/base-bundle* em sua versão 1.1.* ou dev-master.
 Exemplo:
 
@@ -30,7 +29,6 @@ Exemplo:
 ```
 
 ### Adicione BaseBundle em seu AppKernel
-
 Para o MeroBaseBundle ser reconhecido internamente pelo Symfony, é necessário adicionar sua chamada no arquivo
 app/AppKernel.php. Exemplo:
 
@@ -48,26 +46,26 @@ public function registerBundles()
 
 ## Recursos
 
-StdEntity:
-- getId() / setId(), métodos da primary key da entidade;
-- getCreated() / setCreated(), métodos respectivos a data de criação do registro;
-- getUpdated() / setUpdated(), métodos respectivos a data de ultima alteração do registro.
+### StdEntity
+- __construct()__, método construtor para gerar Data/Hora da ultima criação ou atualização do registro;
+- __getId() / setId()__, métodos da primary key da entidade;
+- __getCreated() / setCreated()__, métodos respectivos a data de criação do registro;
+- __getUpdated() / setUpdated()__, métodos respectivos a data de ultima alteração do registro.
 
-StdController:
-- getBundleName(), retorna string com o nome do Bundle correspondente a controller;
-- getJsonResponse(), cria resposta em JSON para uma requisição HTTP;
-- createUuid1(), cria um hash UUID na versão 1(baseado na hora);
-- createUuid3($nome, $ns), cria um hash UUID na versão 3(baseado no nome e criptografado em MD5);
-- createUuid4(), cria um hash UUID na versão 4(aletarório);
-- createUuid5($nome, $ns), cria um hash UUID na versão 3(baseado no nome e criptografado em SHA1).
+### StdController
+- __getBundleName()__, retorna string com o nome do Bundle correspondente a controller;
+- __getJsonResponse()__, cria resposta em JSON para uma requisição HTTP;
+- __createUuid1()__, cria um hash UUID na versão 1(baseado na hora);
+- __createUuid3($nome, $ns)__, cria um hash UUID na versão 3(baseado no nome e criptografado em MD5);
+- __createUuid4()__, cria um hash UUID na versão 4(aletarório);
+- __createUuid5($nome, $ns)__, cria um hash UUID na versão 3(baseado no nome e criptografado em SHA1).
 
-StdCrudController:
+### StdCrudController
 
 
 ## Tutoriais
 
 ### Criando entidades com StdEntity
-
 Extenda sua classe de StdEntity para criar uma entidade compatível com o MeroBaseBundle. Entidades compatíveis
 já possuem automaticamente os campos id(representando a primary-key da tabela), created e updated. Exemplo:
 
@@ -112,7 +110,6 @@ public function __construct()
 ```
 
 ### Criando CRUD com StdCrudController
-
 Extenda sua classe Controller de StdCrudController para criar uma controller simples do MeroBaseBundle. A classe
 abstrata contem as actions indexAction(), addAction(), editAction(), removeAction(), detailsAction(). Exemplo:
 

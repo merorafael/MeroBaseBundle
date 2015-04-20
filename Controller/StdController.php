@@ -39,29 +39,6 @@ class StdController extends Controller
     }
 
     /**
-     * Utiliza o objeto JsonResponse do Symfony para retornar uma resposta de
-     * requisição HTTP no formato de JSON. Este método utiliza o Content-Type
-     * application/json.
-     *
-     * @param mixed $response Arraylist da resposta
-     * @param int $http_status Status HTTP
-     * @return JsonResponse
-     */
-    protected function getJsonResponse($response = null, $http_status = 200)
-    {
-        if ($response === null) {
-            $response = new \ArrayObject();
-        }
-        return new JsonResponse(
-            $response,
-            $http_status,
-            array(
-                'Content-Type' => 'application/json'
-            )
-        );
-    }
-
-    /**
      * Gera string UUID na versão 1(baseada no tempo).
      *
      * @return string UUID
