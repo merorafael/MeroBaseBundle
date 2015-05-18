@@ -3,7 +3,6 @@ namespace Mero\BaseBundle\Controller;
 
 use Rhumsaa\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * @package Mero\BaseBundle\Controller
