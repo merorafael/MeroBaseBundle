@@ -107,7 +107,7 @@ abstract class StdCrudController extends StdController
      *
      * @return string Prefixo para a rota
      */
-    private function getRoutePrefix()
+    protected function getRoutePrefix()
     {
         $request = $this->getRequest();
         $request_route = $request->attributes->get('_route');
@@ -171,7 +171,7 @@ abstract class StdCrudController extends StdController
      *
      * @return mixed Nova entidade do Doctrine
      */
-    private function getNewEntity()
+    protected function getNewEntity()
     {
         $entity_class = "\\".$this->getEntityNamespace()."\\".$this->getEntityName();
         if (!class_exists($entity_class)) {
@@ -239,7 +239,7 @@ abstract class StdCrudController extends StdController
      * @return Form Formulário do Symfony
      * @throws \Exception Entidade não é objeto
      */
-    private function getInsertForm($entity)
+    protected function getInsertForm($entity)
     {
         if (!is_object($entity)) {
             throw new \Exception($this->get('translator')->trans('Entry not found'));
@@ -260,7 +260,7 @@ abstract class StdCrudController extends StdController
      * @return Form Formulário do Symfony
      * @throws \Exception Entidade não é objeto
      */
-    private function getUpdateForm($entity)
+    protected function getUpdateForm($entity)
     {
         if (!is_object($entity)) {
             throw new \Exception($this->get('translator')->trans('Entry not found'));
@@ -282,7 +282,7 @@ abstract class StdCrudController extends StdController
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @return array
      */
-    private function addData(Request $request)
+    protected function addData(Request $request)
     {
         $entity = $this->getNewEntity();
         $form = $this->getInsertForm($entity);
@@ -316,7 +316,7 @@ abstract class StdCrudController extends StdController
      * @param integer $id Identificação do registro
      * @return array
      */
-    private function editData(Request $request, $id)
+    protected function editData(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository("\\".$this->getEntityNamespace()."\\".$this->getEntityName())->find($id);
