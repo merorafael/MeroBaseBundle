@@ -54,7 +54,6 @@ public function registerBundles()
 
 ### StdController
 - __getBundleName()__, retorna string com o nome do Bundle correspondente a controller;
-- __getJsonResponse()__, cria resposta em JSON para uma requisição HTTP;
 - __createUuid1()__, cria um hash UUID na versão 1(baseado na hora);
 - __createUuid3($nome, $ns)__, cria um hash UUID na versão 3(baseado no nome e criptografado em MD5);
 - __createUuid4()__, cria um hash UUID na versão 4(aletarório);
