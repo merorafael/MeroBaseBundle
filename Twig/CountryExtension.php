@@ -2,7 +2,7 @@
 namespace Mero\BaseBundle\Twig;
 
 /**
- * Country filter
+ * Country filter for Twig.
  *
  * @package Mero\BaseBundle\Twig
  * @author Rafael Mello <merorafael@gmail.com>
@@ -11,6 +11,13 @@ namespace Mero\BaseBundle\Twig;
 class CountryExtension extends \Twig_Extension
 {
 
+    public function __construct()
+    {
+        if (!class_exists("\Locale")) {
+            throw new \RuntimeException('The country extension is needed to use intl-based filters.');
+        }
+    }
+
     public function getFilters()
     {
         return array(
@@ -18,10 +25,20 @@ class CountryExtension extends \Twig_Extension
         );
     }
 
+    /**
+     * Return the country name using the Locale class.
+     *
+     * @param string $iso_code Country ISO 3166-1 alpha 2 code
+     * @param null|string $locale Locale code
+     *
+     * @return null|string Country name
+     */
     public function getCountryName($iso_code, $locale = null)
     {
-        return (($locale === null) || ($iso_code === null)) ? null :
-            \Locale::getDisplayRegion("unq_".$iso_code, $locale);
+        if ($iso_code === null) {
+            return null;
+        }
+        return $locale === null ? \Locale::getDisplayRegion("unq_".$iso_code) : \Locale::getDisplayRegion("unq_".$iso_code, $locale);
     }
 
     public function getName()

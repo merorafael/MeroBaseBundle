@@ -1,8 +1,6 @@
 <?php
 namespace Mero\BaseBundle\Entity\Field;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * @package Mero\BaseBundle\Entity\Field
  * @author Rafael Mello <merorafael@gmail.com>

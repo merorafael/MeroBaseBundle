@@ -2,8 +2,10 @@
 
 namespace Mero\BaseBundle\Controller;
 
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\QueryBuilder;
 use Mero\BaseBundle\Entity\StdEntity;
+use Mero\BaseBundle\Exception\InvalidEntityException;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -36,11 +38,13 @@ abstract class StdCrudController extends StdController
     abstract protected function isDataPagination();
 
     /**
-     * Retorna nome referente ao bundle.
+     * Retorna nome da rota referente a action informada.
      *
-     * @return string Nome do bundle
+     * @param string $action Nome da action(indexAction, addAction, editAction ou removeAction)
+     *
+     * @return string
      */
-    abstract protected function getBundleName();
+    abstract protected function getRoute($action);
 
     /**
      * Retorna rota de direcionamento pós-processamento.
@@ -53,25 +57,9 @@ abstract class StdCrudController extends StdController
     abstract protected function getRedirectRoute($origin_action, $fail = false);
 
     /**
-     * Retorna nome da rota referente a action informada.
-     *
-     * @param string $action Nome da action(indexAction, addAction, editAction ou removeAction)
-     *
-     * @return string
+     * @return mixed Entidade referente ao CRUD
      */
-    abstract protected function getRoute($action);
-
-    /**
-     * Retorna nome da entidade incluindo namespace.
-     *
-     * Ex: Mero\BaseBundle\Entity\StdEntity
-     *
-     * @return string
-     */
-    protected function getEntity()
-    {
-        return get_class($this->newEntityObject());
-    }
+    abstract protected function newEntityObject();
 
     /**
      * Retorna objeto relacionado ao Type do formulário.
@@ -81,9 +69,29 @@ abstract class StdCrudController extends StdController
     abstract protected function getFormType();
 
     /**
-     * Retorna namespace da entidade.
+     * Retorna nome da entidade incluindo namespace.
      *
-     * @return string Namespace da entidade
+     * Ex: Mero\BaseBundle\Entity\StdEntity
+     *
+     * @return string
+     */
+    protected final function getEntity()
+    {
+        return get_class($this->newEntityObject());
+    }
+
+    /**
+     * @return EntityManager
+     */
+    protected function getEntityManager()
+    {
+        return $this->getDoctrine()->getManager();
+    }
+
+    /**
+     * Return entity namespace.
+     *
+     * @return string
      */
     protected final function getEntityNamespace()
     {
@@ -93,20 +101,15 @@ abstract class StdCrudController extends StdController
     }
     
     /**
-     * Retorna nome da entidade.
+     * Return entity name.
      * 
-     * @return string Nome da entidade
+     * @return string
      */
     protected final function getEntityName()
     {
         $entity_address = explode("\\", $this->getEntity());
         return end($entity_address);
     }
-
-    /**
-     * @return mixed Entidade referente ao CRUD
-     */
-    abstract protected function newEntityObject();
     
     /**
      * Retorna nome da view a ser renderizado.
@@ -133,17 +136,14 @@ abstract class StdCrudController extends StdController
     }
     
     /**
-     * Método utilizado em classes extendidas para alterar Query Builder padrão
-     * utilizado pelo método indexAction.
-     * 
-     * @see http://doctrine-orm.readthedocs.org/en/latest/reference/query-builder.html Documentação do Query Builder pelo Doctrine
-     * @see \Mero\BaseBundle\Controller::indexAction() Action referente a index do CRUD
-     * 
-     * @param \Doctrine\ORM\QueryBuilder $entity_q Entrada do Query Builder em indexAction
-     * @return \Doctrine\ORM\QueryBuilder Query Builder processado pelo método
+     * @return QueryBuilder
      */
-    protected function indexQueryBuilder(QueryBuilder $entity_q)
+    protected function getIndexQuery()
     {
+        $em = $this->getEntityManager();
+        $entity_q = $em->createQueryBuilder()
+            ->select("e")
+            ->from($this->getEntityNamespace()."\\".$this->getEntityName(), "e");
         return $entity_q;
     }
     
@@ -151,49 +151,42 @@ abstract class StdCrudController extends StdController
      * Método utilizado em classes extendidas para manipular dados da entidade que não 
      * correspondem a um CRUD simples.
      * 
-     * @param StdEntity $entity Entidade referente ao CRUD
-     * 
-     * @return StdEntity
+     * @param mixed $entity Entidade referente ao CRUD
+     *
+     * @return mixed
      */
-    protected function dataManager(StdEntity $entity) 
+    protected function dataManagerAdd($entity)
     {
         return $entity;
-    }
-    
-    /**
-     * Método utilizado em classes extendidas para manipular dados da entidade que não 
-     * correspondem a um CRUD simples.
-     * 
-     * @param \Mero\BaseBundle\Entity\StdEntity $entity Entidade referente ao CRUD
-     * @return \Mero\BaseBundle\Entity\StdEntity
-     */
-    protected function dataManagerAdd(StdEntity $entity) 
-    {
-        return $this->dataManager($entity);
     }
     
     /**
      * Método utilizado em classes extendidas para manipular dados da entidade que não
      * correspondem a um CRUD simples.
      *
-     * @param StdEntity $entity Entidade referente ao CRUD
+     * @param mixed $entity Entidade referente ao CRUD
      *
-     * @return StdEntity
+     * @return mixed
      */
-    protected function dataManagerEdit(StdEntity $entity) 
+    protected function dataManagerEdit($entity)
     {
-        return $this->dataManager($entity);
+        return $entity;
     }
     
     /**
      * Cria o formulário de inserção de dados baseado na entidade informada.
      * 
-     * @param StdEntity $entity Entidade referente ao CRUD
+     * @param StdEntity $entity CRUD entity
      *
-     * @return Form Formulário do Symfony
+     * @throws InvalidEntityException The entity is not instantiated object
+     *
+     * @return Form
      */
-    protected function getInsertForm(StdEntity $entity)
+    protected function getInsertForm($entity)
     {
+        if (!is_object($entity)) {
+            throw new InvalidEntityException("The entity is not instantiated object");
+        }
         $route = $this->isIndexCrud() ? $this->getRoute("indexAction") : $this->getRoute("addAction");
         $form = $this->createForm($this->getFormType(), $entity, array(
             "action" => $this->generateUrl($route),
@@ -206,12 +199,17 @@ abstract class StdCrudController extends StdController
     /**
      * Cria o formulário de alteração de dados baseado na entidade informada.
      * 
-     * @param mixed $entity Entity referente ao CRUD
+     * @param mixed $entity CRUD entity
      *
-     * @return Form Formulário do Symfony
+     * @throws InvalidEntityException The entity is not instantiated object
+     *
+     * @return Form
      */
-    protected function getUpdateForm(StdEntity $entity)
+    protected function getUpdateForm($entity)
     {
+        if (!is_object($entity)) {
+            throw new InvalidEntityException("The entity is not instantiated object");
+        }
         $route = $this->isIndexCrud() ? $this->getRoute("indexAction") : $this->getRoute("editAction");
         $form = $this->createForm($this->getFormType(), $entity, array(
             "action" => $this->generateUrl($route, array(
@@ -237,7 +235,7 @@ abstract class StdCrudController extends StdController
             $form->handleRequest($request);
             if ($form->isValid()) {
                 $entity = $this->dataManagerAdd($entity);;
-                $em = $this->getDoctrine()->getManager();
+                $em = $this->getEntityManager();
                 $em->persist($entity);
                 $em->flush();
                 $this->get("session")
@@ -265,7 +263,7 @@ abstract class StdCrudController extends StdController
      */
     protected function editData(Request $request, $id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->getEntityManager();
         $entity = $em->getRepository($this->getEntityNamespace()."\\".$this->getEntityName())->find($id);
         if (!$entity) {
             $this->get("session")
@@ -308,15 +306,11 @@ abstract class StdCrudController extends StdController
     {
         $page = $request->query->get("page") ? $request->query->get("page") : 1;
         $limit = $request->query->get("limit") ? $request->query->get("limit") : 10;
-        
-        $em = $this->getDoctrine()->getManager();
-        $entity_q = $em->createQueryBuilder()
-            ->select("e")
-            ->from($this->getEntityNamespace()."\\".$this->getEntityName(), "e");
+
+        $entity_q = $this->getIndexQuery();
         if (!$request->query->get("sort")) {
             $entity_q->orderBy("e.{$this->defaultSort()}", "DESC");
         }
-        $entity_q = $this->indexQueryBuilder($entity_q);
         $entities = $this->isDataPagination() ? $this->get("knp_paginator")->paginate($entity_q->getQuery(), $page, $limit) : $entity_q->getQuery()->getResult();
         $view_data = array(
             "entities" => $entities
@@ -340,7 +334,7 @@ abstract class StdCrudController extends StdController
      */
     public function detailsAction($id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->getEntityManager();
         $entity = $em->getRepository($this->getBundleName().":".$this->getEntityName())->find($id);
         if (!$entity) {
             $this->get("session")
@@ -395,7 +389,7 @@ abstract class StdCrudController extends StdController
      */
     public function removeAction($id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->getEntityManager();
         $entity = $em->getRepository($this->getEntityNamespace()."\\".$this->getEntityName())->find($id);
         if (!$entity) {
             $this->get("session")

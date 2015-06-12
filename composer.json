@@ -3,10 +3,11 @@
   "type": "symfony-bundle",
   "description": "Bundle base to accelerate creation of basic resources.",
   "keywords": [
-    "Symfony2",
-    "Doctrine",
-    "Mero",
-    "Base"
+    "sf",
+    "sf2",
+    "symfony",
+    "mero",
+    "base"
   ],
   "homepage": "https://github.com/merorafael/MeroBaseBundle",
   "license": "MIT",
@@ -19,10 +20,11 @@
   "require": {
     "php": ">=5.3.3",
     "ext-intl": "*",
-    "doctrine/orm": "~2.4,>=2.4.2",
-    "symfony/framework-bundle": "~2.3",
-    "knplabs/knp-paginator-bundle": "~2.4",
-    "ramsey/uuid": "~2.8"
+    "symfony/framework-bundle": "~2.3,<3.0",
+    "symfony/form": "~2.3,<3.0",
+    "doctrine/orm": "~2.2,>=2.2.3,<2.5",
+    "twig/extensions": "~1.0",
+    "knplabs/knp-paginator-bundle": "~2.4"
   },
   "autoload": {
     "psr-0": {
