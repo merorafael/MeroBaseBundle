@@ -12,7 +12,7 @@
 <!DOCTYPE html>
 <html lang="{{ app.request.locale }}">
     <head>
-        <title>{% block title %}{{ 'Meu primeiro projeto'|trans }}{% endblock %}</title>
+        <title>{% block title %}{{ 'My base project'|trans }}{% endblock %}</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         {% block metas %}{% endblock %}
@@ -23,14 +23,8 @@
     <body>
         {% block body %}
             <div class="page-header">
-                <h1>{{ 'Meu primeiro projeto'|trans }}</h1>
+                <h1>{{ 'My base project'|trans }}</h1>
             </div>
-            <p class="lead">
-                {% trans with {'%bootstrap%': 'Bootstrap 3.3.2', '%jquery%': 'jQuery 1.11.2', '%font_awesome%': 'Font-Awesome 4.3.0'} from "app" %}
-                Parabéns! O layout base utilizado contém embarcado %bootstrap%, %jquery% e %font_awesome%.
-                Você está pronto para começar seu novo projeto de forma rápida e eficiente!
-                {% endtrans %}
-            </p>
             <p>- <a href="https://github.com/merorafael/MeroBaseBundle" target="_blank">MeroBaseBundle 1.0</a></p>
         {% endblock %}
         <script src="{{ asset('bundles/merobase/js/jquery.min.js') }}" type="text/javascript"></script>

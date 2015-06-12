@@ -3,142 +3,146 @@
 namespace Mero\BaseBundle\Controller;
 
 use Doctrine\ORM\QueryBuilder;
-use Mero\BaseBundle\Entity\StdEntity;
-use Symfony\Component\Form\AbstractType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\Form\Form;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Abstract class for simple CRUD creation.
+ * Classe abstrata para criação de CRUD simples
  *
  * @package Mero\BaseBundle\Controller
  * @author Rafael Mello <merorafael@gmail.com>
+ * @link https://github.com/merorafael/MeroBaseBundle Repositório do projeto
+ * @link http://merorafael.wordpress.com Blog pessoal
  * @Copyright Copyright (c) 2014~2015 - Rafael Mello
- * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE MIT license
+ * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE MIT
  */
 abstract class StdCrudController extends StdController
 {
 
     /**
-     * Habilita CRUD no indexAction.
-     *
-     * @return bool
+     * @var boolean Constante definindo existencia de CRUD no indexAction.
      */
-    abstract protected function isIndexCrud();
+    const INDEX_CRUD = true;
 
     /**
-     * Habilita paginação de dados.
-     *
-     * @return bool
+     * @var boolean Constante definindo paginação de dados no indexAction.
      */
-    abstract protected function isDataPagination();
+    const DATA_PAGINATION = true;
 
     /**
-     * Retorna nome referente ao bundle.
-     *
-     * @return string Nome do bundle
+     * @var string Constante definindo campo padrão de ordenação dos dados.
      */
-    abstract protected function getBundleName();
+    const DEFAULT_SORT = 'created';
 
     /**
-     * Retorna rota de direcionamento pós-processamento.
-     *
-     * @param string $origin_action Página solicitante(indexAction, addAction, editAction ou removeAction)
-     * @param bool $fail Identificador de falha ocorrida durante processamento
-     *
-     * @return null|string
+     * @var string|null Rota de redirecionamento pós inserção.
      */
-    abstract protected function getRedirectRoute($origin_action, $fail = false);
+    const CREATED_ROUTE = null;
 
     /**
-     * Retorna nome da rota referente a action informada.
-     *
-     * @param string $action Nome da action(indexAction, addAction, editAction ou removeAction)
-     *
-     * @return string
+     * @var string|null Rota de redirecionamento pós atualização.
      */
-    abstract protected function getRoute($action);
+    const UPDATED_ROUTE = null;
 
     /**
-     * Retorna nome da entidade incluindo namespace.
-     *
-     * Ex: Mero\BaseBundle\Entity\StdEntity
-     *
-     * @return string
+     * @var string|null Rota de redirecionamento pós exclusão.
      */
-    protected function getEntity()
+    const REMOVED_ROUTE = null;
+
+    /**
+     * Retorna namespace relacionada a entidade.
+     * Sobreescreva este método caso o namespace seja diferente do padrão.
+     *
+     * Namespace padrão: <Namespace do bundle>\Entity
+     *
+     * @return string Namespace da entidade
+     */
+    protected function getEntityNamespace()
     {
-        return get_class($this->newEntityObject());
+        return str_replace('\Controller', '\Entity', substr(get_class($this), 0, strrpos(get_class($this), '\\')));
+    }
+
+    /**
+     * Retorna nome da classe referente a entidade.
+     *
+     * @return string Nome da entidade
+     */
+    protected function getEntityName()
+    {
+        return str_replace("\\", "", strrchr(str_replace("Controller", "", get_class($this)), "\\"));
     }
 
     /**
      * Retorna objeto relacionado ao Type do formulário.
      *
-     * @return AbstractType Form object
+     * @return \Symfony\Component\Form\AbstractType Objeto do tipo do formulário
      */
-    abstract protected function getFormType();
-
-    /**
-     * Retorna namespace da entidade.
-     *
-     * @return string Namespace da entidade
-     */
-    protected final function getEntityNamespace()
+    protected function getFormType()
     {
-        $entity_address = explode("\\", $this->getEntity());
-        array_pop($entity_address);
-        return "\\".implode("\\", $entity_address);
-    }
-    
-    /**
-     * Retorna nome da entidade.
-     * 
-     * @return string Nome da entidade
-     */
-    protected final function getEntityName()
-    {
-        $entity_address = explode("\\", $this->getEntity());
-        return end($entity_address);
+        $type_class = str_replace("\Entity", "\Form", "\\".$this->getEntityNamespace())."\\".$this->getEntityName()."Type";
+        if (!class_exists($type_class)) {
+            throw $this->createNotFoundException($this->get('translator')->trans('FormType not found'));
+        }
+        return new $type_class;
     }
 
-    /**
-     * @return mixed Entidade referente ao CRUD
-     */
-    abstract protected function newEntityObject();
-    
     /**
      * Retorna nome da view a ser renderizado.
-     * 
+     *
      * Por padrão o nome da view é o mesmo da entidade, caso
-     * a controller não utilize esse padrão, sobrescreva este método. 
-     * 
+     * a controller não utilize esse padrão, sobrescreva este método.
+     *
      * @return string Nome da view
      */
     protected function getViewName()
     {
         $check_prefix = strstr($this->getEntityNamespace(), "Entity\\");
-        return ($check_prefix === true) ? str_replace("Entity\\", "", $check_prefix)."\\".$this->getEntityName() : $this->getEntityName();
+        return ($check_prefix !== false) ? str_replace("Entity\\", "", $check_prefix)."\\".$this->getEntityName() : $this->getEntityName();
     }
-    
+
     /**
-     * Retorna campo padrão utilizado para ordenação de dados.
-     * 
-     * @return string Campo da entity
+     * Retorna prefixo a ser usado para a rota.
+     *
+     * @return string Prefixo para a rota
      */
-    protected function defaultSort()
+    protected function getRoutePrefix()
     {
-        return "created";
+        $request = $this->getRequest();
+        $request_route = $request->attributes->get('_route');
+        $route_prefix = str_replace(strrchr($request_route, '_'), '', $request_route);
+        return $route_prefix;
     }
-    
+
+    /**
+     * Retorna nome da rota referente a action desejada.
+     *
+     * @param string $action Nome da action
+     * @return string Nome da rota
+     */
+    protected function getActionRoute($action = null)
+    {
+        return $this->getRoutePrefix()."_".$action;
+    }
+
+    /**
+     * Retorna gerenciador de entidades(Entity Manager) do Doctrine.
+     *
+     * @return EntityManager Entity Manager do Doctrine
+     */
+    protected function getEm()
+    {
+        return $this->getDoctrine()->getManager();
+    }
+
     /**
      * Método utilizado em classes extendidas para alterar Query Builder padrão
      * utilizado pelo método indexAction.
-     * 
+     *
      * @see http://doctrine-orm.readthedocs.org/en/latest/reference/query-builder.html Documentação do Query Builder pelo Doctrine
      * @see \Mero\BaseBundle\Controller::indexAction() Action referente a index do CRUD
-     * 
+     *
      * @param \Doctrine\ORM\QueryBuilder $entity_q Entrada do Query Builder em indexAction
      * @return \Doctrine\ORM\QueryBuilder Query Builder processado pelo método
      */
@@ -146,182 +150,236 @@ abstract class StdCrudController extends StdController
     {
         return $entity_q;
     }
-    
+
     /**
-     * Método utilizado em classes extendidas para manipular dados da entidade que não 
-     * correspondem a um CRUD simples.
-     * 
-     * @param StdEntity $entity Entidade referente ao CRUD
-     * 
-     * @return StdEntity
+     * Chamado no momento em que uma nova entidade é criada.
+     *
+     * @param mixed $entity Entidade referente ao CRUD
+     * @return mixed Entidade referente ao CRUD
+     * @throws \Exception Entidade não é objeto
      */
-    protected function dataManager(StdEntity $entity) 
+    protected function newEntity($entity)
     {
+        if (!is_object($entity)) {
+            throw new \Exception($this->get('translator')->trans('Entry not found'));
+        }
         return $entity;
     }
-    
+
     /**
-     * Método utilizado em classes extendidas para manipular dados da entidade que não 
-     * correspondem a um CRUD simples.
-     * 
-     * @param \Mero\BaseBundle\Entity\StdEntity $entity Entidade referente ao CRUD
-     * @return \Mero\BaseBundle\Entity\StdEntity
+     * Retorna instancia de uma nova entidade do Doctrine.
+     *
+     * @return mixed Nova entidade do Doctrine
      */
-    protected function dataManagerAdd(StdEntity $entity) 
+    protected function getNewEntity()
     {
-        return $this->dataManager($entity);
+        $entity_class = "\\".$this->getEntityNamespace()."\\".$this->getEntityName();
+        if (!class_exists($entity_class)) {
+            throw $this->createNotFoundException($this->get('translator')->trans('Entity not found'));
+        }
+        return $this->newEntity(new $entity_class());
     }
-    
+
     /**
      * Método utilizado em classes extendidas para manipular dados da entidade que não
      * correspondem a um CRUD simples.
      *
-     * @param StdEntity $entity Entidade referente ao CRUD
+     * @deprecated O uso deste método foi substituido pelos métodos
+     * dataManagerAdd() e dataManagerEdit(). O mesmo será removido
+     * na versão 1.1.
      *
-     * @return StdEntity
+     * @param mixed $entity Entidade referente ao CRUD
+     * @return mixed
+     * @throws \Exception Entidade não é objeto
      */
-    protected function dataManagerEdit(StdEntity $entity) 
+    protected function dataManager($entity)
     {
+        if (!is_object($entity)) {
+            throw new \Exception($this->get('translator')->trans('Entry not found'));
+        }
+        return $entity;
+    }
+
+    /**
+     * Método utilizado em classes extendidas para manipular dados da entidade que não
+     * correspondem a um CRUD simples.
+     *
+     * @param mixed $entity Entidade referente ao CRUD
+     * @return mixed
+     * @throws \Exception Entidade não é objeto
+     */
+    protected function dataManagerAdd($entity)
+    {
+        if (!is_object($entity)) {
+            throw new \Exception($this->get('translator')->trans('Entry not found'));
+        }
         return $this->dataManager($entity);
     }
-    
+
+    /**
+     * Método utilizado em classes extendidas para manipular dados da entidade que não
+     * correspondem a um CRUD simples.
+     *
+     * @param mixed $entity Entidade referente ao CRUD
+     * @return mixed
+     * @throws \Exception Entidade não é objeto
+     */
+    protected function dataManagerEdit($entity)
+    {
+        if (!is_object($entity)) {
+            throw new \Exception($this->get('translator')->trans('Entry not found'));
+        }
+        return $this->dataManager($entity);
+    }
+
     /**
      * Cria o formulário de inserção de dados baseado na entidade informada.
-     * 
-     * @param StdEntity $entity Entidade referente ao CRUD
      *
+     * @param mixed $entity Entidade referente ao CRUD
      * @return Form Formulário do Symfony
+     * @throws \Exception Entidade não é objeto
      */
-    protected function getInsertForm(StdEntity $entity)
+    protected function getInsertForm($entity)
     {
-        $route = $this->isIndexCrud() ? $this->getRoute("indexAction") : $this->getRoute("addAction");
+        if (!is_object($entity)) {
+            throw new \Exception($this->get('translator')->trans('Entry not found'));
+        }
+        $route = (static::INDEX_CRUD) ? $this->getActionRoute('index') :  $this->getActionRoute('add');
         $form = $this->createForm($this->getFormType(), $entity, array(
-            "action" => $this->generateUrl($route),
-            "method" => "POST"
+            'action' => $this->generateUrl($route),
+            'method' => 'POST'
         ));
-        $form->add("submit", "submit");
+        $form->add('submit', 'submit');
         return $form;
     }
-    
+
     /**
      * Cria o formulário de alteração de dados baseado na entidade informada.
-     * 
-     * @param mixed $entity Entity referente ao CRUD
      *
+     * @param mixed $entity Entity referente ao CRUD
      * @return Form Formulário do Symfony
+     * @throws \Exception Entidade não é objeto
      */
-    protected function getUpdateForm(StdEntity $entity)
+    protected function getUpdateForm($entity)
     {
-        $route = $this->isIndexCrud() ? $this->getRoute("indexAction") : $this->getRoute("editAction");
+        if (!is_object($entity)) {
+            throw new \Exception($this->get('translator')->trans('Entry not found'));
+        }
+        $route = (static::INDEX_CRUD) ? $this->getActionRoute('index') :  $this->getActionRoute('edit');
         $form = $this->createForm($this->getFormType(), $entity, array(
-            "action" => $this->generateUrl($route, array(
-                "id" => $entity->getId()
+            'action' => $this->generateUrl($route, array(
+                'id' => $entity->getId()
             )),
-            "method" => "PUT"
+            'method' => 'PUT'
         ));
-        $form->add("submit", "submit");
+        $form->add('submit', 'submit');
         return $form;
     }
-    
+
     /**
      * Método responsável por adicionar novos registros
-     * 
+     *
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @return array
      */
-    private function addData(Request $request)
+    protected function addData(Request $request)
     {
-        $entity = $this->newEntityObject();
+        $entity = $this->getNewEntity();
         $form = $this->getInsertForm($entity);
-        if ($request->isMethod("POST")) {
+        if ($request->isMethod('POST')) {
             $form->handleRequest($request);
             if ($form->isValid()) {
                 $entity = $this->dataManagerAdd($entity);;
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($entity);
                 $em->flush();
-                $this->get("session")
+                $this->get('session')
                     ->getFlashBag()
-                    ->add("success", "Operação realizada com sucesso.");
-                return $this->redirect($this->generateUrl($this->getRedirectRoute(__METHOD__, false)));
+                    ->add('success', $this->get('translator')->trans('Operation was successful'));
+                return $this->redirect($this->generateUrl((static::CREATED_ROUTE === null) ? $this->getActionRoute('index') : static::CREATED_ROUTE));
             } else {
-                $this->get("session")
+                $this->get('session')
                     ->getFlashBag()
-                    ->add("danger", "Falha ao realizar operação.");
+                    ->add('danger', $this->get('translator')->trans('Failed to process operation'));
             }
         }
         return array(
-            "entity" => $entity,
-            "form" => $form->createView()
+            'entity' => $entity,
+            'form' => $form->createView()
         );
     }
-    
+
     /**
      * Método responsável por alterar registros
-     * 
+     *
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param int $id Identificação do registro
+     * @param integer $id Identificação do registro
      * @return array
      */
     protected function editData(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository($this->getEntityNamespace()."\\".$this->getEntityName())->find($id);
+        $entity = $em->getRepository("\\".$this->getEntityNamespace()."\\".$this->getEntityName())->find($id);
         if (!$entity) {
-            $this->get("session")
+            $this->get('session')
             ->getFlashBag()
-            ->add("danger", "Registro não encontrado.");
-            return $this->redirect($this->generateUrl($this->getRedirectRoute(__METHOD__, true)));
+            ->add('danger', $this->get('translator')->trans('Entry not found'));
+            return $this->redirect($this->generateUrl((static::UPDATED_ROUTE === null) ? $this->getActionRoute('index') : static::UPDATED_ROUTE));
         }
         $form = $this->getUpdateForm($entity);
-        if ($request->isMethod("PUT")) {
+        if ($request->isMethod('PUT')) {
             $form->handleRequest($request);
             if ($form->isValid()) {
                 $entity = $this->dataManagerEdit($entity);
                 $em->persist($entity);
                 $em->flush();
-                $this->get("session")
+                $this->get('session')
                     ->getFlashBag()
-                    ->add("success", "Operação realizada com sucesso.");
-                return $this->redirect($this->generateUrl($this->getRedirectRoute(__METHOD__, false)));
+                    ->add('success', $this->get('translator')->trans('Operation was successful'));
+                return $this->redirect($this->generateUrl((static::UPDATED_ROUTE === null) ? $this->getActionRoute('index') : static::UPDATED_ROUTE));
             } else {
-                $this->get("session")
+                $this->get('session')
                     ->getFlashBag()
-                    ->add("danger", "Falha ao realizar operação.");
+                    ->add('danger', $this->get('translator')->trans('Failed to process operation'));
             }
         }
         return array(
-            "entity" => $entity,
-            "form" => $form->createView()
+            'entity' => $entity,
+            'form' => $form->createView()
         );
     }
-    
+
     /**
-     * Action de listagem dos registros.
-     * 
-     * @param Request $request
-     * @param int $id Utilizado para editar um registro na indexAction caso informado
+     * Action de listagem dos registros
      *
-     * @return Response
+     * Os dados exibidos são controlados com parâmetros $_GET
+     * page - Qual página está sendo exibida(padrão 0);
+     * limit - Quantidade de registros por página(padrão 10)
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param integer $id Utilizado para editar um registro na indexAction caso informado
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @Route("/{id}", defaults={"id": null}, requirements={"id": "\d+"})
      */
     public function indexAction(Request $request, $id)
     {
-        $page = $request->query->get("page") ? $request->query->get("page") : 1;
-        $limit = $request->query->get("limit") ? $request->query->get("limit") : 10;
-        
+        $page = $request->query->get('page') ? $request->query->get('page') : 1;
+        $limit = $request->query->get('limit') ? $request->query->get('limit') : 10;
+
         $em = $this->getDoctrine()->getManager();
         $entity_q = $em->createQueryBuilder()
-            ->select("e")
-            ->from($this->getEntityNamespace()."\\".$this->getEntityName(), "e");
-        if (!$request->query->get("sort")) {
-            $entity_q->orderBy("e.{$this->defaultSort()}", "DESC");
+            ->select('e')
+            ->from("\\".$this->getEntityNamespace()."\\".$this->getEntityName(), 'e');
+        if (!$request->query->get('sort')) {
+            $entity_q->orderBy("e.".static::DEFAULT_SORT, "DESC");
         }
         $entity_q = $this->indexQueryBuilder($entity_q);
-        $entities = $this->isDataPagination() ? $this->get("knp_paginator")->paginate($entity_q->getQuery(), $page, $limit) : $entity_q->getQuery()->getResult();
+        $entities = (static::DATA_PAGINATION === true) ? $this->get('knp_paginator')->paginate($entity_q->getQuery(), $page, $limit) : $entity_q->getQuery()->getResult();
         $view_data = array(
-            "entities" => $entities
+            'entities' => $entities
         );
-        if ($this->isIndexCrud()) {
+        if (static::INDEX_CRUD === true) {
             $crud = !empty($id) ? $this->editData($request, $id) : $this->addData($request);
             if (!is_array($crud)) {
                 return $crud;
@@ -330,84 +388,82 @@ abstract class StdCrudController extends StdController
         }
         return $this->render($this->getBundleName().":".$this->getViewName().":index.html.twig", $view_data);
     }
-    
+
     /**
      * Action para exibir detalhes de registro especifico
-     * 
-     * @param int $id Identificação do registro
      *
-     * @return Response
+     * @param int $id Identificação do registro
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     *
+     * @Route("/detalhes/{id}", requirements={"id": "\d+"})
      */
     public function detailsAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository($this->getBundleName().":".$this->getEntityName())->find($id);
+        $entity = $em->getRepository("\\".$this->getEntityNamespace()."\\".$this->getEntityName())->find($id);
         if (!$entity) {
-            $this->get("session")
+            $this->get('session')
                 ->getFlashBag()
-                ->add("danger", "Registro não encontrado.");
-            return $this->redirect($this->generateUrl($this->getRoute("indexAction")));
+                ->add('danger', $this->get('translator')->trans('Entry not found'));
+            return $this->redirect($this->generateUrl($this->getActionRoute('index')));
         }
         return $this->render($this->getBundleName().":".$this->getViewName().":details.html.twig", array(
-            "entity" => $entity
+            'entity' => $entity
         ));
     }
-    
+
     /**
      * Action para adicionar novos registros
-     * 
-     * @param Request $request
-     * 
-     * @return RedirectResponse|Response
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     *
+     * @Route("/add")
      */
     public function addAction(Request $request)
     {
         $crud = $this->addData($request);
-        if (!is_array($crud)) {
-            return $crud;
-        }
-        return $this->render($this->getBundleName().":".$this->getViewName().":add.html.twig", $crud);
+        return !is_array($crud) ? $crud : $this->render($this->getBundleName().":".$this->getViewName().":add.html.twig", $crud);
     }
-    
+
     /**
      * Método action responsável por alteração de registros
-     * 
-     * @param Request $request
-     * @param int $id Identificação do registro
-     * 
-     * @return RedirectResponse|Response
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param integer $id Identificação do registro
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     *
+     * @Route("/edit/{id}", requirements={"id": "\d+"})
      */
     public function editAction(Request $request, $id)
     {
         $crud = $this->editData($request, $id);
-        if (!is_array($crud)) {
-            return $crud;
-        }
-        return $this->render($this->getBundleName().":".$this->getViewName().":edit.html.twig", $crud);
+        return !is_array($crud) ? $crud : $this->render($this->getBundleName().":".$this->getViewName().":edit.html.twig", $crud);
     }
-    
+
     /**
      * Método action responsável por remoção de registros
-     * 
-     * @param int $id Identificação do registro
-     * 
-     * @return RedirectResponse
+     *
+     * @param integer $id Identificação do registro
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     *
+     * @Route("/remove/{id}", requirements={"id": "\d+"})
      */
     public function removeAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository($this->getEntityNamespace()."\\".$this->getEntityName())->find($id);
+        $entity = $em->getRepository("\\".$this->getEntityNamespace()."\\".$this->getEntityName())->find($id);
         if (!$entity) {
-            $this->get("session")
+            $this->get('session')
                 ->getFlashBag()
-                ->add("danger", "Registro não encontrado.");
+                ->add('danger', $this->get('translator')->trans('Entry not found'));
         } else {
             $em->remove($entity);
             $em->flush();
-            $this->get("session")
+            $this->get('session')
                 ->getFlashBag()
-                ->add("success", "Operação realizada com sucesso.");
+                ->add('success', $this->get('translator')->trans('Operation was successful'));
         }
-        return $this->redirect($this->generateUrl($this->getRedirectRoute(__METHOD__, false)));
+        return $this->redirect($this->generateUrl((static::REMOVED_ROUTE === null) ? $this->getActionRoute('index') : static::REMOVED_ROUTE));
     }
 }

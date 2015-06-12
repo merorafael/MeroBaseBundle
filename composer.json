@@ -21,7 +21,8 @@
     "ext-intl": "*",
     "doctrine/orm": "~2.4,>=2.4.2",
     "symfony/framework-bundle": "~2.3",
-    "knplabs/knp-paginator-bundle": "~2.4"
+    "knplabs/knp-paginator-bundle": "~2.4",
+    "ramsey/uuid": "~2.8"
   },
   "autoload": {
     "psr-0": {
