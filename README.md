@@ -15,17 +15,3 @@ Você poderá adicionar facilmente em seu arquivo composer.json
     }
 }
 ```
-
-### Adicione BaseBundle em seu AppKernel
-
-```php
-// app/AppKernel.php
-public function registerBundles()
-{
-    return array(
-        // ...
-        new Mero\BaseBundle\MeroBaseBundle(),
-        // ...
-    );
-}
-```
