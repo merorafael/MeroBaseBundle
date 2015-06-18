@@ -5,6 +5,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Mero\BaseBundle\Entity\Field;
 
 /**
+ * Common entity class.
+ *
  * @package Mero\BaseBundle\Entity
  * @author Rafael Mello <merorafael@gmail.com>
  *
@@ -19,6 +21,16 @@ abstract class StdEntity
     public function __construct()
     {
         $this->created = new \DateTime();
+        $this->modified = new \DateTime();
+    }
+
+    /**
+     * Method to update modified date.
+     *
+     * @ORM\PreUpdate()
+     */
+    public function updateModifiedDate()
+    {
         $this->modified = new \DateTime();
     }
 
