@@ -1,10 +1,10 @@
 <?php
-namespace Mero\BaseBundle\Twig;
+namespace Mero\Bundle\BaseBundle\Twig;
 
 /**
  * Country filter for Twig.
  *
- * @package Mero\BaseBundle\Twig
+ * @package Mero\Bundle\BaseBundle\Twig
  * @author Rafael Mello <merorafael@gmail.com>
  * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE MIT license
  */

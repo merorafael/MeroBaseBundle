@@ -1,8 +1,8 @@
 <?php
-namespace Mero\BaseBundle\Entity\Field;
+namespace Mero\Bundle\BaseBundle\Entity\Field;
 
 /**
- * @package Mero\BaseBundle\Entity\Field
+ * @package Mero\Bundle\BaseBundle\Entity\Field
  * @author Rafael Mello <merorafael@gmail.com>
  */
 trait Modified

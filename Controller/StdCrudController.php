@@ -1,11 +1,11 @@
 <?php
 
-namespace Mero\BaseBundle\Controller;
+namespace Mero\Bundle\BaseBundle\Controller;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\QueryBuilder;
-use Mero\BaseBundle\Entity\StdEntity;
-use Mero\BaseBundle\Exception\InvalidEntityException;
+use Mero\Bundle\BaseBundle\Entity\StdEntity;
+use Mero\Bundle\BaseBundle\Exception\InvalidEntityException;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Abstract class for simple CRUD creation.
  *
- * @package Mero\BaseBundle\Controller
+ * @package Mero\Bundle\BaseBundle\Controller
  * @author Rafael Mello <merorafael@gmail.com>
  * @Copyright Copyright (c) 2014~2015 - Rafael Mello
  * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE MIT license
@@ -71,7 +71,7 @@ abstract class StdCrudController extends StdController
     /**
      * Retorna nome da entidade incluindo namespace.
      *
-     * Ex: Mero\BaseBundle\Entity\StdEntity
+     * Ex: Mero\Bundle\BaseBundle\Entity\StdEntity
      *
      * @return string
      */

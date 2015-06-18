@@ -1,10 +1,10 @@
 <?php
-namespace Mero\BaseBundle\Exception;
+namespace Mero\Bundle\BaseBundle\Exception;
 
 /**
  * Exception to invalid entity(not object).
  *
- * @package Mero\BaseBundle\Exception
+ * @package Mero\Bundle\BaseBundle\Exception
  * @author Rafael Mello <merorafael@gmail.com>
  */
 class InvalidEntityException extends \Exception

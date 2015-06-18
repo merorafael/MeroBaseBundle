@@ -1,6 +1,6 @@
 <?php
 
-namespace Mero\BaseBundle;
+namespace Mero\Bundle\BaseBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

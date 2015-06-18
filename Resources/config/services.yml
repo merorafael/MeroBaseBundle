@@ -1,5 +1,5 @@
 parameters:
-#    mero_base.example.class: Mero\BaseBundle\Example
+#    mero_base.example.class: Mero\Bundle\BaseBundle\Example
 
 services:
 #    mero_base.example:

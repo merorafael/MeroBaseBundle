@@ -1,10 +1,10 @@
 <?php
-namespace Mero\BaseBundle\Controller;
+namespace Mero\Bundle\BaseBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 /**
- * @package Mero\BaseBundle\Controller
+ * @package Mero\Bundle\BaseBundle\Controller
  */
 abstract class StdController extends Controller
 {

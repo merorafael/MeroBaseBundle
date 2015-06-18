@@ -1,5 +1,5 @@
 <?php
-namespace Mero\BaseBundle\Validator\Constraints;
+namespace Mero\Bundle\BaseBundle\Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;

@@ -1,34 +1,26 @@
 {
-  "name": "mero/base-bundle",
-  "type": "symfony-bundle",
-  "description": "Bundle base to accelerate creation of basic resources.",
-  "keywords": [
-    "sf",
-    "sf2",
-    "symfony",
-    "mero",
-    "base"
-  ],
-  "homepage": "https://github.com/merorafael/MeroBaseBundle",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Rafael Mello",
-      "homepage": "https://github.com/merorafael"
+    "name": "mero/base-bundle",
+    "type": "symfony-bundle",
+    "description": "Bundle base to accelerate creation of basic resources.",
+    "keywords": [ "SF", "Symfony", "Mero", "Base" ],
+    "homepage": "https://github.com/merorafael/MeroBaseBundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Rafael Mello",
+            "email": "merorafael@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "ext-intl": "*",
+        "symfony/framework-bundle": "~2.3,<3.0",
+        "symfony/validator": "~2.3,<3.0",
+        "symfony/form": "~2.3,<3.0",
+        "doctrine/orm": "~2.2,>=2.2.3,<2.5",
+        "knplabs/knp-paginator-bundle": "~2.4"
+    },
+    "autoload": {
+        "psr-4": {"Mero\\Bundle\\BaseBundle\\": ""}
     }
-  ],
-  "require": {
-    "php": ">=5.3.3",
-    "ext-intl": "*",
-    "symfony/framework-bundle": "~2.3,<3.0",
-    "symfony/form": "~2.3,<3.0",
-    "doctrine/orm": "~2.2,>=2.2.3,<2.5",
-    "knplabs/knp-paginator-bundle": "~2.4"
-  },
-  "autoload": {
-    "psr-0": {
-      "Mero\\BaseBundle": ""
-    }
-  },
-  "target-dir": "Mero/BaseBundle"
 }
