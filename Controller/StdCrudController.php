@@ -143,10 +143,12 @@ abstract class StdCrudController extends StdController
      * @see http://doctrine-orm.readthedocs.org/en/latest/reference/query-builder.html Documentação do Query Builder pelo Doctrine
      * @see \Mero\BaseBundle\Controller::indexAction() Action referente a index do CRUD
      *
-     * @param \Doctrine\ORM\QueryBuilder $entity_q Entrada do Query Builder em indexAction
-     * @return \Doctrine\ORM\QueryBuilder Query Builder processado pelo método
+     * @param Request $request Objeto do HTTP request
+     * @param QueryBuilder $entity_q Entrada do Query Builder em indexAction
+     *
+     * @return QueryBuilder Query Builder processado pelo método
      */
-    protected function indexQueryBuilder(QueryBuilder $entity_q)
+    protected function indexQueryBuilder(Request $request, QueryBuilder $entity_q)
     {
         return $entity_q;
     }
@@ -374,7 +376,7 @@ abstract class StdCrudController extends StdController
         if (!$request->query->get('sort')) {
             $entity_q->orderBy("e.".static::DEFAULT_SORT, "DESC");
         }
-        $entity_q = $this->indexQueryBuilder($entity_q);
+        $entity_q = $this->indexQueryBuilder($request, $entity_q);
         $entities = (static::DATA_PAGINATION === true) ? $this->get('knp_paginator')->paginate($entity_q->getQuery(), $page, $limit) : $entity_q->getQuery()->getResult();
         $view_data = array(
             'entities' => $entities
