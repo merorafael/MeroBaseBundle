@@ -154,6 +154,16 @@ abstract class StdCrudController extends StdController
     }
 
     /**
+     * Retorna formulário para filtro.
+     *
+     * @return null|Form
+     */
+    protected function getFormFiltro()
+    {
+        return null;
+    }
+
+    /**
      * Chamado no momento em que uma nova entidade é criada.
      *
      * @param mixed $entity Entidade referente ao CRUD
@@ -379,7 +389,8 @@ abstract class StdCrudController extends StdController
         $entity_q = $this->indexQueryBuilder($request, $entity_q);
         $entities = (static::DATA_PAGINATION === true) ? $this->get('knp_paginator')->paginate($entity_q->getQuery(), $page, $limit) : $entity_q->getQuery()->getResult();
         $view_data = array(
-            'entities' => $entities
+            'form_filtro' => $this->getFormFiltro(),
+            'entities' => $entities,
         );
         if (static::INDEX_CRUD === true) {
             $crud = !empty($id) ? $this->editData($request, $id) : $this->addData($request);
