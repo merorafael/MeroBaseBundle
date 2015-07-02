@@ -14,7 +14,21 @@ class Configuration implements ConfigurationInterface
 
     public function getConfigTreeBuilder()
     {
-        $builder = new TreeBuilder();
-        return $builder;
+        $treeBuilder = new TreeBuilder();
+        $rootNode = $treeBuilder->root('mero_base');
+
+        $rootNode
+            ->children()
+                ->booleanNode("index_crud")
+                ->defaultFalse()
+                ->cannotBeEmpty()
+            ->end()
+            ->children()
+                ->booleanNode("data_pagination")
+                ->defaultTrue()
+                ->cannotBeEmpty()
+            ->end();
+
+        return $treeBuilder;
     }
 }
