@@ -4,6 +4,8 @@ namespace Mero\Bundle\BaseBundle\Controller;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
+use Mero\Bundle\BaseBundle\Exception\InvalidEntityException;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -132,18 +134,230 @@ abstract class StdCrudController extends StdController
      *
      * @return null|Form
      */
-    abstract protected function getFilterForm();
+    protected function getFilterForm()
+    {
+        return null;
+    }
+
+    /**
+     * Retorna entidade nova instanciada como objeto.
+     *
+     * @return object
+     */
+    abstract protected function getNewEntityObject();
+
+    /**
+     * Retorna objeto de formulário.
+     *
+     * @return AbstractType
+     */
+    abstract protected function getFormType();
+
+    /**
+     * Retorna nome da entidade incluindo namespace. Ex: Mero\Bundle\BaseBundle\Entity\StdEntity
+     *
+     * @return string
+     *
+     * @throws InvalidEntityException Entidade não é um objeto instanciado
+     */
+    protected final function getEntity()
+    {
+        $entity_object = $this->getNewEntityObject();
+        if (!is_object($entity_object)) {
+            throw new InvalidEntityException("The entity is not instantiated object");
+        }
+        return get_class($entity_object);
+    }
+
+    /**
+     * Retorna namespace da classe de entidade.
+     *
+     * @return string
+     *
+     * @throws InvalidEntityException Entidade não é um objeto instanciado
+     */
+    protected final function getEntityNamespace()
+    {
+        $entity_namespace = explode("\\", $this->getEntity());
+        array_pop($entity_namespace);
+        return "\\".implode("\\", $entity_namespace);
+    }
+
+    /**
+     * Retorna nome da classe de entidade.
+     *
+     * @return string
+     *
+     * @throws InvalidEntityException Entidade não é um objeto instanciado
+     */
+    protected final function getEntityName()
+    {
+        $entity = explode("\\", $this->getEntity());
+        return end($entity);
+    }
+
+    /**
+     * Retorna formulário de inserção.
+     *
+     * @param object $entity Objeto de entidade para formulário de inserção
+     *
+     * @return Form
+     *
+     * @throws InvalidEntityException Entidade não é um objeto instanciado
+     */
+    protected function getInsertForm($entity)
+    {
+        if (!is_object($entity)) {
+            throw new InvalidEntityException("The entity is not instantiated object");
+        }
+        $route = $this->isIndexCrud()
+            ? $this->getRoute("indexAction")
+            : $this->getRoute("addAction");
+        $form = $this->createForm($this->getFormType(), $entity, array(
+            "action" => $this->generateUrl($route),
+            "method" => "POST"
+        ));
+        $form->add("submit", "submit");
+        return $form;
+    }
+
+    /**
+     * Retorna formulário de alteração.
+     *
+     * @param object $entity Objeto de entidade para formulário de alteração
+     * @param mixed $entity_id ID do registro em alteração
+     *
+     * @return Form
+     *
+     * @throws InvalidEntityException Entidade não é um objeto instanciado
+     */
+    protected function getUpdateForm($entity, $entity_id)
+    {
+        if (!is_object($entity)) {
+            throw new InvalidEntityException("The entity is not instantiated object");
+        }
+        $route = $this->isIndexCrud()
+            ? $this->getRoute("indexAction")
+            : $this->getRoute("editAction");
+        $form = $this->createForm($this->getFormType(), $entity, array(
+            "action" => $this->generateUrl($route, array(
+                "id" => $entity_id
+            )),
+            "method" => "PUT"
+        ));
+        $form->add("submit", "submit");
+        return $form;
+    }
 
     /**
      * Retorna objeto QueryBuilder(ORM) para busca dos dados da indexAction.
      *
+     * @param Request $request Objeto HTTP Request do indexAction
+     *
      * @return QueryBuilder
      */
-    protected function listQueryBuilder()
+    protected function listQueryBuilder(Request &$request)
     {
         return $this->getEntityManager()->createQueryBuilder()
             ->select("e")
-            ->from("", "e");
+            ->from($this->getEntity(), "e");
+    }
+
+    /**
+     * Retorna nome da view a ser renderizado.
+     *
+     * Por padrão o nome da view é o mesmo da entidade, caso
+     * a controller não utilize esse padrão, sobrescreva este método.
+     *
+     * @return string Nome da view
+     */
+    protected function getViewName()
+    {
+        $check_prefix = strstr($this->getEntityNamespace(), "Entity\\");
+        return ($check_prefix)
+            ? str_replace("Entity\\", "", $check_prefix)."\\".$this->getEntityName()
+            : $this->getEntityName();
+    }
+
+    /**
+     * Método responsável por adicionar novos registros.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @return array
+     */
+    private function addData(Request $request)
+    {
+        $entity = $this->getNewEntityObject();
+        $form = $this->getInsertForm($entity);
+        if ($request->isMethod("POST")) {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $em = $this->getEntityManager();
+                $em->persist($entity);
+                $em->flush();
+                $this->get("session")
+                    ->getFlashBag()
+                    ->add("success", "Operação realizada com sucesso.");
+                return $this->redirect($this->generateUrl($this->getRedirectRoute(__METHOD__, false)));
+            } else {
+                $this->get("session")
+                    ->getFlashBag()
+                    ->add("danger", "Falha ao realizar operação.");
+                $redirect_route = $this->getRedirectRoute(__METHOD__, true);
+                if ($redirect_route !== null) {
+                    return $this->redirect($this->generateUrl($redirect_route));
+                }
+            }
+        }
+        return array(
+            "entity" => $entity,
+            "form" => $form->createView()
+        );
+    }
+
+    /**
+     * Método responsável por alterar registros.
+     *
+     * @param Request $request
+     * @param int $id Identificação do registro
+     *
+     * @return array
+     */
+    protected function editData(Request $request, $id)
+    {
+        $em = $this->getEntityManager();
+        $entity = $em->getRepository($this->getEntity())->find($id);
+        if (!$entity) {
+            $this->get("session")
+                ->getFlashBag()
+                ->add("danger", "Registro não encontrado.");
+            return $this->redirect($this->generateUrl($this->getRedirectRoute(__METHOD__, true)));
+        }
+        $form = $this->getUpdateForm($entity, $entity->getId());
+        if ($request->isMethod("PUT")) {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $em->persist($entity);
+                $em->flush();
+                $this->get("session")
+                    ->getFlashBag()
+                    ->add("success", "Operação realizada com sucesso.");
+                return $this->redirect($this->generateUrl($this->getRedirectRoute(__METHOD__, false)));
+            } else {
+                $this->get("session")
+                    ->getFlashBag()
+                    ->add("danger", "Falha ao realizar operação.");
+                $redirect_route = $this->getRedirectRoute(__METHOD__, true);
+                if ($redirect_route !== null) {
+                    return $this->redirect($this->generateUrl($redirect_route));
+                }
+            }
+        }
+        return array(
+            "entity" => $entity,
+            "form" => $form->createView()
+        );
     }
 
     public function indexAction(Request $request, $id = null)
@@ -151,7 +365,7 @@ abstract class StdCrudController extends StdController
         if (!$this->isIndexActionAuthorized()) {
             throw $this->createAccessDeniedException();
         }
-        $entity_q = $this->listQueryBuilder();
+        $entity_q = $this->listQueryBuilder($request);
         if (!$request->query->get("sort")) {
             $entity_q->orderBy("e.{$this->defaultSort()}", "DESC");
         }
@@ -161,36 +375,89 @@ abstract class StdCrudController extends StdController
         $limit = $request->query->get("limit")
             ? $request->query->get("limit")
             : 10;
-        var_dump($this->getBundleName());
-        //$entities = $this->isDataPagination() ? $this->get("knp_paginator")->paginate($entity_q->getQuery(), $page, $limit) : $entity_q->getQuery()->getResult();
+        $entities = $this->isDataPagination()
+            ? $this->get("knp_paginator")->paginate($entity_q->getQuery(), $page, $limit)
+            : $entity_q->getQuery()->getResult();
+        $view_data = array(
+            "entities" => $entities
+        );
+        if ($this->isIndexCrud()) {
+            $crud = !empty($id)
+                ? $this->editData($request, $id)
+                : $this->addData($request);
+            if (!is_array($crud)) {
+                return $crud;
+            }
+            $view_data = array_merge($view_data, $crud);
+        }
+        return $this->render($this->getBundleName().":".$this->getViewName().":index.html.twig", $view_data);
     }
 
-    public function detailsAction()
+    public function detailsAction($id)
     {
         if (!$this->isDetailsActionAuthorized()) {
             throw $this->createAccessDeniedException();
         }
+        $em = $this->getEntityManager();
+        $entity = $em->getRepository($this->getBundleName().":".$this->getEntityName())->find($id);
+        if (!$entity) {
+            $this->get("session")
+                ->getFlashBag()
+                ->add("danger", "Registro não encontrado.");
+            return $this->redirect($this->generateUrl($this->getRedirectRoute(__METHOD__, true)));
+        }
+        return $this->render($this->getBundleName().":".$this->getViewName().":details.html.twig", array(
+            "entity" => $entity
+        ));
     }
 
-    public function addAction()
+    public function addAction(Request $request)
     {
         if (!$this->isAddActionAuthorized()) {
             throw $this->createAccessDeniedException();
         }
+        $crud = $this->addData($request);
+        if (!is_array($crud)) {
+            return $crud;
+        }
+        return $this->render($this->getBundleName().":".$this->getViewName().":add.html.twig", $crud);
     }
 
-    public function editAction()
+    public function editAction(Request $request, $id)
     {
         if (!$this->isEditActionAuthorized()) {
             throw $this->createAccessDeniedException();
         }
+        $crud = $this->editData($request, $id);
+        if (!is_array($crud)) {
+            return $crud;
+        }
+        return $this->render($this->getBundleName().":".$this->getViewName().":edit.html.twig", $crud);
     }
 
-    public function removeAction()
+    public function removeAction($id)
     {
         if (!$this->isRemoveActionAuthorized()) {
             throw $this->createAccessDeniedException();
         }
+        $em = $this->getEntityManager();
+        $entity = $em->getRepository($this->getEntityNamespace()."\\".$this->getEntityName())->find($id);
+        if (!$entity) {
+            $this->get("session")
+                ->getFlashBag()
+                ->add("danger", "Registro não encontrado.");
+            $redirect_route = $this->getRedirectRoute(__METHOD__, true);
+            if ($redirect_route !== null) {
+                return $this->redirect($this->generateUrl($redirect_route));
+            }
+        } else {
+            $em->remove($entity);
+            $em->flush();
+            $this->get("session")
+                ->getFlashBag()
+                ->add("success", "Operação realizada com sucesso.");
+        }
+        return $this->redirect($this->generateUrl($this->getRedirectRoute(__METHOD__, false)));
     }
 
 }
