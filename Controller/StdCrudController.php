@@ -387,9 +387,13 @@ abstract class StdCrudController extends StdController
             $entity_q->orderBy("e.".static::DEFAULT_SORT, "DESC");
         }
         $entity_q = $this->indexQueryBuilder($request, $entity_q);
-        $entities = (static::DATA_PAGINATION === true) ? $this->get('knp_paginator')->paginate($entity_q->getQuery(), $page, $limit) : $entity_q->getQuery()->getResult();
+        $entities = (static::DATA_PAGINATION === true)
+            ? $this->get('knp_paginator')->paginate($entity_q->getQuery(), $page, $limit)
+            : $entity_q->getQuery()->getResult();
         $view_data = array(
-            'form_filtro' => $this->getFormFiltro(),
+            'form_filtro' => ($this->getFormFiltro() instanceof Form)
+                ? $this->getFormFiltro()->createView()
+                : null,
             'entities' => $entities,
         );
         if (static::INDEX_CRUD === true) {
