@@ -17,7 +17,13 @@ class MeroBaseExtension extends Extension
 
     public function load(array $configs, ContainerBuilder $container)
     {
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
+
+        $container->setParameter("mero_base.index_crud", $config["index_crud"]);
+        $container->setParameter("mero_base.data_pagination", $config["data_pagination"]);
+
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
     }
 }

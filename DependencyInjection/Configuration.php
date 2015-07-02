@@ -19,15 +19,11 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->booleanNode("index_crud")
-                ->defaultFalse()
-                ->cannotBeEmpty()
+                ->scalarNode("default_sort")->defaultValue("created")->cannotBeEmpty()->end()
+                ->booleanNode("index_crud")->defaultFalse()->cannotBeEmpty()->end()
+                ->booleanNode("data_pagination")->defaultTrue()->cannotBeEmpty()->end()
             ->end()
-            ->children()
-                ->booleanNode("data_pagination")
-                ->defaultTrue()
-                ->cannotBeEmpty()
-            ->end();
+        ;
 
         return $treeBuilder;
     }
