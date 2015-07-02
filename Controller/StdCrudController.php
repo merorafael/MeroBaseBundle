@@ -264,29 +264,22 @@ abstract class StdCrudController extends StdController
     }
 
     /**
-     * Retorna nome da view a ser renderizado.
+     * Retorna endereço da view a ser renderizada.
      *
-     * Por padrão o nome da view é o mesmo da entidade, caso
-     * a controller não utilize esse padrão, sobrescreva este método.
+     * @param string $action Nome da action(indexAction, addAction ou editAction)
      *
-     * @return string Nome da view
+     * @return string
      */
-    protected function getViewName()
-    {
-        $check_prefix = strstr($this->getEntityNamespace(), "Entity\\");
-        return ($check_prefix)
-            ? str_replace("Entity\\", "", $check_prefix)."\\".$this->getEntityName()
-            : $this->getEntityName();
-    }
+    abstract protected function getViewAddress($action);
 
     /**
      * Método responsável por adicionar novos registros.
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      *
      * @return array
      */
-    private function addData(Request $request)
+    private function addData(Request &$request)
     {
         $entity = $this->getNewEntityObject();
         $form = $this->getInsertForm($entity);
@@ -324,7 +317,7 @@ abstract class StdCrudController extends StdController
      *
      * @return array
      */
-    protected function editData(Request $request, $id)
+    protected function editData(Request &$request, $id)
     {
         $em = $this->getEntityManager();
         $entity = $em->getRepository($this->getEntity())->find($id);
@@ -390,7 +383,7 @@ abstract class StdCrudController extends StdController
             }
             $view_data = array_merge($view_data, $crud);
         }
-        return $this->render($this->getBundleName().":".$this->getViewName().":index.html.twig", $view_data);
+        return $this->render($this->getViewAddress(__METHOD__), $view_data);
     }
 
     public function detailsAction($id)
@@ -406,7 +399,7 @@ abstract class StdCrudController extends StdController
                 ->add("danger", "Registro não encontrado.");
             return $this->redirect($this->generateUrl($this->getRedirectRoute(__METHOD__, true)));
         }
-        return $this->render($this->getBundleName().":".$this->getViewName().":details.html.twig", array(
+        return $this->render($this->getViewAddress(__METHOD__), array(
             "entity" => $entity
         ));
     }
@@ -420,7 +413,7 @@ abstract class StdCrudController extends StdController
         if (!is_array($crud)) {
             return $crud;
         }
-        return $this->render($this->getBundleName().":".$this->getViewName().":add.html.twig", $crud);
+        return $this->render($this->getViewAddress(__METHOD__), $crud);
     }
 
     public function editAction(Request $request, $id)
@@ -432,7 +425,7 @@ abstract class StdCrudController extends StdController
         if (!is_array($crud)) {
             return $crud;
         }
-        return $this->render($this->getBundleName().":".$this->getViewName().":edit.html.twig", $crud);
+        return $this->render($this->getViewAddress(__METHOD__), $crud);
     }
 
     public function removeAction($id)
