@@ -20,6 +20,7 @@ class MeroBaseExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
+        $container->setParameter("mero_base.default_sort", $config["default_sort"]);
         $container->setParameter("mero_base.index_crud", $config["index_crud"]);
         $container->setParameter("mero_base.data_pagination", $config["data_pagination"]);
 
