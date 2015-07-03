@@ -16,22 +16,12 @@ use Mero\Bundle\BaseBundle\Entity\Field;
 abstract class StdEntity
 {
 
-    use Field\Id, Field\Created, Field\Modified;
+    use Field\Id, Field\Created, Field\Updated;
 
     public function __construct()
     {
         $this->created = new \DateTime();
-        $this->modified = new \DateTime();
-    }
-
-    /**
-     * Method to update modified date.
-     *
-     * @ORM\PreUpdate()
-     */
-    public function updateModifiedDate()
-    {
-        $this->modified = new \DateTime();
+        $this->updated = new \DateTime();
     }
 
 }

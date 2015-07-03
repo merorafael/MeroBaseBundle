@@ -38,4 +38,13 @@ trait Created
         return $this;
     }
 
+
+    /**
+     * @ORM\Pre
+     */
+    public function dataUpdated()
+    {
+        $this->updated = new \DateTime();
+    }
+
 }
