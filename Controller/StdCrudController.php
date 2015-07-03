@@ -162,11 +162,11 @@ abstract class StdCrudController extends StdController
      */
     protected final function getEntity()
     {
-        $entity_object = $this->getNewEntityObject();
-        if (!is_object($entity_object)) {
-            throw new InvalidEntityException("The entity is not instantiated object");
+        $entity = $this->getNewEntityObject();
+        if (!is_object($entity)) {
+            throw $this->createInvalidEntityException();
         }
-        return get_class($entity_object);
+        return get_class($entity);
     }
 
     /**
@@ -197,59 +197,6 @@ abstract class StdCrudController extends StdController
     }
 
     /**
-     * Retorna formulário de inserção.
-     *
-     * @param object $entity Objeto de entidade para formulário de inserção
-     *
-     * @return Form
-     *
-     * @throws InvalidEntityException Entidade não é um objeto instanciado
-     */
-    protected function getInsertForm($entity)
-    {
-        if (!is_object($entity)) {
-            throw new InvalidEntityException("The entity is not instantiated object");
-        }
-        $route = $this->isIndexCrud()
-            ? $this->getRoute("indexAction")
-            : $this->getRoute("addAction");
-        $form = $this->createForm($this->getFormType(), $entity, array(
-            "action" => $this->generateUrl($route),
-            "method" => "POST"
-        ));
-        $form->add("submit", "submit");
-        return $form;
-    }
-
-    /**
-     * Retorna formulário de alteração.
-     *
-     * @param object $entity Objeto de entidade para formulário de alteração
-     * @param mixed $entity_id ID do registro em alteração
-     *
-     * @return Form
-     *
-     * @throws InvalidEntityException Entidade não é um objeto instanciado
-     */
-    protected function getUpdateForm($entity, $entity_id)
-    {
-        if (!is_object($entity)) {
-            throw new InvalidEntityException("The entity is not instantiated object");
-        }
-        $route = $this->isIndexCrud()
-            ? $this->getRoute("indexAction")
-            : $this->getRoute("editAction");
-        $form = $this->createForm($this->getFormType(), $entity, array(
-            "action" => $this->generateUrl($route, array(
-                "id" => $entity_id
-            )),
-            "method" => "PUT"
-        ));
-        $form->add("submit", "submit");
-        return $form;
-    }
-
-    /**
      * Retorna objeto QueryBuilder(ORM) para busca dos dados da indexAction.
      *
      * @param Request $request Objeto HTTP Request do indexAction
@@ -273,16 +220,42 @@ abstract class StdCrudController extends StdController
     abstract protected function getViewAddress($action);
 
     /**
+     * Retorna formulário de inserção.
+     *
+     * @param object $entity Objeto de entidade para formulário de inserção
+     *
+     * @return Form
+     *
+     * @throws InvalidEntityException Entidade não é um objeto instanciado
+     */
+    protected function createCreateForm($entity)
+    {
+        if (!is_object($entity)) {
+            throw $this->createInvalidEntityException();
+        }
+        $route = $this->isIndexCrud()
+            ? $this->getRoute("indexAction")
+            : $this->getRoute("createAction");
+        $form = $this->createForm($this->getFormType(), $entity, array(
+            "action" => $this->generateUrl($route),
+            "method" => "POST"
+        ));
+        $form->add("submit", "submit");
+        return $form;
+    }
+
+    /**
      * Método responsável por adicionar novos registros.
      *
-     * @param Request $request
+     * @param Request $request HTTP Request method
+     * @param string $action_name Nome do método de action
      *
      * @return array
      */
-    private function addData(Request &$request)
+    private function createData(Request &$request, $action_name)
     {
         $entity = $this->getNewEntityObject();
-        $form = $this->getInsertForm($entity);
+        $form = $this->createCreateForm($entity);
         if ($request->isMethod("POST")) {
             $form->handleRequest($request);
             if ($form->isValid()) {
@@ -292,12 +265,12 @@ abstract class StdCrudController extends StdController
                 $this->get("session")
                     ->getFlashBag()
                     ->add("success", "Operação realizada com sucesso.");
-                return $this->redirect($this->generateUrl($this->getRedirectRoute(__METHOD__, false)));
+                return $this->redirect($this->generateUrl($this->getRedirectRoute($action_name, false)));
             } else {
                 $this->get("session")
                     ->getFlashBag()
                     ->add("danger", "Falha ao realizar operação.");
-                $redirect_route = $this->getRedirectRoute(__METHOD__, true);
+                $redirect_route = $this->getRedirectRoute($action_name, true);
                 if ($redirect_route !== null) {
                     return $this->redirect($this->generateUrl($redirect_route));
                 }
@@ -310,14 +283,42 @@ abstract class StdCrudController extends StdController
     }
 
     /**
+     * Retorna formulário de alteração.
+     *
+     * @param object $entity Objeto de entidade para formulário de alteração
+     *
+     * @return Form
+     *
+     * @throws InvalidEntityException Entidade não é um objeto instanciado
+     */
+    protected function createEditForm($entity)
+    {
+        if (!is_object($entity)) {
+            throw $this->createInvalidEntityException();
+        }
+        $route_url = $this->isIndexCrud()
+            ? $this->getRoute("indexAction")
+            : $this->getRoute("addAction");
+        $form = $this->createForm($this->getFormType(), $entity, array(
+            "action" => $this->generateUrl($route_url, array(
+                "id" => $entity->getId()
+            )),
+            "method" => "PUT"
+        ));
+        $form->add("submit", "submit");
+        return $form;
+    }
+
+    /**
      * Método responsável por alterar registros.
      *
-     * @param Request $request
+     * @param Request $request HTTP Request method
+     * @param string $action_name Nome do método de action
      * @param int $id Identificação do registro
      *
      * @return array
      */
-    protected function editData(Request &$request, $id)
+    protected function editData(Request &$request, $action_name, $id)
     {
         $em = $this->getEntityManager();
         $entity = $em->getRepository($this->getEntity())->find($id);
@@ -325,9 +326,9 @@ abstract class StdCrudController extends StdController
             $this->get("session")
                 ->getFlashBag()
                 ->add("danger", "Registro não encontrado.");
-            return $this->redirect($this->generateUrl($this->getRedirectRoute(__METHOD__, true)));
+            return $this->redirect($this->generateUrl($this->getRedirectRoute($action_name, false)));
         }
-        $form = $this->getUpdateForm($entity, $entity->getId());
+        $form = $this->createEditForm($entity);
         if ($request->isMethod("PUT")) {
             $form->handleRequest($request);
             if ($form->isValid()) {
@@ -336,12 +337,12 @@ abstract class StdCrudController extends StdController
                 $this->get("session")
                     ->getFlashBag()
                     ->add("success", "Operação realizada com sucesso.");
-                return $this->redirect($this->generateUrl($this->getRedirectRoute(__METHOD__, false)));
+                return $this->redirect($this->generateUrl($this->getRedirectRoute($action_name, false)));
             } else {
                 $this->get("session")
                     ->getFlashBag()
                     ->add("danger", "Falha ao realizar operação.");
-                $redirect_route = $this->getRedirectRoute(__METHOD__, true);
+                $redirect_route = $this->getRedirectRoute($action_name, true);
                 if ($redirect_route !== null) {
                     return $this->redirect($this->generateUrl($redirect_route));
                 }
@@ -375,18 +376,18 @@ abstract class StdCrudController extends StdController
             "entities" => $entities
         );
         if ($this->isIndexCrud()) {
-            $crud = !empty($id)
-                ? $this->editData($request, $id)
-                : $this->addData($request);
+            $crud = ($id !== null)
+                ? $this->editData($request, $this->getActionName(__METHOD__), $id)
+                : $this->createData($request, $this->getActionName(__METHOD__));
             if (!is_array($crud)) {
                 return $crud;
             }
             $view_data = array_merge($view_data, $crud);
         }
-        return $this->render($this->getViewAddress(__METHOD__), $view_data);
+        return $this->render($this->getViewAddress($this->getActionName(__METHOD__)), $view_data);
     }
 
-    public function detailsAction($id)
+    public function showAction($id)
     {
         if (!$this->isDetailsActionAuthorized()) {
             throw $this->createAccessDeniedException();
@@ -397,23 +398,26 @@ abstract class StdCrudController extends StdController
             $this->get("session")
                 ->getFlashBag()
                 ->add("danger", "Registro não encontrado.");
-            return $this->redirect($this->generateUrl($this->getRedirectRoute(__METHOD__, true)));
+            $redirect_route = $this->getRedirectRoute($this->getActionName(__METHOD__), true);
+            if ($redirect_route !== null) {
+                return $this->redirect($this->generateUrl($redirect_route));
+            }
         }
-        return $this->render($this->getViewAddress(__METHOD__), array(
+        return $this->render($this->getViewAddress($this->getActionName(__METHOD__)), array(
             "entity" => $entity
         ));
     }
 
-    public function addAction(Request $request)
+    public function createAction(Request $request)
     {
         if (!$this->isAddActionAuthorized()) {
             throw $this->createAccessDeniedException();
         }
-        $crud = $this->addData($request);
+        $crud = $this->createData($request, $this->getActionName(__METHOD__));
         if (!is_array($crud)) {
             return $crud;
         }
-        return $this->render($this->getViewAddress(__METHOD__), $crud);
+        return $this->render($this->getViewAddress($this->getActionName(__METHOD__)), $crud);
     }
 
     public function editAction(Request $request, $id)
@@ -421,11 +425,11 @@ abstract class StdCrudController extends StdController
         if (!$this->isEditActionAuthorized()) {
             throw $this->createAccessDeniedException();
         }
-        $crud = $this->editData($request, $id);
+        $crud = $this->editData($request, $this->getActionName(__METHOD__), $id);
         if (!is_array($crud)) {
             return $crud;
         }
-        return $this->render($this->getViewAddress(__METHOD__), $crud);
+        return $this->render($this->getViewAddress($this->getActionName(__METHOD__)), $crud);
     }
 
     public function removeAction($id)
@@ -439,7 +443,7 @@ abstract class StdCrudController extends StdController
             $this->get("session")
                 ->getFlashBag()
                 ->add("danger", "Registro não encontrado.");
-            $redirect_route = $this->getRedirectRoute(__METHOD__, true);
+            $redirect_route = $this->getRedirectRoute($this->getActionName(__METHOD__), true);
             if ($redirect_route !== null) {
                 return $this->redirect($this->generateUrl($redirect_route));
             }
@@ -450,7 +454,7 @@ abstract class StdCrudController extends StdController
                 ->getFlashBag()
                 ->add("success", "Operação realizada com sucesso.");
         }
-        return $this->redirect($this->generateUrl($this->getRedirectRoute(__METHOD__, false)));
+        return $this->redirect($this->generateUrl($this->getRedirectRoute($this->getActionName(__METHOD__), false)));
     }
 
 }
