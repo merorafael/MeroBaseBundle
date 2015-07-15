@@ -19,13 +19,8 @@ class CPFValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, __NAMESPACE__ . "\CPF");
         }
         if (!empty($value)) {
-            if (!preg_match("^\d{3}.\d{3}.\d{3}-\d{2}$", $value)) {
-                $this->buildViolation($constraint->message)
-                    ->setParameter("{{ value }}", $this->formatValue($value))
-                    ->addViolation();
-            }
-            $value = preg_replace("[^0-9]", "", $value);
-            if (!preg_match("(?!(\d)\1{10})\d{11}", $value)) {
+            $value = preg_replace("/[^0-9]/", "", $value);
+            if (strlen($value) != 11) {
                 $this->buildViolation($constraint->message)
                     ->setParameter("{{ value }}", $this->formatValue($value))
                     ->addViolation();
