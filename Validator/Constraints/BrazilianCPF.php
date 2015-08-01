@@ -12,9 +12,9 @@ use Symfony\Component\Validator\Constraint;
  *
  * @api
  */
-class CPF extends Constraint
+class BrazilianCPF extends Constraint
 {
 
-    public $message = "O CPF informado não é válido.";
+    public $message = "CPF entered is not valid";
 
 }
