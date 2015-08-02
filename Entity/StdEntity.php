@@ -16,12 +16,12 @@ use Mero\Bundle\BaseBundle\Entity\Field;
 abstract class StdEntity
 {
 
-    use Field\Id, Field\Created, Field\Updated;
+    use Field\Id, Field\Created, Field\Modified;
 
     public function __construct()
     {
         $this->created = new \DateTime();
-        $this->updated = new \DateTime();
+        $this->modified = new \DateTime();
     }
 
 }

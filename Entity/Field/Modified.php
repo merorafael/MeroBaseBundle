@@ -5,7 +5,7 @@ namespace Mero\Bundle\BaseBundle\Entity\Field;
  * @package Mero\Bundle\BaseBundle\Entity\Field
  * @author Rafael Mello <merorafael@gmail.com>
  */
-trait Updated
+trait Modified
 {
 
     /**
@@ -13,28 +13,28 @@ trait Updated
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
-    protected $updated;
+    protected $modified;
 
     /**
      * Returns registry modification date if any.
      *
      * @return null|\DateTime
      */
-    public function getUpdated()
+    public function getModified()
     {
-        return $this->updated;
+        return $this->modified;
     }
 
     /**
      * Sets modified date.
      *
-     * @param \DateTime $updated Date modified
+     * @param \DateTime $modified Date modified
      *
-     * @return Updated
+     * @return Modified
      */
-    public function setUpdated(\DateTime $updated)
+    public function setModified(\DateTime $modified)
     {
-        $this->updated = $updated;
+        $this->modified = $modified;
         return $this;
     }
 
@@ -43,9 +43,9 @@ trait Updated
      *
      * @ORM\PreUpdate
      */
-    public function updateDate()
+    public function updateModifiedDate()
     {
-        $this->updated = new \DateTime();
+        $this->modified = new \DateTime();
     }
 
 }

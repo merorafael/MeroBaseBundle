@@ -17,6 +17,30 @@
 
 ## Usage
 
+### Configuration KnpPaginatorBundle
+
+1. Open **my/project/dir/app/config/config.yml**;
+2. Add the configuration below.
+
+```yaml
+# KnpPaginator Configuration
+knp_paginator:
+    page_range: 10 #Number of records per page
+    template:
+        pagination: MeroBaseBundle:Bootstrap:pagination.html.twig
+```
+
+### Configuration MeroBaseBundle
+
+1. Open **my/project/dir/app/config/config.yml**;
+2. Add the configuration below.
+
+```yaml
+# MeroBase Configuration
+mero_base:
+    index_crud: false #Enable/Disable add form and edit form in indexAction 
+```
+
 ### Doctrine ORM entities
 
 - **Trait "Id":** Create the primary key field - **Class:** \Mero\Bundle\BaseBundle\Entity\Field\Id;
@@ -24,12 +48,12 @@
 - **Trait "Modified":** Create field to store the date of last change - **Class:** \Mero\Bundle\BaseBundle\Entity\Field\Modified;
 - **Abstract "StdEntity":** Entity superclass using the three basic traits - **Class:** \Mero\Bundle\BaseBundle\Entity\StdEntity
 
-## Symfony validators
+### Symfony validators
 
 | Applies to         | Options | Class | Validator |
 | -------------------| ------- | ----- | --------- |
-| [property or method](http://symfony.com/doc/current/book/validation.html#validation-property-target) | message | BrazilianCNPJ | BrazilianCNPJValidator  |
-| [property or method](http://symfony.com/doc/current/book/validation.html#validation-property-target) | message | BrazilianCPF  | BrazilianCPFValidator   |
+| [property or method](http://symfony.com/doc/current/book/validation.html#validation-property-target) | message | [BrazilianCNPJ](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/BrazilianCNPJ.php) | [BrazilianCNPJValidator](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/BrazilianCNPJValidator.php)  |
+| [property or method](http://symfony.com/doc/current/book/validation.html#validation-property-target) | message | [BrazilianCPF](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/BrazilianCPF.php)  | [BrazilianCPFValidator](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/BrazilianCPFValidator.php)   |
 
 ### Validator exemple
 
