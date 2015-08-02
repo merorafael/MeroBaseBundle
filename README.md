@@ -4,7 +4,6 @@
 
 - PHP 5.3.3 or higher
 - Symfony 2.3 or higher
-- [ZnpPaginatorBundle 2.4](https://github.com/KnpLabs/KnpPaginatorBundle)
 
 ## Instalation with composer
 
@@ -12,23 +11,9 @@
 2. Run `composer require mero/base-bundle` to add MeroBaseBundle in your project vendor;
 3. Run `composer update command`;
 4. Open **my/project/dir/app/AppKernel.php**;
-5. Add dependence bundle `Knp\Bundle\PaginatorBundle\KnpPaginatorBundle()`;
 6. Add `Mero\Bundle\BaseBundle\MeroBaseBundle()`.
 
 ## Usage
-
-### Configuration KnpPaginatorBundle
-
-1. Open **my/project/dir/app/config/config.yml**;
-2. Add the configuration below.
-
-```yaml
-# KnpPaginator Configuration
-knp_paginator:
-    page_range: 10 #Number of records per page
-    template:
-        pagination: MeroBaseBundle:Bootstrap:pagination.html.twig
-```
 
 ### Configuration MeroBaseBundle
 
@@ -38,6 +23,8 @@ knp_paginator:
 ```yaml
 # MeroBase Configuration
 mero_base:
+    data_pagination: true #Enable/Disable data pagination in indexAction
+    page_range: 10 #Number of records per page
     index_crud: false #Enable/Disable add form and edit form in indexAction 
 ```
 

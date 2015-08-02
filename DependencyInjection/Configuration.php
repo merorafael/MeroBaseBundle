@@ -19,9 +19,9 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode("default_sort")->defaultValue("created")->cannotBeEmpty()->end()
-                ->booleanNode("index_crud")->defaultFalse()->cannotBeEmpty()->end()
                 ->booleanNode("data_pagination")->defaultTrue()->cannotBeEmpty()->end()
+                ->booleanNode("page_range")->defaultValue(10)->cannotBeEmpty()->end()
+                ->booleanNode("index_crud")->defaultFalse()->cannotBeEmpty()->end()
             ->end()
         ;
 
