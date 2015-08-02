@@ -58,12 +58,12 @@ mero_base:
 
 ### Symfony validators
 
-| Applies to         | Options | Class | Validator |
-| -------------------| ------- | ----- | --------- |
-| [property or method](http://symfony.com/doc/current/book/validation.html#validation-property-target) | message | [BrazilianCNPJ](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/BrazilianCNPJ.php) | [BrazilianCNPJValidator](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/BrazilianCNPJValidator.php)  |
-| [property or method](http://symfony.com/doc/current/book/validation.html#validation-property-target) | message | [BrazilianCPF](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/BrazilianCPF.php)  | [BrazilianCPFValidator](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/BrazilianCPFValidator.php)   |
+| Applies to         | Options | Class | Validator | Description |
+| -------------------| ------- | ----- | --------- | ----------- |
+| [property or method](http://symfony.com/doc/current/book/validation.html#validation-property-target) | message | [CNPJ](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/CNPJ.php) | [CNPJValidator](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/CNPJValidator.php)  | Validates number of Brazilian CNPJ. |
+| [property or method](http://symfony.com/doc/current/book/validation.html#validation-property-target) | message | [CPF](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/CPF.php)  | [CPFValidator](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/CPFValidator.php)   | Validates number of Brazilian CPF |
 
-### Validator exemple
+#### Basic usage
 
 ```php
 <?php
@@ -74,12 +74,12 @@ class People
 {
     
     /**
-     * @MeroAssert\BrazilianCPF()
+     * @MeroAssert\CPF()
      */
     private $cpf;
     
     /**
-     * @MeroAssert\BrazilianCNPJ()
+     * @MeroAssert\CNPJ()
      */
     private $cnpj;
 

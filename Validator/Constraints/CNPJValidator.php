@@ -10,7 +10,7 @@ use Symfony\Component\Validator\ConstraintValidator;
  * @author Rafael Mello <merorafael@gmail.com>
  * @api
  */
-class BrazilianCNPJValidator extends ConstraintValidator
+class CNPJValidator extends ConstraintValidator
 {
 
     /**
@@ -18,7 +18,7 @@ class BrazilianCNPJValidator extends ConstraintValidator
      */
     public function validate($value, Constraint $constraint)
     {
-        if (!$constraint instanceof BrazilianCNPJ)
+        if (!$constraint instanceof CNPJ)
             throw new UnexpectedTypeException($constraint, __NAMESPACE__ . "\BrazilianCNPJ");
         if (!empty($value)) {
             $value = preg_replace("/[^0-9]/", "", $value);

@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
  * @author Rafael Mello <merorafael@gmail.com>
  * @api
  */
-class BrazilianCPFValidator extends ConstraintValidator
+class CPFValidator extends ConstraintValidator
 {
 
     /**
@@ -18,7 +18,7 @@ class BrazilianCPFValidator extends ConstraintValidator
      */
     public function validate($value, Constraint $constraint)
     {
-        if (!$constraint instanceof BrazilianCPF)
+        if (!$constraint instanceof CPF)
             throw new UnexpectedTypeException($constraint, __NAMESPACE__ . "\BrazilianCPF");
         if (!empty($value)) {
             $value = preg_replace("/[^0-9]/", "", $value);

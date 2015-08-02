@@ -5,14 +5,11 @@ use Symfony\Component\Validator\Constraint;
 
 /**
  * @Annotation
- *
  * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
- *
  * @author Rafael Mello <merorafael@gmail.com>
- *
  * @api
  */
-class BrazilianCNPJ extends Constraint
+class CNPJ extends Constraint
 {
 
     public $message = "CNPJ entered is not valid";
