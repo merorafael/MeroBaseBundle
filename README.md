@@ -1,9 +1,17 @@
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/4612cf8e-4579-4ad5-a2ca-8e4620da09c8/mini.png)](https://insight.sensiolabs.com/projects/4612cf8e-4579-4ad5-a2ca-8e4620da09c8) [![Latest Stable Version](https://poser.pugx.org/mero/base-bundle/v/stable.svg)](https://packagist.org/packages/mero/base-bundle) [![Total Downloads](https://poser.pugx.org/mero/base-bundle/downloads.svg)](https://packagist.org/packages/mero/base-bundle) [![License](https://poser.pugx.org/mero/base-bundle/license.svg)](https://packagist.org/packages/mero/base-bundle)
 
+Bundle to accelerate development of solutions in Symfony 2.
+
 ## Requeriments
 
-- PHP 5.3.3 or higher
-- Symfony 2.3 or higher
+- PHP 5.3.3 or above
+- Symfony 2.3 or above
+- [KnpPaginatorBundle 2.4](https://github.com/KnpLabs/KnpPaginatorBundle) or above
+
+## What is KnpPaginatorBundle
+
+KnpPaginatorBundle is developed by KnpLabs and its usefulness is to provide sorting and 
+pagination of data displayed in indexAction method. This bundle was inserted as dependency and will be installed by composer.
 
 ## Instalation with composer
 
@@ -13,7 +21,20 @@
 4. Open **my/project/dir/app/AppKernel.php**;
 6. Add `Mero\Bundle\BaseBundle\MeroBaseBundle()`.
 
-## Configuration
+## KnpPaginatorBundle Configuration
+
+1. Open **my/project/dir/app/config/config.yml**;
+2. Add the configuration below.
+
+```yaml
+# KnpPaginator Configuration
+knp_paginator:
+    page_range: 10 #Number of records per page
+    template:
+        pagination: MeroBaseBundle:Bootstrap:pagination.html.twig
+```
+
+## MeroBaseBundle Configuration
 
 1. Open **my/project/dir/app/config/config.yml**;
 2. Add the configuration below.
@@ -21,8 +42,6 @@
 ```yaml
 # MeroBase Configuration
 mero_base:
-    data_pagination: true #Enable/Disable data pagination in indexAction
-    page_range: 10 #Number of records per page
     index_crud: false #Enable/Disable add form and edit form in indexAction 
 ```
 
