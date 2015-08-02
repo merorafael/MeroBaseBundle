@@ -1,6 +1,8 @@
 <?php
 namespace Mero\Bundle\BaseBundle\Twig;
 
+use Symfony\Component\Intl\Intl;
+
 /**
  * Country filter for Twig.
  *
@@ -13,7 +15,7 @@ class CountryExtension extends \Twig_Extension
 
     public function __construct()
     {
-        if (!class_exists("\Locale")) {
+        if (!class_exists('\Locale')) {
             throw new \RuntimeException('The country extension is needed to use intl-based filters.');
         }
     }
@@ -21,7 +23,10 @@ class CountryExtension extends \Twig_Extension
     public function getFilters()
     {
         return array(
-            new \Twig_SimpleFilter("country", array($this, "getCountryName")),
+            new \Twig_SimpleFilter('country', [
+                $this,
+                'getCountryName'
+            ]),
         );
     }
 
@@ -38,12 +43,14 @@ class CountryExtension extends \Twig_Extension
         if ($iso_code === null) {
             return null;
         }
-        return $locale === null ? \Locale::getDisplayRegion("unq_".$iso_code) : \Locale::getDisplayRegion("unq_".$iso_code, $locale);
+        return ($locale === null)
+            ? Intl::getRegionBundle()->getCountryName($iso_code)
+            : Intl::getRegionBundle()->getCountryName($iso_code, $locale);
     }
 
     public function getName()
     {
-        return "country_extension";
+        return 'country_extension';
     }
 
 }
