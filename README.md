@@ -43,10 +43,12 @@ mero_base:
 
 ### Doctrine ORM entities
 
-- **Trait "Id":** Create the primary key field - **Class:** \Mero\Bundle\BaseBundle\Entity\Field\Id;
-- **Trait "Created":** Create field to store the creation date - **Class:** \Mero\Bundle\BaseBundle\Entity\Field\Created;
-- **Trait "Modified":** Create field to store the date of last change - **Class:** \Mero\Bundle\BaseBundle\Entity\Field\Modified;
-- **Abstract "StdEntity":** Entity superclass using the three basic traits - **Class:** \Mero\Bundle\BaseBundle\Entity\StdEntity
+| Name      | Type        | Description                                    | Address  |
+| --------- | ----------- | ---------------------------------------------- | -------- |
+| Id        | Trait       | Create the primary key field                   | [\Mero\Bundle\BaseBundle\Entity\Field\Id](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/Id.php) |
+| Created   | Trait       | Create field to store the creation date        | [\Mero\Bundle\BaseBundle\Entity\Field\Created](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/Created.php) |
+| Modified  | Trait       | Create field to store the date of last change  | [\Mero\Bundle\BaseBundle\Entity\Field\Modified](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/Modified.php) |
+| StdEntity | Super class | Entity superclass using the three basic traits | [\Mero\Bundle\BaseBundle\Entity\StdEntity](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/StdEntity.php) | 
 
 ### Symfony validators
 
