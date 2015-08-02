@@ -60,7 +60,7 @@ mero_base:
 
 | Applies to         | Options | Class | Validator | Description |
 | -------------------| ------- | ----- | --------- | ----------- |
-| [property or method](http://symfony.com/doc/current/book/validation.html#validation-property-target) | message | [CNPJ](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/CNPJ.php) | [CNPJValidator](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/CNPJValidator.php)  | Validates number of Brazilian CNPJ. |
+| [property or method](http://symfony.com/doc/current/book/validation.html#validation-property-target) | message | [CNPJ](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/CNPJ.php) | [CNPJValidator](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/CNPJValidator.php)  | Validates number of Brazilian CNPJ |
 | [property or method](http://symfony.com/doc/current/book/validation.html#validation-property-target) | message | [CPF](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/CPF.php)  | [CPFValidator](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/CPFValidator.php)   | Validates number of Brazilian CPF |
 
 #### Basic usage
