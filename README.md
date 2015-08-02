@@ -74,9 +74,14 @@ class People
 {
     
     /**
-     * @MeroAssert\CPF()
+     * @MeroAssert\BrazilianCPF()
      */
     private $cpf;
+    
+    /**
+     * @MeroAssert\BrazilianCNPJ()
+     */
+    private $cnpj;
 
 }
 ```
