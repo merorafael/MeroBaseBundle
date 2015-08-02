@@ -25,9 +25,9 @@ abstract class StdCrudController extends StdController
      *
      * @return EntityManager
      */
-    protected function getEntityManager()
+    protected function getEntityManager($name = null)
     {
-        return $this->getDoctrine()->getManager();
+        return $this->getDoctrine()->getManager($name);
     }
 
     /**

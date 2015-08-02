@@ -13,9 +13,7 @@
 4. Open **my/project/dir/app/AppKernel.php**;
 6. Add `Mero\Bundle\BaseBundle\MeroBaseBundle()`.
 
-## Usage
-
-### Configuration MeroBaseBundle
+## Configuration
 
 1. Open **my/project/dir/app/config/config.yml**;
 2. Add the configuration below.
@@ -27,6 +25,8 @@ mero_base:
     page_range: 10 #Number of records per page
     index_crud: false #Enable/Disable add form and edit form in indexAction 
 ```
+
+## Usage
 
 ### Doctrine ORM entities
 
