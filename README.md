@@ -5,7 +5,7 @@ Bundle to accelerate development of solutions in Symfony 2.
 ## Requeriments
 
 - PHP 5.3.3 or above
-- Symfony 2.3 or above
+- Symfony 2.5 or above
 - [KnpPaginatorBundle 2.4](https://github.com/KnpLabs/KnpPaginatorBundle) or above
 
 ## What is KnpPaginatorBundle
