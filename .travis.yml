@@ -15,23 +15,16 @@ php:
     - hhvm
 
 matrix:
-    include:
-        - php: 5.3
-          env: deps=low
+    fast_finish: true
     allow_failures:
         - php: 7.0
         - php: hhvm
-
-env:
-    global:
-        - deps=no
 
 before_install:
     - composer self-update
 
 install:
-  - if [ "$deps" = "no" ]; then composer install; fi;
-  - if [ "$deps" = "low" ]; then composer --prefer-lowest --prefer-stable update; fi;
+    - composer install
 
 script:
     - ./vendor/bin/phpunit -v --coverage-clover ./build/logs/clover.xml
