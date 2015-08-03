@@ -12,6 +12,6 @@ use Symfony\Component\Validator\Constraint;
 class CNPJ extends Constraint
 {
 
-    public $message = "CNPJ entered is not valid";
+    public $message = "CNPJ {{ value }} is not valid";
 
 }

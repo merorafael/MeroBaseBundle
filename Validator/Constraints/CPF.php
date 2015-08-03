@@ -12,6 +12,6 @@ use Symfony\Component\Validator\Constraint;
 class CPF extends Constraint
 {
 
-    public $message = "CPF entered is not valid";
+    public $message = "CPF {{ value }} is not valid";
 
 }

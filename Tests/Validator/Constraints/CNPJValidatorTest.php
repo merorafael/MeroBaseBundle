@@ -34,11 +34,11 @@ class CNPJValidatorTest extends AbstractConstraintValidatorTest
 
     public function getInvalidCNPJs()
     {
-        return [
-            ['11.111.111/1111-11'],
-            ['22.222.222/2222-22'],
-            ['66.121.538/0001-00']
-        ];
+        return array(
+            array('11.111.111/1111-11'),
+            array('22.222.222/2222-22'),
+            array('66.121.538/0001-00')
+        );
     }
 
     /**
@@ -57,11 +57,11 @@ class CNPJValidatorTest extends AbstractConstraintValidatorTest
 
     public function getValidCNPJs()
     {
-        return [
-            ['06.785.165/0001-00'],
-            ['66.121.538/0001-62'],
-            ['32.771.783/0001-01']
-        ];
+        return array(
+            array('06.785.165/0001-00'),
+            array('66.121.538/0001-62'),
+            array('32.771.783/0001-01')
+        );
     }
 
     /**
