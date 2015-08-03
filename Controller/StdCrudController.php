@@ -10,8 +10,6 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class StdCrudController
- *
  * @package Mero\Bundle\BaseBundle\Controller
  * @author Rafael Mello <merorafael@gmail.com>
  * @Copyright Copyright (c) 2014~2015 - Rafael Mello
@@ -21,11 +19,13 @@ abstract class StdCrudController extends StdController
 {
 
     /**
-     * Retorna gerenciador de entidades do Doctrine.
+     * Gets a named object manager.
+     *
+     * @param string $name The object manager name (null for the default one)
      *
      * @return EntityManager
      */
-    protected function getEntityManager($name = null)
+    protected function getDoctrineManager($name = null)
     {
         return $this->getDoctrine()->getManager($name);
     }
@@ -35,10 +35,7 @@ abstract class StdCrudController extends StdController
      *
      * @return string
      */
-    protected function defaultSort()
-    {
-        return $this->getParameter("mero_base.default_sort");
-    }
+    abstract protected function defaultSort();
 
     /**
      * Verificador de CRUD na indexAction.
@@ -57,7 +54,7 @@ abstract class StdCrudController extends StdController
      */
     protected function isDataPagination()
     {
-        return $this->getParameter("mero_base.data_pagination");
+        return true;
     }
 
     /**
@@ -109,15 +106,6 @@ abstract class StdCrudController extends StdController
     {
         return true;
     }
-
-    /**
-     * Retorna nome da rota referente a action informada.
-     *
-     * @param string $action Nome da action(indexAction, addAction, editAction ou removeAction)
-     *
-     * @return string
-     */
-    abstract protected function getRoute($action);
 
     /**
      * Retorna rota de direcionamento pós-processamento.
@@ -205,7 +193,7 @@ abstract class StdCrudController extends StdController
      */
     protected function listQueryBuilder(Request &$request)
     {
-        return $this->getEntityManager()->createQueryBuilder()
+        return $this->getDoctrineManager()->createQueryBuilder()
             ->select("e")
             ->from($this->getEntity(), "e");
     }
@@ -259,7 +247,7 @@ abstract class StdCrudController extends StdController
         if ($request->isMethod("POST")) {
             $form->handleRequest($request);
             if ($form->isValid()) {
-                $em = $this->getEntityManager();
+                $em = $this->getDoctrineManager();
                 $em->persist($entity);
                 $em->flush();
                 $this->get("session")
@@ -320,7 +308,7 @@ abstract class StdCrudController extends StdController
      */
     protected function editData(Request &$request, $action_name, $id)
     {
-        $em = $this->getEntityManager();
+        $em = $this->getDoctrineManager();
         $entity = $em->getRepository($this->getEntity())->find($id);
         if (!$entity) {
             $this->get("session")
@@ -392,7 +380,7 @@ abstract class StdCrudController extends StdController
         if (!$this->isDetailsActionAuthorized()) {
             throw $this->createAccessDeniedException();
         }
-        $em = $this->getEntityManager();
+        $em = $this->getDoctrineManager();
         $entity = $em->getRepository($this->getBundleName().":".$this->getEntityName())->find($id);
         if (!$entity) {
             $this->get("session")
@@ -437,7 +425,7 @@ abstract class StdCrudController extends StdController
         if (!$this->isRemoveActionAuthorized()) {
             throw $this->createAccessDeniedException();
         }
-        $em = $this->getEntityManager();
+        $em = $this->getDoctrineManager();
         $entity = $em->getRepository($this->getEntityNamespace()."\\".$this->getEntityName())->find($id);
         if (!$entity) {
             $this->get("session")

@@ -3,28 +3,44 @@ namespace Mero\Bundle\BaseBundle\Controller;
 
 use Mero\Bundle\BaseBundle\Exception\InvalidEntityException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @package Mero\Bundle\BaseBundle\Controller
+ * @author Rafael Mello <merorafael@gmail.com>
+ * @Copyright Copyright (c) 2014~2015 - Rafael Mello
+ * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE MIT license
  */
 abstract class StdController extends Controller
 {
 
     /**
-     * Retorna nome do método de action.
+     * Gets the route name.
      *
-     * @param string $method_constant Constante __METHOD__
+     * @param Request $request Action request injection
      *
-     * @return string
+     * @return string Route name
      */
-    protected function getActionName($method_constant)
+    protected function getRouteName(Request $request)
     {
-        $action = preg_split("/[\:]+/", $method_constant);
+        return $request->attributes->get('_route');
+    }
+
+    /**
+     * Gets the action name.
+     *
+     * @param Request $request Action request injection
+     *
+     * @return string Action name
+     */
+    protected function getActionName(Request $request)
+    {
+        $action = explode('::', $request->attributes->get('_controller'));
         return $action[1];
     }
 
     /**
-     * Return current bundle name.
+     * Gets the bundle name.
      *
      * <b>Attention! This method returns the bundle name as the conventions of framewok.</b>
      * Example: "Mero/Bundle/BaseBundle" or "Mero/BaseBundle" returns "MeroBaseBundle".
@@ -48,18 +64,18 @@ abstract class StdController extends Controller
     }
 
     /**
-     * Retorna exceção de InvalidEntityException.
+     * Returns a InvalidEntityException.
      *
-     * Exemplo de uso:
+     * This method returns an invalid entity exception. Usage exemple:
      *
      *     throw $this->createInvalidEntityException('Invalid entity');
      *
-     * @param string $message  Mensagem de exceção
-     * @param \Exception|null $previous Exceção anterior
+     * @param string $message A message
+     * @param \Exception|null $previous The previous exception
      *
      * @return InvalidEntityException
      */
-    protected function createInvalidEntityException($message = 'Entity is not object', \Exception $previous = null)
+    public function createInvalidEntityException($message = 'Entity is not object', \Exception $previous = null)
     {
         return new InvalidEntityException($message, $previous);
     }
