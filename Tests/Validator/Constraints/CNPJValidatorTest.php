@@ -46,9 +46,9 @@ class CNPJValidatorTest extends AbstractConstraintValidatorTest
      */
     public function testInvalidCNPJs($cnpj)
     {
-        $constraint = new CNPJ([
+        $constraint = new CNPJ(array(
             "message" => "testMessage"
-        ]);
+        ));
         $this->validator->validate($cnpj, $constraint);
         $this->buildViolation('testMessage')
             ->setParameter('{{ value }}', '"'.$cnpj.'"')
