@@ -77,16 +77,20 @@ namespace Acme\Bundle\BlogBundle;
 
 use Mero\Bundle\BaseBundle\Controller\StdController;
 use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 class NewsController extends StdController
 {
 
+    /**
+     * @Route("/", name="news")
+     */
     public function indexAction(Request $request)
     {
-        $bundle_name = $this->getRouteName($request);
-        $action_name = $this->getActionName($request);
-        $route_name = $this->getRouteName();
-        throw $this->createInvalidEntityException();
+        $route_name = $this->getRouteName($request); // Return "news"
+        $action_name = $this->getActionName($request); // Return "indexAction"
+        $bundle_name = $this->getBundleName(); // Return "AcmeBlogBundle"
+        throw $this->createInvalidEntityException(); // Throw invalid entity exception
     }
 
 }
