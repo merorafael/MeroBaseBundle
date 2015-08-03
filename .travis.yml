@@ -22,6 +22,10 @@ matrix:
         - php: 7.0
         - php: hhvm
 
+env:
+    global:
+        - deps=no
+
 before_install:
     - composer self-update
 
