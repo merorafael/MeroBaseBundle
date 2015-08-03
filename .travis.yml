@@ -15,3 +15,8 @@ matrix:
         - php: nightly
         - php: hhvm
     fast_finish: true
+
+before_script:
+  - composer install --dev
+
+script: phpunit
