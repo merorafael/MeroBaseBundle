@@ -75,7 +75,7 @@ abstract class StdController extends Controller
      *
      * @return InvalidEntityException
      */
-    public function createInvalidEntityException($message = 'Entity is not object', \Exception $previous = null)
+    protected function createInvalidEntityException($message = 'Entity is not object', \Exception $previous = null)
     {
         return new InvalidEntityException($message, $previous);
     }
