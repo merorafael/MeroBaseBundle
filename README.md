@@ -10,21 +10,21 @@ MeroBaseBundle
 
 Bundle to accelerate development of solutions in Symfony 2.
 
-## Requeriments
------------------
+Requeriments
+------------
 
 - PHP 5.3.3 or above
 - Symfony 2.5 or above
 - [KnpPaginatorBundle 2.4](https://github.com/KnpLabs/KnpPaginatorBundle) or above
 
-## What is KnpPaginatorBundle
------------------
+What is KnpPaginatorBundle
+--------------------------
 
 KnpPaginatorBundle is developed by KnpLabs and its usefulness is to provide sorting and 
 pagination of data displayed in indexAction method. This bundle was inserted as dependency and will be installed by composer.
 
-## Instalation with composer
------------------
+Instalation with composer
+-------------------------
 
 1. Open your project directory;
 2. Run `composer require mero/base-bundle` to add MeroBaseBundle in your project vendor;
@@ -32,8 +32,8 @@ pagination of data displayed in indexAction method. This bundle was inserted as 
 4. Open **my/project/dir/app/AppKernel.php**;
 6. Add `Mero\Bundle\BaseBundle\MeroBaseBundle()`.
 
-## KnpPaginatorBundle Configuration
------------------
+KnpPaginatorBundle Configuration
+--------------------------------
 
 1. Open **my/project/dir/app/config/config.yml**;
 2. Add the configuration below.
@@ -46,8 +46,8 @@ knp_paginator:
         pagination: MeroBaseBundle:Bootstrap:pagination.html.twig
 ```
 
-## MeroBaseBundle Configuration
------------------
+MeroBaseBundle Configuration
+----------------------------
 
 1. Open **my/project/dir/app/config/config.yml**;
 2. Add the configuration below.
@@ -58,8 +58,8 @@ mero_base:
     index_crud: false #Enable/Disable add form and edit form in indexAction 
 ```
 
-## Abstract StdController to Symfony Controllers
------------------
+Abstract StdController to Symfony Controllers
+---------------------------------------------
 
 Abstract controller with basic methods for easy identification framework resources.
 
@@ -96,8 +96,8 @@ class NewsController extends StdController
 }
 ```
 
-## Doctrine ORM entities
------------------
+Doctrine ORM entities
+---------------------
 
 | Name           | Description                                    | Address  |
 | -------------- | ---------------------------------------------- | -------- |
@@ -106,8 +106,8 @@ class NewsController extends StdController
 | ModifiedTrait  | Create field to store the date of last change  | [\Mero\Bundle\BaseBundle\Entity\Field\ModifiedTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/ModifiedTrait.php) |
 | AbstractEntity | Entity superclass using the three basic traits | [\Mero\Bundle\BaseBundle\Entity\AbstractEntity](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/AbstractEntity.php) | 
 
-## Symfony validators
------------------
+Symfony validators
+------------------
 
 | Applies to         | Options | Class | Validator | Description |
 | -------------------| ------- | ----- | --------- | ----------- |
@@ -137,8 +137,8 @@ class People
 }
 ```
 
-## Twig extensions
------------------
+Twig extensions
+---------------
 
 ### Country
 
