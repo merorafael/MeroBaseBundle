@@ -1,9 +1,9 @@
 MeroBaseBundle
 =================
 
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/4612cf8e-4579-4ad5-a2ca-8e4620da09c8/mini.png)](https://insight.sensiolabs.com/projects/4612cf8e-4579-4ad5-a2ca-8e4620da09c8) 
-[![Build Status](https://travis-ci.org/merorafael/MeroBaseBundle.svg?branch=master)](https://travis-ci.org/merorafael/MeroBaseBundle) 
-[![Coverage Status](https://coveralls.io/repos/merorafael/MeroBaseBundle/badge.svg?branch=master&service=github)](https://coveralls.io/github/merorafael/MeroBaseBundle?branch=master) 
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/4612cf8e-4579-4ad5-a2ca-8e4620da09c8/mini.png)](https://insight.sensiolabs.com/projects/4612cf8e-4579-4ad5-a2ca-8e4620da09c8)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/merorafael/MeroBaseBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/merorafael/MeroBaseBundle/?branch=master)
+[![Build Status](https://travis-ci.org/merorafael/MeroBaseBundle.svg?branch=master)](https://travis-ci.org/merorafael/MeroBaseBundle)  
 [![Latest Stable Version](https://poser.pugx.org/mero/base-bundle/v/stable.svg)](https://packagist.org/packages/mero/base-bundle) 
 [![Total Downloads](https://poser.pugx.org/mero/base-bundle/downloads.svg)](https://packagist.org/packages/mero/base-bundle) 
 [![License](https://poser.pugx.org/mero/base-bundle/license.svg)](https://packagist.org/packages/mero/base-bundle)
@@ -58,15 +58,15 @@ mero_base:
     index_crud: false #Enable/Disable add form and edit form in indexAction 
 ```
 
-Abstract StdController to Symfony Controllers
----------------------------------------------
+AbstractController to Symfony Controllers
+-----------------------------------------
 
 Abstract controller with basic methods for easy identification framework resources.
 
 | Name                         | Atributes                      | Description                           |
 | ---------------------------- | ------------------------------ | ------------------------------------- |
-| getRouteName                 | Request $request               | Gets the route name.                  |
-| getActionName                | Request $request               | Gets the action name.                 |
+| getRouteName                 | -                              | Gets the route name.                  |
+| getActionName                | -                              | Gets the action name.                 |
 | getBundleName                | -                              | Gets the bundle name.                 |
 | createInvalidEntityException | $message, \Exception $previous | Returns a InvalidEntityException.     |
 
