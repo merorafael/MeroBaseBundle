@@ -99,12 +99,12 @@ class NewsController extends StdController
 ## Doctrine ORM entities
 -----------------
 
-| Name      | Type        | Description                                    | Address  |
-| --------- | ----------- | ---------------------------------------------- | -------- |
-| Id        | Trait       | Create the primary key field                   | [\Mero\Bundle\BaseBundle\Entity\Field\Id](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/Id.php) |
-| Created   | Trait       | Create field to store the creation date        | [\Mero\Bundle\BaseBundle\Entity\Field\Created](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/Created.php) |
-| Modified  | Trait       | Create field to store the date of last change  | [\Mero\Bundle\BaseBundle\Entity\Field\Modified](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/Modified.php) |
-| StdEntity | Super class | Entity superclass using the three basic traits | [\Mero\Bundle\BaseBundle\Entity\StdEntity](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/StdEntity.php) | 
+| Name           | Description                                    | Address  |
+| -------------- | ---------------------------------------------- | -------- |
+| IdTrait        | Create the primary key field                   | [\Mero\Bundle\BaseBundle\Entity\Field\Id](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/IdTrait.php) |
+| CreatedTrait   | Create field to store the creation date        | [\Mero\Bundle\BaseBundle\Entity\Field\Created](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/CreatedTrait.php) |
+| ModifiedTrait  | Create field to store the date of last change  | [\Mero\Bundle\BaseBundle\Entity\Field\Modified](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/ModifiedTrait.php) |
+| AbstractEntity | Entity superclass using the three basic traits | [\Mero\Bundle\BaseBundle\Entity\StdEntity](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/AbstractEntity.php) | 
 
 ## Symfony validators
 -----------------
