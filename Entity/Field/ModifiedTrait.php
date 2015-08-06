@@ -34,6 +34,7 @@ trait ModifiedTrait
     public function setModified(\DateTime $modified)
     {
         $this->modified = $modified;
+
         return $this;
     }
 

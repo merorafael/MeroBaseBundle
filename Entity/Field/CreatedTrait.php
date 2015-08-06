@@ -34,6 +34,7 @@ trait CreatedTrait
     public function setCreated(\DateTime $created)
     {
         $this->created = $created;
+
         return $this;
     }
 }
