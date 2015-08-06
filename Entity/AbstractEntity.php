@@ -1,27 +1,24 @@
 <?php
+
 namespace Mero\Bundle\BaseBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Mero\Bundle\BaseBundle\Entity\Field;
 
 /**
  * Common entity class.
  *
- * @package Mero\Bundle\BaseBundle\Entity
  * @author Rafael Mello <merorafael@gmail.com>
  *
  * @ORM\MappedSuperclass
  * @ORM\HasLifecycleCallbacks
  */
-abstract class StdEntity
+abstract class AbstractEntity
 {
-
-    use Field\Id, Field\Created, Field\Modified;
+    use Field\IdTrait, Field\CreatedTrait, Field\ModifiedTrait;
 
     public function __construct()
     {
         $this->created = new \DateTime();
         $this->modified = new \DateTime();
     }
-
 }

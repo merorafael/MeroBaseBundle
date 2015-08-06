@@ -1,13 +1,12 @@
 <?php
+
 namespace Mero\Bundle\BaseBundle\Entity\Field;
 
 /**
- * @package Mero\Bundle\BaseBundle\Entity\Field
  * @author Rafael Mello <merorafael@gmail.com>
  */
-trait Created
+trait CreatedTrait
 {
-
     /**
      * @var \DateTime Date created
      *
@@ -30,12 +29,11 @@ trait Created
      *
      * @param \DateTime $created
      *
-     * @return Created
+     * @return object
      */
     public function setCreated(\DateTime $created)
     {
         $this->created = $created;
         return $this;
     }
-
 }

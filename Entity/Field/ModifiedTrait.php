@@ -1,13 +1,12 @@
 <?php
+
 namespace Mero\Bundle\BaseBundle\Entity\Field;
 
 /**
- * @package Mero\Bundle\BaseBundle\Entity\Field
  * @author Rafael Mello <merorafael@gmail.com>
  */
-trait Modified
+trait ModifiedTrait
 {
-
     /**
      * @var \DateTime Date modified
      *
@@ -30,7 +29,7 @@ trait Modified
      *
      * @param \DateTime $modified Date modified
      *
-     * @return Modified
+     * @return object
      */
     public function setModified(\DateTime $modified)
     {
@@ -47,5 +46,4 @@ trait Modified
     {
         $this->modified = new \DateTime();
     }
-
 }

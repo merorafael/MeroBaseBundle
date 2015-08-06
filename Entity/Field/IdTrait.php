@@ -1,13 +1,12 @@
 <?php
+
 namespace Mero\Bundle\BaseBundle\Entity\Field;
 
 /**
- * @package Mero\Bundle\BaseBundle\Entity\Field
  * @author Rafael Mello <merorafael@gmail.com>
  */
-trait Id
+trait IdTrait
 {
-
     /**
      * @var int Primary key
      *
@@ -32,12 +31,11 @@ trait Id
      *
      * @param int $id
      *
-     * @return Id
+     * @return object
      */
     public function setId($id)
     {
         $this->id = $id;
         return $this;
     }
-
 }
