@@ -14,9 +14,9 @@
     "require": {
         "php": ">=5.3.3",
         "ext-intl": "*",
-        "doctrine/orm": "~2.2,>=2.2.3,<2.5",
+        "symfony/symfony": "2.7.*",
+        "doctrine/orm": "^2.4.8",
         "doctrine/doctrine-bundle": "~1.4",
-        "symfony/framework-bundle": "~2.5,>=2.5.0,<3.0",
         "knplabs/knp-paginator-bundle": "~2.4"
     },
     "require-dev": {
