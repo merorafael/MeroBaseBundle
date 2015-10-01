@@ -18,7 +18,6 @@ abstract class AbstractEntity
 
     public function __construct()
     {
-        $this->created = new \DateTime();
-        $this->modified = new \DateTime();
+        $this->created = $this->modified = new \DateTime("now");
     }
 }

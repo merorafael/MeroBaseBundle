@@ -16,13 +16,6 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('mero_base');
-
-        $rootNode
-            ->children()
-                ->booleanNode("index_crud")->defaultFalse()->cannotBeEmpty()->end()
-            ->end()
-        ;
-
         return $treeBuilder;
     }
 }
