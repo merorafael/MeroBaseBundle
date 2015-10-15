@@ -2,6 +2,8 @@
 
 namespace Mero\Bundle\BaseBundle\Controller\Action\Crud;
 
+use Symfony\Component\HttpFoundation\Request;
+
 trait EditTrait
 {
     /**
@@ -34,7 +36,7 @@ trait EditTrait
     abstract protected function getRedirectRoute($actionName, $actionParams, $error);
 
     /**
-     * @param mixed $entity
+     * @param object $entity
      *
      * @return Form
      */

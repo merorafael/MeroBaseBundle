@@ -2,6 +2,8 @@
 
 namespace Mero\Bundle\BaseBundle\Controller\Action\Crud;
 
+use Symfony\Component\HttpFoundation\Request;
+
 trait IndexTrait
 {
     /**
