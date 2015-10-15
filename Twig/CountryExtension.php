@@ -1,4 +1,5 @@
 <?php
+
 namespace Mero\Bundle\BaseBundle\Twig;
 
 use Symfony\Component\Intl\Intl;
@@ -6,13 +7,11 @@ use Symfony\Component\Intl\Intl;
 /**
  * Country filter for Twig.
  *
- * @package Mero\Bundle\BaseBundle\Twig
  * @author Rafael Mello <merorafael@gmail.com>
  * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE MIT license
  */
 class CountryExtension extends \Twig_Extension
 {
-
     public function __construct()
     {
         if (!class_exists('\Locale')) {
@@ -25,7 +24,7 @@ class CountryExtension extends \Twig_Extension
         return array(
             new \Twig_SimpleFilter('country', [
                 $this,
-                'getCountryName'
+                'getCountryName',
             ]),
         );
     }
@@ -33,16 +32,17 @@ class CountryExtension extends \Twig_Extension
     /**
      * Return the country name using the Locale class.
      *
-     * @param string $iso_code Country ISO 3166-1 alpha 2 code
-     * @param null|string $locale Locale code
+     * @param string      $iso_code Country ISO 3166-1 alpha 2 code
+     * @param null|string $locale   Locale code
      *
      * @return null|string Country name
      */
     public function getCountryName($iso_code, $locale = null)
     {
         if ($iso_code === null) {
-            return null;
+            return;
         }
+
         return ($locale === null)
             ? Intl::getRegionBundle()->getCountryName($iso_code)
             : Intl::getRegionBundle()->getCountryName($iso_code, $locale);
@@ -52,5 +52,4 @@ class CountryExtension extends \Twig_Extension
     {
         return 'country_extension';
     }
-
 }

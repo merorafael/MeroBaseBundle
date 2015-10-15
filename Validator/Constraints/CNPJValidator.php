@@ -1,4 +1,5 @@
 <?php
+
 namespace Mero\Bundle\BaseBundle\Validator\Constraints;
 
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
@@ -6,31 +7,34 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 /**
- * @package Mero\Bundle\BaseBundle\Validator\Constraints
  * @author Rafael Mello <merorafael@gmail.com>
+ *
  * @api
  */
 class CNPJValidator extends ConstraintValidator
 {
-
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function validate($value, Constraint $constraint)
     {
-        if (!$constraint instanceof CNPJ)
-            throw new UnexpectedTypeException($constraint, __NAMESPACE__ . '\CNPJ');
-        if (null === $value || '' === $value)
+        if (!$constraint instanceof CNPJ) {
+            throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\CNPJ');
+        }
+        if (null === $value || '' === $value) {
             return;
+        }
         $value_number = preg_replace('/[^0-9]/', '', $value);
         if (strlen($value_number) != 14) {
             $this->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $this->formatValue($value))
                 ->addViolation();
+
             return;
         }
-        for ($i = 0, $aux = 5, $count = 0; $i < 12; $i++) {
-            $count += $value_number{$i} * $aux;
+        for ($i = 0, $aux = 5, $count = 0; $i < 12; ++$i) {
+            $count += $value_number{$i}
+            * $aux;
             $aux = ($aux == 2)
                 ? 9
                 : $aux - 1;
@@ -43,10 +47,12 @@ class CNPJValidator extends ConstraintValidator
             $this->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $this->formatValue($value))
                 ->addViolation();
+
             return;
         }
-        for ($i = 0, $aux = 6, $count = 0; $i < 13; $i++) {
-            $count += $value_number{$i} * $aux;
+        for ($i = 0, $aux = 6, $count = 0; $i < 13; ++$i) {
+            $count += $value_number{$i}
+            * $aux;
             $aux = ($aux == 2)
                 ? 9
                 : $aux - 1;
@@ -59,8 +65,8 @@ class CNPJValidator extends ConstraintValidator
             $this->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $this->formatValue($value))
                 ->addViolation();
+
             return;
         }
     }
-
 }

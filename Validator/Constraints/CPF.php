@@ -1,4 +1,5 @@
 <?php
+
 namespace Mero\Bundle\BaseBundle\Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
@@ -6,12 +7,12 @@ use Symfony\Component\Validator\Constraint;
 /**
  * @Annotation
  * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
+ *
  * @author Rafael Mello <merorafael@gmail.com>
+ *
  * @api
  */
 class CPF extends Constraint
 {
-
-    public $message = "CPF {{ value }} is not valid";
-
+    public $message = 'CPF {{ value }} is not valid';
 }

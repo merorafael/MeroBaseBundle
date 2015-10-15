@@ -2,14 +2,8 @@
 
 namespace Mero\Bundle\BaseBundle\Controller\Action\Crud;
 
-use Doctrine\ORM\EntityManager;
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Form;
-use Symfony\Component\HttpFoundation\Request;
-
 trait EditTrait
 {
-
     /**
      * @return EntityManager Doctrine entity manager
      */
@@ -34,13 +28,13 @@ trait EditTrait
 
     /**
      * @param string $actionName
-     * @param array $actionParams
-     * @param bool $error
+     * @param array  $actionParams
+     * @param bool   $error
      */
     abstract protected function getRedirectRoute($actionName, $actionParams, $error);
 
     /**
-     * @param $entity
+     * @param mixed $entity
      *
      * @return Form
      */
@@ -48,11 +42,12 @@ trait EditTrait
     {
         $form = $this->createForm($this->createFormType($entity), [
             'action' => $this->generateUrl($this->getRoute($this->getActionName()), [
-                'id' => $entity->getId()
+                'id' => $entity->getId(),
             ]),
-            'method' => 'PUT'
+            'method' => 'PUT',
         ]);
         $form->add('submit', 'submit');
+
         return $form;
     }
 
@@ -70,10 +65,11 @@ trait EditTrait
         $em = $this->getDoctrineManager();
         $entity = $em->getRepository()->find($id);
         if (!$entity) {
-            $this->get("session")
+            $this->get('session')
                 ->getFlashBag()
-                ->add("danger", "mero.base.data_not_found");
+                ->add('danger', 'mero.base.data_not_found');
             $redirectRoute = $this->getRedirectRoute($actionName, [], true);
+
             return $this->redirect($this->generateUrl($redirectRoute));
         }
         $form = $this->getEditForm($entity);
@@ -82,23 +78,25 @@ trait EditTrait
             if ($form->isValid()) {
                 $em->persist($entity);
                 $em->flush();
-                $this->get("session")
+                $this->get('session')
                     ->getFlashBag()
-                    ->add("success", "mero.base.edit_success");
+                    ->add('success', 'mero.base.edit_success');
                 $redirectRoute = $this->getRedirectRoute($actionName, [], false);
+
                 return $this->redirect($this->generateUrl($redirectRoute));
             } else {
-                $this->get("session")
+                $this->get('session')
                     ->getFlashBag()
-                    ->add("danger", "mero.base.edit_fail");
+                    ->add('danger', 'mero.base.edit_fail');
                 $redirectRoute = $this->getRedirectRoute($actionName, [], true);
+
                 return $this->redirect($this->generateUrl($redirectRoute));
             }
         }
+
         return $this->render($this->getViewName($actionName), [
             'entity' => $entity,
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ]);
     }
-
 }

@@ -2,14 +2,8 @@
 
 namespace Mero\Bundle\BaseBundle\Controller\Action\Crud;
 
-use Doctrine\ORM\EntityManager;
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Form;
-use Symfony\Component\HttpFoundation\Request;
-
 trait CreateTrait
 {
-
     /**
      * @return EntityManager Doctrine entity manager
      */
@@ -36,8 +30,8 @@ trait CreateTrait
 
     /**
      * @param string $actionName
-     * @param array $actionParams
-     * @param bool $error
+     * @param array  $actionParams
+     * @param bool   $error
      */
     abstract protected function getRedirectRoute($actionName, $actionParams, $error);
 
@@ -47,7 +41,7 @@ trait CreateTrait
     }
 
     /**
-     * @param $entity
+     * @param mixed $entity
      *
      * @return Form
      */
@@ -55,9 +49,10 @@ trait CreateTrait
     {
         $form = $this->createForm($this->createFormType($entity), [
             'action' => $this->generateUrl($this->getRoute($this->getActionName())),
-            'method' => 'POST'
+            'method' => 'POST',
         ]);
         $form->add('submit', 'submit');
+
         return $form;
     }
 
@@ -75,23 +70,25 @@ trait CreateTrait
                 $em = $this->getDoctrineManager();
                 $em->persist($newEntity);
                 $em->flush();
-                $this->get("session")
+                $this->get('session')
                     ->getFlashBag()
-                    ->add("success", "mero.base.create_success");
+                    ->add('success', 'mero.base.create_success');
                 $redirectRoute = $this->getRedirectRoute($actionName, [], false);
+
                 return $this->redirect($this->generateUrl($redirectRoute));
             } else {
-                $this->get("session")
+                $this->get('session')
                     ->getFlashBag()
-                    ->add("danger", "mero.base.create_fail");
+                    ->add('danger', 'mero.base.create_fail');
                 $redirectRoute = $this->getRedirectRoute($actionName, [], true);
+
                 return $this->redirect($this->generateUrl($redirectRoute));
             }
         }
+
         return $this->render($this->getViewName($actionName), [
             'entity' => $newEntity,
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ]);
     }
-
 }

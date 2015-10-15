@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class AbstractController extends Controller
 {
-
     /**
      * Gets the current request object.
      *
@@ -32,6 +31,7 @@ class AbstractController extends Controller
         $matches = [];
         $className = str_replace('\Bundle\\', '', get_class($this));
         preg_match('/(.*)\\\Controller/', $className, $matches);
+
         return count($matches) != 0
             ? $matches[1]
             : null;
@@ -46,6 +46,7 @@ class AbstractController extends Controller
     {
         $request = $this->getCurrentRequest();
         $action = explode('::', $request->attributes->get('_controller'));
+
         return $action[1];
     }
 
@@ -56,7 +57,7 @@ class AbstractController extends Controller
      *
      *     throw $this->createInvalidEntityException('Invalid entity');
      *
-     * @param string $message A message
+     * @param string          $message  A message
      * @param \Exception|null $previous The previous exception
      *
      * @return InvalidEntityException
@@ -65,5 +66,4 @@ class AbstractController extends Controller
     {
         return new InvalidEntityException($message, $previous);
     }
-
 }

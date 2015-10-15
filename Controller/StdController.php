@@ -1,4 +1,5 @@
 <?php
+
 namespace Mero\Bundle\BaseBundle\Controller;
 
 use Mero\Bundle\BaseBundle\Exception\InvalidEntityException;
@@ -6,14 +7,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @package Mero\Bundle\BaseBundle\Controller
  * @author Rafael Mello <merorafael@gmail.com>
  * @Copyright Copyright (c) 2014~2015 - Rafael Mello
+ *
  * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE MIT license
  */
 abstract class StdController extends Controller
 {
-
     /**
      * Gets the route name.
      *
@@ -36,6 +36,7 @@ abstract class StdController extends Controller
     protected function getActionName(Request $request)
     {
         $action = explode('::', $request->attributes->get('_controller'));
+
         return $action[1];
     }
 
@@ -49,17 +50,18 @@ abstract class StdController extends Controller
      */
     protected function getBundleName()
     {
-        $current_class = explode("\\", get_class($this));
-        if (in_array("Bundle", $current_class, true)) {
-            unset($current_class[array_search("Bundle", $current_class, true)]);
+        $current_class = explode('\\', get_class($this));
+        if (in_array('Bundle', $current_class, true)) {
+            unset($current_class[array_search('Bundle', $current_class, true)]);
         }
-        $bundle_name = "";
+        $bundle_name = '';
         foreach ($current_class as &$directory) {
             $bundle_name .= $directory;
-            if (strpos($directory, "Bundle")) {
+            if (strpos($directory, 'Bundle')) {
                 break;
             }
         }
+
         return $bundle_name;
     }
 
@@ -70,7 +72,7 @@ abstract class StdController extends Controller
      *
      *     throw $this->createInvalidEntityException('Invalid entity');
      *
-     * @param string $message A message
+     * @param string          $message  A message
      * @param \Exception|null $previous The previous exception
      *
      * @return InvalidEntityException
@@ -79,5 +81,4 @@ abstract class StdController extends Controller
     {
         return new InvalidEntityException($message, $previous);
     }
-
 }

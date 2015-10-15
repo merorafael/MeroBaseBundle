@@ -7,7 +7,6 @@ use Symfony\Component\Form\AbstractType;
 
 abstract class AbstractCrudController extends AbstractController
 {
-
     /**
      * @return mixed
      */
@@ -36,8 +35,8 @@ abstract class AbstractCrudController extends AbstractController
 
     /**
      * @param string $actionName
-     * @param array $actionParams
-     * @param bool $error
+     * @param array  $actionParams
+     * @param bool   $error
      *
      * @return string
      */
@@ -54,19 +53,22 @@ abstract class AbstractCrudController extends AbstractController
         if (!is_object($entity)) {
             throw $this->createInvalidEntityException();
         }
+
         return get_class($entity);
     }
 
     final protected function getEntityNamespace()
     {
-        $entity_namespace = explode("\\", $this->getEntityName());
+        $entity_namespace = explode('\\', $this->getEntityName());
         array_pop($entity_namespace);
-        return "\\".implode("\\", $entity_namespace);
+
+        return '\\'.implode('\\', $entity_namespace);
     }
 
     final protected function getEntityClassname()
     {
-        $entity = explode("\\", $this->getEntityName());
+        $entity = explode('\\', $this->getEntityName());
+
         return end($entity);
     }
 

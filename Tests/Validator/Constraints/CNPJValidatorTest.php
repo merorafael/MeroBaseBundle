@@ -1,4 +1,5 @@
 <?php
+
 namespace Mero\Bundle\BaseBundle\Tests\Validator\Constraints;
 
 use Mero\Bundle\BaseBundle\Validator\Constraints\CNPJ;
@@ -8,7 +9,6 @@ use Symfony\Component\Validator\Validation;
 
 class CNPJValidatorTest extends AbstractConstraintValidatorTest
 {
-
     protected function getApiVersion()
     {
         return Validation::API_VERSION_2_5;
@@ -31,13 +31,12 @@ class CNPJValidatorTest extends AbstractConstraintValidatorTest
         $this->assertNoViolation();
     }
 
-
     public function getInvalidCNPJs()
     {
         return array(
             array('11.111.111/1111-11'),
             array('22.222.222/2222-22'),
-            array('66.121.538/0001-00')
+            array('66.121.538/0001-00'),
         );
     }
 
@@ -47,7 +46,7 @@ class CNPJValidatorTest extends AbstractConstraintValidatorTest
     public function testInvalidCNPJs($cnpj)
     {
         $constraint = new CNPJ(array(
-            "message" => "testMessage"
+            'message' => 'testMessage',
         ));
         $this->validator->validate($cnpj, $constraint);
         $this->buildViolation('testMessage')
@@ -60,7 +59,7 @@ class CNPJValidatorTest extends AbstractConstraintValidatorTest
         return array(
             array('06.785.165/0001-00'),
             array('66.121.538/0001-62'),
-            array('32.771.783/0001-01')
+            array('32.771.783/0001-01'),
         );
     }
 
@@ -72,5 +71,4 @@ class CNPJValidatorTest extends AbstractConstraintValidatorTest
         $this->validator->validate($cnpj, new CNPJ());
         $this->assertNoViolation();
     }
-
 }

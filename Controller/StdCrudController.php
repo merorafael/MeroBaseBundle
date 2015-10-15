@@ -1,4 +1,5 @@
 <?php
+
 namespace Mero\Bundle\BaseBundle\Controller;
 
 use Doctrine\ORM\EntityManager;
@@ -10,14 +11,13 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @package Mero\Bundle\BaseBundle\Controller
  * @author Rafael Mello <merorafael@gmail.com>
  * @Copyright Copyright (c) 2014~2015 - Rafael Mello
+ *
  * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE MIT license
  */
 abstract class StdCrudController extends StdController
 {
-
     /**
      * Gets a named object manager.
      *
@@ -44,7 +44,7 @@ abstract class StdCrudController extends StdController
      */
     protected function isIndexCrud()
     {
-        return $this->getParameter("mero_base.index_crud");
+        return $this->getParameter('mero_base.index_crud');
     }
 
     /**
@@ -111,7 +111,7 @@ abstract class StdCrudController extends StdController
      * Retorna rota de direcionamento pós-processamento.
      *
      * @param string $origin_action Página solicitante(indexAction, addAction, editAction ou removeAction)
-     * @param bool $fail Identificador de falha ocorrida durante processamento
+     * @param bool   $fail          Identificador de falha ocorrida durante processamento
      *
      * @return null|string
      */
@@ -124,7 +124,7 @@ abstract class StdCrudController extends StdController
      */
     protected function getFilterForm()
     {
-        return null;
+        return;
     }
 
     /**
@@ -142,18 +142,19 @@ abstract class StdCrudController extends StdController
     abstract protected function getFormType();
 
     /**
-     * Retorna nome da entidade incluindo namespace. Ex: Mero\Bundle\BaseBundle\Entity\StdEntity
+     * Retorna nome da entidade incluindo namespace. Ex: Mero\Bundle\BaseBundle\Entity\StdEntity.
      *
      * @return string
      *
      * @throws InvalidEntityException Entidade não é um objeto instanciado
      */
-    protected final function getEntity()
+    final protected function getEntity()
     {
         $entity = $this->getNewEntityObject();
         if (!is_object($entity)) {
             throw $this->createInvalidEntityException();
         }
+
         return get_class($entity);
     }
 
@@ -164,11 +165,12 @@ abstract class StdCrudController extends StdController
      *
      * @throws InvalidEntityException Entidade não é um objeto instanciado
      */
-    protected final function getEntityNamespace()
+    final protected function getEntityNamespace()
     {
-        $entity_namespace = explode("\\", $this->getEntity());
+        $entity_namespace = explode('\\', $this->getEntity());
         array_pop($entity_namespace);
-        return "\\".implode("\\", $entity_namespace);
+
+        return '\\'.implode('\\', $entity_namespace);
     }
 
     /**
@@ -178,9 +180,10 @@ abstract class StdCrudController extends StdController
      *
      * @throws InvalidEntityException Entidade não é um objeto instanciado
      */
-    protected final function getEntityName()
+    final protected function getEntityName()
     {
-        $entity = explode("\\", $this->getEntity());
+        $entity = explode('\\', $this->getEntity());
+
         return end($entity);
     }
 
@@ -194,8 +197,8 @@ abstract class StdCrudController extends StdController
     protected function listQueryBuilder(Request &$request)
     {
         return $this->getDoctrineManager()->createQueryBuilder()
-            ->select("e")
-            ->from($this->getEntity(), "e");
+            ->select('e')
+            ->from($this->getEntity(), 'e');
     }
 
     /**
@@ -222,21 +225,22 @@ abstract class StdCrudController extends StdController
             throw $this->createInvalidEntityException();
         }
         $route = $this->isIndexCrud()
-            ? $this->getRoute("indexAction")
-            : $this->getRoute("createAction");
+            ? $this->getRoute('indexAction')
+            : $this->getRoute('createAction');
         $form = $this->createForm($this->getFormType(), $entity, array(
-            "action" => $this->generateUrl($route),
-            "method" => "POST"
+            'action' => $this->generateUrl($route),
+            'method' => 'POST',
         ));
-        $form->add("submit", "submit");
+        $form->add('submit', 'submit');
+
         return $form;
     }
 
     /**
      * Método responsável por adicionar novos registros.
      *
-     * @param Request $request HTTP Request method
-     * @param string $action_name Nome do método de action
+     * @param Request $request     HTTP Request method
+     * @param string  $action_name Nome do método de action
      *
      * @return array
      */
@@ -244,29 +248,31 @@ abstract class StdCrudController extends StdController
     {
         $entity = $this->getNewEntityObject();
         $form = $this->createCreateForm($entity);
-        if ($request->isMethod("POST")) {
+        if ($request->isMethod('POST')) {
             $form->handleRequest($request);
             if ($form->isValid()) {
                 $em = $this->getDoctrineManager();
                 $em->persist($entity);
                 $em->flush();
-                $this->get("session")
+                $this->get('session')
                     ->getFlashBag()
-                    ->add("success", "Operação realizada com sucesso.");
+                    ->add('success', 'Operação realizada com sucesso.');
+
                 return $this->redirect($this->generateUrl($this->getRedirectRoute($action_name, false)));
             } else {
-                $this->get("session")
+                $this->get('session')
                     ->getFlashBag()
-                    ->add("danger", "Falha ao realizar operação.");
+                    ->add('danger', 'Falha ao realizar operação.');
                 $redirect_route = $this->getRedirectRoute($action_name, true);
                 if ($redirect_route !== null) {
                     return $this->redirect($this->generateUrl($redirect_route));
                 }
             }
         }
+
         return array(
-            "entity" => $entity,
-            "form" => $form->createView()
+            'entity' => $entity,
+            'form' => $form->createView(),
         );
     }
 
@@ -285,24 +291,25 @@ abstract class StdCrudController extends StdController
             throw $this->createInvalidEntityException();
         }
         $route_url = $this->isIndexCrud()
-            ? $this->getRoute("indexAction")
-            : $this->getRoute("addAction");
+            ? $this->getRoute('indexAction')
+            : $this->getRoute('addAction');
         $form = $this->createForm($this->getFormType(), $entity, array(
-            "action" => $this->generateUrl($route_url, array(
-                "id" => $entity->getId()
+            'action' => $this->generateUrl($route_url, array(
+                'id' => $entity->getId(),
             )),
-            "method" => "PUT"
+            'method' => 'PUT',
         ));
-        $form->add("submit", "submit");
+        $form->add('submit', 'submit');
+
         return $form;
     }
 
     /**
      * Método responsável por alterar registros.
      *
-     * @param Request $request HTTP Request method
-     * @param string $action_name Nome do método de action
-     * @param int $id Identificação do registro
+     * @param Request $request     HTTP Request method
+     * @param string  $action_name Nome do método de action
+     * @param int     $id          Identificação do registro
      *
      * @return array
      */
@@ -311,34 +318,37 @@ abstract class StdCrudController extends StdController
         $em = $this->getDoctrineManager();
         $entity = $em->getRepository($this->getEntity())->find($id);
         if (!$entity) {
-            $this->get("session")
+            $this->get('session')
                 ->getFlashBag()
-                ->add("danger", "Registro não encontrado.");
+                ->add('danger', 'Registro não encontrado.');
+
             return $this->redirect($this->generateUrl($this->getRedirectRoute($action_name, false)));
         }
         $form = $this->createEditForm($entity);
-        if ($request->isMethod("PUT")) {
+        if ($request->isMethod('PUT')) {
             $form->handleRequest($request);
             if ($form->isValid()) {
                 $em->persist($entity);
                 $em->flush();
-                $this->get("session")
+                $this->get('session')
                     ->getFlashBag()
-                    ->add("success", "Operação realizada com sucesso.");
+                    ->add('success', 'Operação realizada com sucesso.');
+
                 return $this->redirect($this->generateUrl($this->getRedirectRoute($action_name, false)));
             } else {
-                $this->get("session")
+                $this->get('session')
                     ->getFlashBag()
-                    ->add("danger", "Falha ao realizar operação.");
+                    ->add('danger', 'Falha ao realizar operação.');
                 $redirect_route = $this->getRedirectRoute($action_name, true);
                 if ($redirect_route !== null) {
                     return $this->redirect($this->generateUrl($redirect_route));
                 }
             }
         }
+
         return array(
-            "entity" => $entity,
-            "form" => $form->createView()
+            'entity' => $entity,
+            'form' => $form->createView(),
         );
     }
 
@@ -348,20 +358,20 @@ abstract class StdCrudController extends StdController
             throw $this->createAccessDeniedException();
         }
         $entity_q = $this->listQueryBuilder($request);
-        if (!$request->query->get("sort")) {
-            $entity_q->orderBy("e.{$this->defaultSort()}", "DESC");
+        if (!$request->query->get('sort')) {
+            $entity_q->orderBy("e.{$this->defaultSort()}", 'DESC');
         }
-        $page = $request->query->get("page")
-            ? $request->query->get("page")
+        $page = $request->query->get('page')
+            ? $request->query->get('page')
             : 1;
-        $limit = $request->query->get("limit")
-            ? $request->query->get("limit")
+        $limit = $request->query->get('limit')
+            ? $request->query->get('limit')
             : 10;
         $entities = $this->isDataPagination()
-            ? $this->get("knp_paginator")->paginate($entity_q->getQuery(), $page, $limit)
+            ? $this->get('knp_paginator')->paginate($entity_q->getQuery(), $page, $limit)
             : $entity_q->getQuery()->getResult();
         $view_data = array(
-            "entities" => $entities
+            'entities' => $entities,
         );
         if ($this->isIndexCrud()) {
             $crud = ($id !== null)
@@ -372,6 +382,7 @@ abstract class StdCrudController extends StdController
             }
             $view_data = array_merge($view_data, $crud);
         }
+
         return $this->render($this->getViewAddress($this->getActionName(__METHOD__)), $view_data);
     }
 
@@ -381,18 +392,19 @@ abstract class StdCrudController extends StdController
             throw $this->createAccessDeniedException();
         }
         $em = $this->getDoctrineManager();
-        $entity = $em->getRepository($this->getBundleName().":".$this->getEntityName())->find($id);
+        $entity = $em->getRepository($this->getBundleName().':'.$this->getEntityName())->find($id);
         if (!$entity) {
-            $this->get("session")
+            $this->get('session')
                 ->getFlashBag()
-                ->add("danger", "Registro não encontrado.");
+                ->add('danger', 'Registro não encontrado.');
             $redirect_route = $this->getRedirectRoute($this->getActionName(__METHOD__), true);
             if ($redirect_route !== null) {
                 return $this->redirect($this->generateUrl($redirect_route));
             }
         }
+
         return $this->render($this->getViewAddress($this->getActionName(__METHOD__)), array(
-            "entity" => $entity
+            'entity' => $entity,
         ));
     }
 
@@ -405,6 +417,7 @@ abstract class StdCrudController extends StdController
         if (!is_array($crud)) {
             return $crud;
         }
+
         return $this->render($this->getViewAddress($this->getActionName(__METHOD__)), $crud);
     }
 
@@ -417,6 +430,7 @@ abstract class StdCrudController extends StdController
         if (!is_array($crud)) {
             return $crud;
         }
+
         return $this->render($this->getViewAddress($this->getActionName(__METHOD__)), $crud);
     }
 
@@ -426,11 +440,11 @@ abstract class StdCrudController extends StdController
             throw $this->createAccessDeniedException();
         }
         $em = $this->getDoctrineManager();
-        $entity = $em->getRepository($this->getEntityNamespace()."\\".$this->getEntityName())->find($id);
+        $entity = $em->getRepository($this->getEntityNamespace().'\\'.$this->getEntityName())->find($id);
         if (!$entity) {
-            $this->get("session")
+            $this->get('session')
                 ->getFlashBag()
-                ->add("danger", "Registro não encontrado.");
+                ->add('danger', 'Registro não encontrado.');
             $redirect_route = $this->getRedirectRoute($this->getActionName(__METHOD__), true);
             if ($redirect_route !== null) {
                 return $this->redirect($this->generateUrl($redirect_route));
@@ -438,11 +452,11 @@ abstract class StdCrudController extends StdController
         } else {
             $em->remove($entity);
             $em->flush();
-            $this->get("session")
+            $this->get('session')
                 ->getFlashBag()
-                ->add("success", "Operação realizada com sucesso.");
+                ->add('success', 'Operação realizada com sucesso.');
         }
+
         return $this->redirect($this->generateUrl($this->getRedirectRoute($this->getActionName(__METHOD__), false)));
     }
-
 }
