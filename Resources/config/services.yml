@@ -1,5 +1,5 @@
 services:
-    mero_base.country_extension:
+    mero.base.country_extension:
         class: Mero\Bundle\BaseBundle\Twig\CountryExtension
         tags:
             - { name: twig.extension }
