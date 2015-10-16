@@ -24,8 +24,8 @@ class CNPJValidator extends ConstraintValidator
         if (null === $value || '' === $value) {
             return;
         }
-        $value_number = preg_replace('/[^0-9]/', '', $value);
-        if (strlen($value_number) != 14) {
+        $valueNumber = preg_replace('/[^0-9]/', '', $value);
+        if (strlen($valueNumber) != 14) {
             $this->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $this->formatValue($value))
                 ->addViolation();
@@ -33,7 +33,7 @@ class CNPJValidator extends ConstraintValidator
             return;
         }
         for ($i = 0, $aux = 5, $count = 0; $i < 12; ++$i) {
-            $count += $value_number{$i}
+            $count += $valueNumber{$i}
             * $aux;
             $aux = ($aux == 2)
                 ? 9
@@ -43,7 +43,7 @@ class CNPJValidator extends ConstraintValidator
         $d1 = $d1 < 2
             ? 0
             : 11 - $d1;
-        if ($value_number{12} != $d1) {
+        if ($valueNumber{12} != $d1) {
             $this->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $this->formatValue($value))
                 ->addViolation();
@@ -51,7 +51,7 @@ class CNPJValidator extends ConstraintValidator
             return;
         }
         for ($i = 0, $aux = 6, $count = 0; $i < 13; ++$i) {
-            $count += $value_number{$i}
+            $count += $valueNumber{$i}
             * $aux;
             $aux = ($aux == 2)
                 ? 9
@@ -61,7 +61,7 @@ class CNPJValidator extends ConstraintValidator
         $d2 = $d2 < 2
             ? 0
             : 11 - $d2;
-        if ($value_number{13} != $d2) {
+        if ($valueNumber{13} != $d2) {
             $this->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $this->formatValue($value))
                 ->addViolation();

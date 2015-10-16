@@ -32,20 +32,20 @@ class CountryExtension extends \Twig_Extension
     /**
      * Return the country name using the Locale class.
      *
-     * @param string      $iso_code Country ISO 3166-1 alpha 2 code
-     * @param null|string $locale   Locale code
+     * @param string      $isoCode Country ISO 3166-1 alpha 2 code
+     * @param null|string $locale  Locale code
      *
      * @return null|string Country name
      */
-    public function getCountryName($iso_code, $locale = null)
+    public function getCountryName($isoCode, $locale = null)
     {
-        if ($iso_code === null) {
+        if ($isoCode === null) {
             return;
         }
 
         return ($locale === null)
-            ? Intl::getRegionBundle()->getCountryName($iso_code)
-            : Intl::getRegionBundle()->getCountryName($iso_code, $locale);
+            ? Intl::getRegionBundle()->getCountryName($isoCode)
+            : Intl::getRegionBundle()->getCountryName($isoCode, $locale);
     }
 
     public function getName()
