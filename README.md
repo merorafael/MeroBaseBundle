@@ -13,7 +13,7 @@ Bundle with additional features for Symfony.
 Requeriments
 ------------
 
-- PHP 5.3.3 or above
+- PHP 5.5.9 or above
 - Symfony 2.7 or above(including Symfony 3)
 
 What is KnpPaginatorBundle
