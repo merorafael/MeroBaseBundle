@@ -1,7 +1,7 @@
 {
     "name": "mero/base-bundle",
     "type": "symfony-bundle",
-    "description": "Bundle base to accelerate creation of basic resources.",
+    "description": "Bundle with additional features for Symfony.",
     "keywords": [ "SF", "Symfony", "Mero", "Base" ],
     "homepage": "https://github.com/merorafael/MeroBaseBundle",
     "license": "MIT",
@@ -12,16 +12,15 @@
         }
     ],
     "require": {
-        "php": ">=5.3.3",
-        "ext-intl": "*",
-        "knplabs/knp-paginator-bundle": "~2.4"
+        "php": ">=5.5.9",
+        "ext-intl": "*"
     },
     "require-dev": {
         "symfony/symfony": "~2.7",
         "doctrine/orm": "^2.4.8",
         "doctrine/doctrine-bundle": "~1.4",
-        "symfony/validator": "~2.5,>=2.5.0,<3.0",
-        "symfony/form": "~2.5,>=2.5.0,<3.0",
+        "symfony/validator": "~2.8",
+        "symfony/form": "~2.8",
         "satooshi/php-coveralls": "~0.6.1",
         "phpunit/phpunit": "~4.4"
     },
