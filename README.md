@@ -32,7 +32,7 @@ Abstract controller with basic methods for easy identification framework resourc
 
 | Name                         | Atributes                          | Description                           |
 | ---------------------------- | ---------------------------------- | ------------------------------------- |
-| apiResponse                  | $data, int $status, string $format | Return a new JSON response            |
+| apiResponse                  | $data, int $status, string $format | Return a new JSON or XML response     |
 | getRouteName                 | -                                  | Gets the route name.                  |
 | getActionName                | -                                  | Gets the action name.                 |
 | getBundleName                | -                                  | Gets the bundle name.                 |
