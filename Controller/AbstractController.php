@@ -3,8 +3,14 @@
 namespace Mero\Bundle\BaseBundle\Controller;
 
 use Mero\Bundle\BaseBundle\Exception\InvalidEntityException;
+use Mero\Bundle\BaseBundle\Exception\UnsupportedFormatException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Serializer;
 
 class AbstractController extends Controller
 {
@@ -48,6 +54,29 @@ class AbstractController extends Controller
         $action = explode('::', $request->attributes->get('_controller'));
 
         return $action[1];
+    }
+
+    /**
+     * Return JSON response.
+     *
+     * @param mixed $data    The response data
+     * @param int   $status  The response status code
+     * @param string $format Response format(json or xml)
+     *
+     * @throws UnsupportedFormatException When format is not json or xml
+     *
+     * @return JsonResponse
+     */
+    protected function apiResponse($data, $status, $format = 'json')
+    {
+        if (($format != 'json') && ($format != 'xml')) {
+            throw new UnsupportedFormatException();
+        }
+
+        return new Response(
+            $this->container->get('serializer')->serialize($data, $format),
+            $status
+        );
     }
 
     /**

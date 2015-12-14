@@ -30,12 +30,13 @@ AbstractController to Symfony Controllers
 
 Abstract controller with basic methods for easy identification framework resources.
 
-| Name                         | Atributes                      | Description                           |
-| ---------------------------- | ------------------------------ | ------------------------------------- |
-| getRouteName                 | -                              | Gets the route name.                  |
-| getActionName                | -                              | Gets the action name.                 |
-| getBundleName                | -                              | Gets the bundle name.                 |
-| createInvalidEntityException | $message, \Exception $previous | Returns a InvalidEntityException.     |
+| Name                         | Atributes                          | Description                           |
+| ---------------------------- | ---------------------------------- | ------------------------------------- |
+| apiResponse                  | $data, int $status, string $format | Return a new JSON response            |
+| getRouteName                 | -                                  | Gets the route name.                  |
+| getActionName                | -                                  | Gets the action name.                 |
+| getBundleName                | -                                  | Gets the bundle name.                 |
+| createInvalidEntityException | $message, \Exception $previous     | Returns a InvalidEntityException.     |
 
 
 ### Usage example:
