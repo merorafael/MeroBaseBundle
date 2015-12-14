@@ -26,7 +26,7 @@ class CNPJValidator extends ConstraintValidator
         }
         $valueNumber = preg_replace('/[^0-9]/', '', $value);
         if (strlen($valueNumber) != 14) {
-            $this->buildViolation($constraint->message)
+            $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $this->formatValue($value))
                 ->addViolation();
 
@@ -44,7 +44,7 @@ class CNPJValidator extends ConstraintValidator
             ? 0
             : 11 - $d1;
         if ($valueNumber{12} != $d1) {
-            $this->buildViolation($constraint->message)
+            $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $this->formatValue($value))
                 ->addViolation();
 
@@ -62,7 +62,7 @@ class CNPJValidator extends ConstraintValidator
             ? 0
             : 11 - $d2;
         if ($valueNumber{13} != $d2) {
-            $this->buildViolation($constraint->message)
+            $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $this->formatValue($value))
                 ->addViolation();
 

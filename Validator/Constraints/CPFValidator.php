@@ -26,14 +26,14 @@ class CPFValidator extends ConstraintValidator
         }
         $valueNumber = preg_replace('/[^0-9]/', '', $value);
         if (strlen($valueNumber) != 11) {
-            $this->buildViolation($constraint->message)
+            $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $this->formatValue($value))
                 ->addViolation();
 
             return;
         }
         if (!preg_match('/(?!(\d)\1{10})\d{11}/', $valueNumber)) {
-            $this->buildViolation($constraint->message)
+            $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $this->formatValue($value))
                 ->addViolation();
 
@@ -46,7 +46,7 @@ class CPFValidator extends ConstraintValidator
             }
             $d = ((10 * $d) % 11) % 10;
             if ($valueNumber{$c} != $d) {
-                $this->buildViolation($constraint->message)
+                $this->context->buildViolation($constraint->message)
                     ->setParameter('{{ value }}', $this->formatValue($value))
                     ->addViolation();
 
