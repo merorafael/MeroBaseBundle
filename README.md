@@ -16,12 +16,6 @@ Requeriments
 - PHP 5.5.9 or above
 - Symfony 2.7 or above(including Symfony 3)
 
-What is KnpPaginatorBundle
---------------------------
-
-KnpPaginatorBundle is developed by KnpLabs and its usefulness is to provide sorting and 
-pagination of data displayed in indexAction method. This bundle was inserted as dependency and will be installed by composer.
-
 Instalation with composer
 -------------------------
 
