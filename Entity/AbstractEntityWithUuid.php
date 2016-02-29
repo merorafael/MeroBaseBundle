@@ -4,7 +4,7 @@ namespace Mero\Bundle\BaseBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Common entity class.
+ * Common entity class with UUID.
  *
  * @author Rafael Mello <merorafael@gmail.com>
  *
