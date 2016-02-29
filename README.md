@@ -67,12 +67,14 @@ class NewsController extends AbstractController
 Doctrine ORM entities
 ---------------------
 
-| Name           | Description                                    | Address  |
-| -------------- | ---------------------------------------------- | -------- |
-| IdTrait        | Create the primary key field                   | [\Mero\Bundle\BaseBundle\Entity\Field\IdTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/IdTrait.php) |
-| CreatedTrait   | Create field to store the creation date        | [\Mero\Bundle\BaseBundle\Entity\Field\CreatedTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/CreatedTrait.php) |
-| ModifiedTrait  | Create field to store the date of last change  | [\Mero\Bundle\BaseBundle\Entity\Field\ModifiedTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/ModifiedTrait.php) |
-| AbstractEntity | Entity superclass using the three basic traits | [\Mero\Bundle\BaseBundle\Entity\AbstractEntity](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/AbstractEntity.php) | 
+| Name                   | Description                                    | Address  |
+| ---------------------- | ---------------------------------------------- | -------- |
+| IdTrait                | Create the primary key field                   | [\Mero\Bundle\BaseBundle\Entity\Field\IdTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/IdTrait.php) |
+| UuidTrait              | Create the primary key UUID field              | [\Mero\Bundle\BaseBundle\Entity\Field\UuidTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/UuidTrait.php) |
+| CreatedTrait           | Create field to store the creation date        | [\Mero\Bundle\BaseBundle\Entity\Field\CreatedTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/CreatedTrait.php) |
+| ModifiedTrait          | Create field to store the date of last change  | [\Mero\Bundle\BaseBundle\Entity\Field\ModifiedTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/ModifiedTrait.php) |
+| AbstractEntity         | Entity superclass using the three basic traits | [\Mero\Bundle\BaseBundle\Entity\AbstractEntity](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/AbstractEntity.php) | 
+| AbstractEntityWithUuid | Entity superclass using the three basic traits | [\Mero\Bundle\BaseBundle\Entity\AbstractEntityWithUuid](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/AbstractEntityWithUuid.php) | 
 
 Symfony validators
 ------------------
