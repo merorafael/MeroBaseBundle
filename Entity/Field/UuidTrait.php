@@ -10,28 +10,28 @@ trait UuidTrait
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="UUID")
      */
-    protected $uuid;
+    protected $id;
 
     /**
      * Return primary key UUID identifier.
      *
      * @return string Primary key UUID
      */
-    public function getUuid()
+    public function getId()
     {
-        return $this->uuid;
+        return $this->id;
     }
 
     /**
      * Sets primary key UUID identifier.
      *
-     * @param string $uuid Primary key UUID
+     * @param string $id Primary key UUID
      *
      * @return UuidTrait
      */
-    public function setUuid($uuid)
+    public function setId($id)
     {
-        $this->uuid = $uuid;
+        $this->id = $id;
 
         return $this;
     }
