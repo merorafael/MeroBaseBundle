@@ -7,7 +7,7 @@ trait UuidTrait
      * @var string Primary key UUID
      *
      * @ORM\Id
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string")
      * @ORM\GeneratedValue(strategy="UUID")
      */
     protected $id;
