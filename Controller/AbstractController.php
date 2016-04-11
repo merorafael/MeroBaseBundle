@@ -56,8 +56,8 @@ class AbstractController extends Controller
     /**
      * Return JSON response.
      *
-     * @param mixed $data    The response data
-     * @param int   $status  The response status code
+     * @param mixed  $data   The response data
+     * @param int    $status The response status code
      * @param string $format Response format(json or xml)
      *
      * @throws UnsupportedFormatException When format is not json or xml

@@ -1,4 +1,5 @@
 <?php
+
 namespace Mero\Bundle\BaseBundle\Entity\Field;
 
 trait UuidTrait
@@ -35,6 +36,4 @@ trait UuidTrait
 
         return $this;
     }
-
-
 }

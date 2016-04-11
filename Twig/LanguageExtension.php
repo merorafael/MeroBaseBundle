@@ -5,12 +5,12 @@ namespace Mero\Bundle\BaseBundle\Twig;
 use Symfony\Component\Intl\Intl;
 
 /**
- * Country filter for Twig.
+ * Language filter for Twig.
  *
  * @author Rafael Mello <merorafael@gmail.com>
  * @license https://github.com/merorafael/MeroBaseBundle/blob/master/LICENSE MIT license
  */
-class CountryExtension extends \Twig_Extension
+class LanguageExtension extends \Twig_Extension
 {
     public function __construct()
     {
@@ -22,9 +22,9 @@ class CountryExtension extends \Twig_Extension
     public function getFilters()
     {
         return array(
-            new \Twig_SimpleFilter('country', [
+            new \Twig_SimpleFilter('language', [
                 $this,
-                'getCountryName',
+                'getLanguageName',
             ]),
         );
     }
@@ -37,7 +37,7 @@ class CountryExtension extends \Twig_Extension
      *
      * @return null|string Country name
      */
-    public function getCountryName($isoCode, $locale = null)
+    public function getLanguageName($isoCode, $locale = null)
     {
         if ($isoCode === null) {
             return;
@@ -45,12 +45,15 @@ class CountryExtension extends \Twig_Extension
         if ($locale) {
             \Locale::setDefault($locale);
         }
+        $language = explode('_', $isoCode);
 
-        return Intl::getRegionBundle()->getCountryName($isoCode);
+        return isset($language[1])
+            ? Intl::getLanguageBundle()->getLanguageName($language[0], $language[1])
+            : Intl::getLanguageBundle()->getLanguageName($language[0]);
     }
 
     public function getName()
     {
-        return 'country_extension';
+        return 'language_extension';
     }
 }

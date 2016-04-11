@@ -35,11 +35,11 @@ class CPFValidatorTest extends AbstractConstraintValidatorTest
 
     public function getInvalidCPFs()
     {
-        return array(
-            array('111.111.111-11'),
-            array('222.222.222-22'),
-            array('398.682.528-23'),
-        );
+        return [
+            ['111.111.111-11'],
+            ['222.222.222-22'],
+            ['398.682.528-23'],
+        ];
     }
 
     /**
@@ -58,11 +58,11 @@ class CPFValidatorTest extends AbstractConstraintValidatorTest
 
     public function getValidCPFs()
     {
-        return array(
-            array('398.682.528-22'),
-            array('534.005.933-20'),
-            array('235.515.623-93'),
-        );
+        return [
+            ['398.682.528-22'],
+            ['534.005.933-20'],
+            ['235.515.623-93'],
+        ];
     }
 
     /**
