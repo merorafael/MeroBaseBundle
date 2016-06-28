@@ -37,10 +37,9 @@ Abstract controller with basic methods for easy identification framework resourc
 | getBundleName                | -                                  | Gets the bundle name.                 |
 | createInvalidEntityException | $message, \Exception $previous     | Returns a InvalidEntityException.     |
 
-
 ### Usage example:
 ```php
-namespace Acme\Bundle\BlogBundle;
+namespace Acme\Bundle\BlogBundle\Controller;
 
 use Mero\Bundle\BaseBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -68,12 +67,63 @@ Doctrine ORM entities
 
 | Name                  | Type           | Description                                         | Address  |
 | --------------------- | -------------- | --------------------------------------------------- | -------- |
-| IdTrait               | Trait          | Create the primary key field                        | [\Mero\Bundle\BaseBundle\Entity\Field\IdTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/IdTrait.php) |
+| IdTrait               | Trait          | Create the primary key integer field                | [\Mero\Bundle\BaseBundle\Entity\Field\IdTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/IdTrait.php) |
 | UuidTrait             | Trait          | Create the primary key UUID field                   | [\Mero\Bundle\BaseBundle\Entity\Field\UuidTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/UuidTrait.php) |
 | CreatedTrait          | Trait          | Create field to store the creation date             | [\Mero\Bundle\BaseBundle\Entity\Field\CreatedTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/CreatedTrait.php) |
 | ModifiedTrait         | Trait          | Create field to store the date of last change       | [\Mero\Bundle\BaseBundle\Entity\Field\ModifiedTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/ModifiedTrait.php) |
 | AbstractEntity        | Abstract Class | Entity superclass using UUID identifier             | [\Mero\Bundle\BaseBundle\Entity\AbstractEntity](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/AbstractEntity.php) | 
 | AbstractEntityClassic | Abstract Class | Classic entity superclass using integer identifier  | [\Mero\Bundle\BaseBundle\Entity\AbstractEntityClassic](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/AbstractEntityClassic.php) | 
+
+### Usage example with AbstractEntity:
+```php
+namespace Acme\Bundle\BlogBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Mero\Bundle\BaseBundle\Entity\AbstractEntity;
+
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="post")
+ */
+class Post extends AbstractEntity
+{
+    // Entity class with UuidTrait, CreatedTrait and ModifiedTrait implemented
+}
+```
+
+### Usage example with AbstractEntityClassic:
+```php
+namespace Acme\Bundle\BlogBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Mero\Bundle\BaseBundle\Entity\AbstractEntityClassic;
+
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="post")
+ */
+class Post extends AbstractEntity
+{
+    // Entity class with IdTrait, CreatedTrait and ModifiedTrait implemented
+}
+```
+
+### Usage example with Traits:
+```php
+namespace Acme\Bundle\BlogBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Mero\Bundle\BaseBundle\Entity\IdTrait;
+
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="post")
+ */
+class Post
+{
+    use IdTrait;
+}
+```
 
 Symfony validators
 ------------------
