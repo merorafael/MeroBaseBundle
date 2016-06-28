@@ -102,7 +102,7 @@ use Mero\Bundle\BaseBundle\Entity\AbstractEntityClassic;
  * @ORM\Entity()
  * @ORM\Table(name="post")
  */
-class Post extends AbstractEntity
+class Post extends AbstractEntityClassic
 {
     // Entity class with IdTrait, CreatedTrait and ModifiedTrait implemented
 }
