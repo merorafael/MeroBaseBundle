@@ -5,16 +5,16 @@ namespace Mero\Bundle\BaseBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Common entity class with UUID.
+ * Common entity class with simple identifier(integer type).
  *
  * @author Rafael Mello <merorafael@gmail.com>
  *
  * @ORM\MappedSuperclass
  * @ORM\HasLifecycleCallbacks
  */
-abstract class AbstractEntityWithUuid
+abstract class AbstractEntityClassic
 {
-    use Field\UuidTrait, Field\CreatedTrait, Field\ModifiedTrait;
+    use Field\IdTrait, Field\CreatedTrait, Field\ModifiedTrait;
 
     public function __construct()
     {

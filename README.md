@@ -21,9 +21,8 @@ Instalation with composer
 
 1. Open your project directory;
 2. Run `composer require mero/base-bundle` to add MeroBaseBundle in your project vendor;
-3. Run `composer update command`;
-4. Open **my/project/dir/app/AppKernel.php**;
-6. Add `Mero\Bundle\BaseBundle\MeroBaseBundle()`.
+3. Open **my/project/dir/app/AppKernel.php**;
+4. Add `Mero\Bundle\BaseBundle\MeroBaseBundle()`.
 
 AbstractController to Symfony Controllers
 -----------------------------------------
@@ -67,45 +66,20 @@ class NewsController extends AbstractController
 Doctrine ORM entities
 ---------------------
 
-| Name                   | Description                                    | Address  |
-| ---------------------- | ---------------------------------------------- | -------- |
-| IdTrait                | Create the primary key field                   | [\Mero\Bundle\BaseBundle\Entity\Field\IdTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/IdTrait.php) |
-| UuidTrait              | Create the primary key UUID field              | [\Mero\Bundle\BaseBundle\Entity\Field\UuidTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/UuidTrait.php) |
-| CreatedTrait           | Create field to store the creation date        | [\Mero\Bundle\BaseBundle\Entity\Field\CreatedTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/CreatedTrait.php) |
-| ModifiedTrait          | Create field to store the date of last change  | [\Mero\Bundle\BaseBundle\Entity\Field\ModifiedTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/ModifiedTrait.php) |
-| AbstractEntity         | Entity superclass using the three basic traits | [\Mero\Bundle\BaseBundle\Entity\AbstractEntity](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/AbstractEntity.php) | 
-| AbstractEntityWithUuid | Entity superclass using the three basic traits | [\Mero\Bundle\BaseBundle\Entity\AbstractEntityWithUuid](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/AbstractEntityWithUuid.php) | 
+| Name                  | Type           | Description                                         | Address  |
+| --------------------- | -------------- | --------------------------------------------------- | -------- |
+| IdTrait               | Trait          | Create the primary key field                        | [\Mero\Bundle\BaseBundle\Entity\Field\IdTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/IdTrait.php) |
+| UuidTrait             | Trait          | Create the primary key UUID field                   | [\Mero\Bundle\BaseBundle\Entity\Field\UuidTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/UuidTrait.php) |
+| CreatedTrait          | Trait          | Create field to store the creation date             | [\Mero\Bundle\BaseBundle\Entity\Field\CreatedTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/CreatedTrait.php) |
+| ModifiedTrait         | Trait          | Create field to store the date of last change       | [\Mero\Bundle\BaseBundle\Entity\Field\ModifiedTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/ModifiedTrait.php) |
+| AbstractEntity        | Abstract Class | Entity superclass using UUID identifier             | [\Mero\Bundle\BaseBundle\Entity\AbstractEntity](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/AbstractEntity.php) | 
+| AbstractEntityClassic | Abstract Class | Classic entity superclass using integer identifier  | [\Mero\Bundle\BaseBundle\Entity\AbstractEntityClassic](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/AbstractEntityClassic.php) | 
 
 Symfony validators
 ------------------
 
-| Applies to         | Options | Class | Validator | Description |
-| -------------------| ------- | ----- | --------- | ----------- |
-| [property or method](http://symfony.com/doc/current/book/validation.html#validation-property-target) | message | [CNPJ](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/CNPJ.php) | [CNPJValidator](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/CNPJValidator.php)  | Validates number of Brazilian CNPJ |
-| [property or method](http://symfony.com/doc/current/book/validation.html#validation-property-target) | message | [CPF](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/CPF.php)  | [CPFValidator](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/CPFValidator.php)   | Validates number of Brazilian CPF |
-
-### Basic usage
-
-```php
-<?php
-
-use Mero\Bundle\BaseBundle\Validator\Constraints as MeroAssert;
-
-class People 
-{
-    
-    /**
-     * @MeroAssert\CPF()
-     */
-    private $cpf;
-    
-    /**
-     * @MeroAssert\CNPJ()
-     */
-    private $cnpj;
-
-}
-```
+This feature has been migrated to the package [mero/br-validator-bundle](https://packagist.org/packages/mero/br-validator-bundle)
+because earlier versions contains only validators related to Brazilian locations.
 
 Twig extensions
 ---------------

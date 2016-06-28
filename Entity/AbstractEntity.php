@@ -5,7 +5,7 @@ namespace Mero\Bundle\BaseBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Common entity class.
+ * Common entity class with UUID identifier.
  *
  * @author Rafael Mello <merorafael@gmail.com>
  *
@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 abstract class AbstractEntity
 {
-    use Field\IdTrait, Field\CreatedTrait, Field\ModifiedTrait;
+    use Field\UuidTrait, Field\CreatedTrait, Field\ModifiedTrait;
 
     public function __construct()
     {
