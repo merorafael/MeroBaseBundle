@@ -2,6 +2,8 @@
 
 namespace Mero\Bundle\BaseBundle\Entity\Field;
 
+use Doctrine\ORM\Mapping as ORM;
+
 trait UuidTrait
 {
     /**
