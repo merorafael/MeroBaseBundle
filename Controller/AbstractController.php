@@ -2,7 +2,6 @@
 
 namespace Mero\Bundle\BaseBundle\Controller;
 
-use Mero\Bundle\BaseBundle\Exception\InvalidEntityException;
 use Mero\Bundle\BaseBundle\Exception\UnsupportedFormatException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
