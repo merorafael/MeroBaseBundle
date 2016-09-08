@@ -24,18 +24,24 @@ Instalation with composer
 3. Open **my/project/dir/app/AppKernel.php**;
 4. Add `Mero\Bundle\BaseBundle\MeroBaseBundle()`.
 
+Validators in the new version
+-----------------------------
+
+This feature has been migrated to the package [mero/br-validator-bundle](https://packagist.org/packages/mero/br-validator-bundle)
+because earlier versions contains only validators related to Brazilian locations.
+
 AbstractController to Symfony Controllers
 -----------------------------------------
 
 Abstract controller with basic methods for easy identification framework resources.
 
-| Name                         | Atributes                          | Description                           |
-| ---------------------------- | ---------------------------------- | ------------------------------------- |
-| apiResponse                  | $data, int $status, string $format | Return a new JSON or XML response     |
-| getRouteName                 | -                                  | Gets the route name.                  |
-| getActionName                | -                                  | Gets the action name.                 |
-| getBundleName                | -                                  | Gets the bundle name.                 |
-| createInvalidEntityException | $message, \Exception $previous     | Returns a InvalidEntityException.     |
+| Name                         | Atributes                                          | Return type | Description                           |
+| ---------------------------- | -------------------------------------------------- | ----------- | ------------------------------------- |
+| getCurrentRequest            | -                                                  | Request     | Gets the cuurrent request             |
+| getActionName                | -                                                  | string      | Gets the action name                  |
+| getBundleName                | Request $request                                   | string      | Gets the bundle name                  |
+| getRouteName                 | Request $request                                   | string      | Gets the route name                   |
+| wsResponse                   | $data, int $status, array $headers, string $format | Response    | Return a new JSON or XML response     |
 
 ### Usage example:
 ```php
@@ -56,7 +62,21 @@ class NewsController extends AbstractController
         $routeName = $this->getRouteName($request); // Return "news"
         $actionName = $this->getActionName($request); // Return "indexAction"
         $bundleName = $this->getBundleName(); // Return "AcmeBlogBundle"
-        throw $this->createInvalidEntityException(); // Throw invalid entity exception
+        $data = [
+            'data' => [
+                'news' => [
+                    [
+                        'title' => 'Lorem ipsum'
+                    ]
+                ]
+            ]
+        ];
+        
+        //to return JSON
+        return $this->wsResponse($data, 200, [], AbstractController::WS_RESPONSE_JSON);
+        
+        //to return XML
+        return $this->wsResponse($data, 200, [], AbstractController::WS_RESPONSE_XML);
     }
 
 }
@@ -65,14 +85,14 @@ class NewsController extends AbstractController
 Doctrine ORM entities
 ---------------------
 
-| Name                  | Type           | Description                                         | Address  |
-| --------------------- | -------------- | --------------------------------------------------- | -------- |
-| IdTrait               | Trait          | Create the primary key integer field                | [\Mero\Bundle\BaseBundle\Entity\Field\IdTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/IdTrait.php) |
-| UuidTrait             | Trait          | Create the primary key UUID field                   | [\Mero\Bundle\BaseBundle\Entity\Field\UuidTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/UuidTrait.php) |
-| CreatedTrait          | Trait          | Create field to store the creation date             | [\Mero\Bundle\BaseBundle\Entity\Field\CreatedTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/CreatedTrait.php) |
-| ModifiedTrait         | Trait          | Create field to store the date of last change       | [\Mero\Bundle\BaseBundle\Entity\Field\ModifiedTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/ModifiedTrait.php) |
-| AbstractEntity        | Abstract Class | Entity superclass using UUID identifier             | [\Mero\Bundle\BaseBundle\Entity\AbstractEntity](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/AbstractEntity.php) | 
-| AbstractEntityClassic | Abstract Class | Classic entity superclass using integer identifier  | [\Mero\Bundle\BaseBundle\Entity\AbstractEntityClassic](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/AbstractEntityClassic.php) | 
+| Name                  | Type           | Description                                         | Address                                                                                                                                          |
+| --------------------- | -------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| IdTrait               | Trait          | Create the primary key integer field                | [Mero\Bundle\BaseBundle\Entity\Field\IdTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/IdTrait.php)                 |
+| UuidTrait             | Trait          | Create the primary key UUID field                   | [Mero\Bundle\BaseBundle\Entity\Field\UuidTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/UuidTrait.php)             |
+| CreatedTrait          | Trait          | Create field to store the creation date             | [Mero\Bundle\BaseBundle\Entity\Field\CreatedTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/CreatedTrait.php)       |
+| ModifiedTrait         | Trait          | Create field to store the date of last change       | [Mero\Bundle\BaseBundle\Entity\Field\ModifiedTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/ModifiedTrait.php)     |
+| AbstractEntity        | Abstract Class | Entity superclass using UUID identifier             | [Mero\Bundle\BaseBundle\Entity\AbstractEntity](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/AbstractEntity.php)               | 
+| AbstractEntityClassic | Abstract Class | Classic entity superclass using integer identifier  | [Mero\Bundle\BaseBundle\Entity\AbstractEntityClassic](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/AbstractEntityClassic.php) | 
 
 ### Usage example with AbstractEntity:
 ```php
@@ -124,12 +144,6 @@ class Post
     use IdTrait;
 }
 ```
-
-Symfony validators
-------------------
-
-This feature has been migrated to the package [mero/br-validator-bundle](https://packagist.org/packages/mero/br-validator-bundle)
-because earlier versions contains only validators related to Brazilian locations.
 
 Twig extensions
 ---------------

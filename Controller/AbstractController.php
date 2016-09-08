@@ -5,12 +5,22 @@ namespace Mero\Bundle\BaseBundle\Controller;
 use Mero\Bundle\BaseBundle\Exception\InvalidEntityException;
 use Mero\Bundle\BaseBundle\Exception\UnsupportedFormatException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class AbstractController extends Controller
 {
+
+    /**
+     * Constant with webservice response type JSON
+     */
+    const WS_RESPONSE_JSON = 'json';
+
+    /**
+     * Constant with webservice response type XML
+     */
+    const WS_RESPONSE_XML = 'xml';
+
     /**
      * Gets the current request object.
      *
@@ -19,6 +29,20 @@ class AbstractController extends Controller
     protected function getCurrentRequest()
     {
         return $this->container->get('request_stack')->getCurrentRequest();
+    }
+
+    /**
+     * Gets the action name.
+     *
+     * @param Request $request HTTP request object
+     *
+     * @return string Action name
+     */
+    protected function getActionName(Request $request)
+    {
+        $action = explode('::', $request->attributes->get('_controller'));
+
+        return $action[1];
     }
 
     /**
@@ -41,55 +65,39 @@ class AbstractController extends Controller
     }
 
     /**
-     * Gets the action name.
+     * Gets the route name.
      *
-     * @return string Action name
+     * @param Request $request HTTP request object
+     *
+     * @return string Route name
      */
-    protected function getActionName()
+    protected function getRouteName(Request $request)
     {
-        $request = $this->getCurrentRequest();
-        $action = explode('::', $request->attributes->get('_controller'));
-
-        return $action[1];
+        return $request->attributes->get('_route');
     }
 
     /**
-     * Return JSON response.
+     * Return webservice(API Rest JSON or SOAP XML) response.
      *
-     * @param mixed  $data   The response data
-     * @param int    $status The response status code
-     * @param string $format Response format(json or xml)
+     * @param mixed  $data    The response data
+     * @param int    $status  The response status code
+     * @param array  $headers An array of response headers
+     * @param string $format  Response format(json or xml)
      *
      * @throws UnsupportedFormatException When format is not json or xml
      *
-     * @return JsonResponse
+     * @return Response
      */
-    protected function apiResponse($data, $status, $format = 'json')
+    protected function wsResponse($data, $status = 200, array $headers = [], $format = self::WS_RESPONSE_JSON)
     {
-        if (($format != 'json') && ($format != 'xml')) {
+        if (!in_array($format, ['json', 'xml'])) {
             throw new UnsupportedFormatException();
         }
 
         return new Response(
             $this->container->get('serializer')->serialize($data, $format),
-            $status
+            $status,
+            $headers
         );
-    }
-
-    /**
-     * Returns a InvalidEntityException.
-     *
-     * This method returns an invalid entity exception. Usage exemple:
-     *
-     *     throw $this->createInvalidEntityException('Invalid entity');
-     *
-     * @param string          $message  A message
-     * @param \Exception|null $previous The previous exception
-     *
-     * @return InvalidEntityException
-     */
-    protected function createInvalidEntityException($message = 'Entity is not object', \Exception $previous = null)
-    {
-        return new InvalidEntityException($message, $previous);
     }
 }
