@@ -37,7 +37,7 @@ class AbstractController extends Controller
      *
      * @return string Action name
      */
-    protected function getActionName(Request $request)
+    protected function getActionName(Request &$request)
     {
         $action = explode('::', $request->attributes->get('_controller'));
 
@@ -70,7 +70,7 @@ class AbstractController extends Controller
      *
      * @return string Route name
      */
-    protected function getRouteName(Request $request)
+    protected function getRouteName(Request &$request)
     {
         return $request->attributes->get('_route');
     }
