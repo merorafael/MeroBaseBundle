@@ -89,7 +89,7 @@ class AbstractController extends Controller
      */
     protected function wsResponse($data, $status = 200, array $headers = [], $format = self::WS_RESPONSE_JSON)
     {
-        if (!in_array($format, ['json', 'xml'])) {
+        if (!in_array($format, [self::WS_RESPONSE_JSON, self::WS_RESPONSE_XML])) {
             throw new UnsupportedFormatException();
         }
 
