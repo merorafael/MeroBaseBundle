@@ -24,7 +24,7 @@ install:
     - composer install
 
 script:
-    - ./vendor/bin/phpunit -c phpunit.xml.dist
+    - composer test
 
 after_script:
     - php ./vendor/bin/coveralls -v

@@ -5,6 +5,10 @@
     "keywords": [ "SF", "Symfony", "Mero", "Base" ],
     "homepage": "https://github.com/merorafael/MeroBaseBundle",
     "license": "MIT",
+    "support": {
+        "issues": "https://github.com/merorafael/MeroBaseBundle/issues",
+        "source": "https://github.com/merorafael/MeroBaseBundle"
+    },
     "authors": [
         {
             "name": "Rafael Mello",
@@ -21,7 +25,21 @@
         "satooshi/php-coveralls": "~1.0",
         "phpunit/phpunit": "~4.4"
     },
+    "suggest": {
+        "mero/telegram-handler": "Monolog handler to send log via Telegram",
+        "mero/br-validator-bundle": "Bundle for Symfony with validators for Brazilian location"
+    },
     "autoload": {
         "psr-4": {"Mero\\Bundle\\BaseBundle\\": ""}
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.0.x-dev"
+        }
+    },
+    "scripts": {
+        "test": [
+            "./vendor/bin/phpunit -c phpunit.xml.dist"
+        ]
     }
 }
