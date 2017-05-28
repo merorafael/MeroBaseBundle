@@ -45,11 +45,8 @@ class LanguageExtension extends \Twig_Extension
         if ($locale) {
             \Locale::setDefault($locale);
         }
-        $language = explode('_', $isoCode);
 
-        return isset($language[1])
-            ? Intl::getLanguageBundle()->getLanguageName($isoCode, $language[0])
-            : Intl::getLanguageBundle()->getLanguageName($isoCode);
+        return \Locale::getDisplayLanguage($isoCode, $locale);
     }
 
     public function getName()
