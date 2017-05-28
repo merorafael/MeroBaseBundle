@@ -21,12 +21,12 @@ class LanguageExtensionTest extends \PHPUnit_Framework_TestCase
         return [
             ['en', 'pt_BR', 'inglês'],
             ['en', 'en_US', 'English'],
-            ['en_US', 'pt_BR', 'inglês americano'],
-            ['en_US', 'en_US', 'American English'],
+            ['en_US', 'pt_BR', 'inglês'],
+            ['en_US', 'en_US', 'English'],
             ['es', 'pt_BR', 'espanhol'],
             ['es', 'en_US', 'Spanish'],
-            ['es_ES', 'pt_BR', 'espanhol europeu'],
-            ['es_ES', 'en_US', 'European Spanish'],
+            ['es_ES', 'pt_BR', 'espanhol'],
+            ['es_ES', 'en_US', 'Spanish'],
         ];
     }
 
