@@ -12,7 +12,7 @@ Bundle with additional features for Symfony.
 Requeriments
 ------------
 
-- PHP 5.5.9 or above
+- PHP 5.4.9 or above
 - Symfony 2.7 or above(including Symfony 3)
 
 Instalation with composer
@@ -84,14 +84,14 @@ class NewsController extends AbstractController
 Doctrine ORM entities
 ---------------------
 
-| Name                  | Type           | Description                                         | Address                                                                                                                                          |
-| --------------------- | -------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| IdTrait               | Trait          | Create the primary key integer field                | [Mero\Bundle\BaseBundle\Entity\Field\IdTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/IdTrait.php)                 |
-| UuidTrait             | Trait          | Create the primary key UUID field                   | [Mero\Bundle\BaseBundle\Entity\Field\UuidTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/UuidTrait.php)             |
-| CreatedTrait          | Trait          | Create field to store the creation date             | [Mero\Bundle\BaseBundle\Entity\Field\CreatedTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/CreatedTrait.php)       |
-| ModifiedTrait         | Trait          | Create field to store the date of last change       | [Mero\Bundle\BaseBundle\Entity\Field\ModifiedTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/ModifiedTrait.php)     |
-| AbstractEntity        | Abstract Class | Entity superclass using UUID identifier             | [Mero\Bundle\BaseBundle\Entity\AbstractEntity](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/AbstractEntity.php)               | 
-| AbstractEntityClassic | Abstract Class | Classic entity superclass using integer identifier  | [Mero\Bundle\BaseBundle\Entity\AbstractEntityClassic](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/AbstractEntityClassic.php) | 
+| Name                   | Type           | Description                                         | Address                                                                                                                                          |
+| ---------------------- | -------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| IdTrait                | Trait          | Create the primary key integer field                | [Mero\Bundle\BaseBundle\Entity\Field\IdTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/IdTrait.php)                 |
+| UuidTrait              | Trait          | Create the primary key UUID field                   | [Mero\Bundle\BaseBundle\Entity\Field\UuidTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/UuidTrait.php)             |
+| CreatedTrait           | Trait          | Create field to store the creation date             | [Mero\Bundle\BaseBundle\Entity\Field\CreatedTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/CreatedTrait.php)       |
+| ModifiedTrait          | Trait          | Create field to store the date of last change       | [Mero\Bundle\BaseBundle\Entity\Field\ModifiedTrait](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/Field/ModifiedTrait.php)     | 
+| AbstractEntity         | Abstract Class | Classic entity superclass using integer identifier  | [Mero\Bundle\BaseBundle\Entity\AbstractEntity](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/AbstractEntity.php) |
+| AbstractEntityWithUuid | Abstract Class | Entity superclass using UUID identifier             | [Mero\Bundle\BaseBundle\Entity\AbstractEntityWithUuid](https://github.com/merorafael/MeroBaseBundle/blob/master/Entity/AbstractEntityWithUuid.php)               | 
 
 ### Usage example with AbstractEntity:
 ```php
@@ -106,24 +106,24 @@ use Mero\Bundle\BaseBundle\Entity\AbstractEntity;
  */
 class Post extends AbstractEntity
 {
-    // Entity class with UuidTrait, CreatedTrait and ModifiedTrait implemented
+    // Entity class with IdTrait, CreatedTrait and ModifiedTrait implemented
 }
 ```
 
-### Usage example with AbstractEntityClassic:
+### Usage example with AbstractEntityWithUuid:
 ```php
 namespace Acme\Bundle\BlogBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Mero\Bundle\BaseBundle\Entity\AbstractEntityClassic;
+use Mero\Bundle\BaseBundle\Entity\AbstractEntityWithUuid;
 
 /**
  * @ORM\Entity()
  * @ORM\Table(name="post")
  */
-class Post extends AbstractEntityClassic
+class Post extends AbstractEntityWithUuid
 {
-    // Entity class with IdTrait, CreatedTrait and ModifiedTrait implemented
+    // Entity class with UuidTrait, CreatedTrait and ModifiedTrait implemented
 }
 ```
 
@@ -177,4 +177,32 @@ Example: entity.getLanguage() is a value generated by the type of form [language
 
 {# Returns the language name in portuguese #}
 {{ entity.getLanguage()|language('pt_BR') }}
+```
+
+Helpers
+-------
+
+### className
+
+Gets name of the class. This helper was added to facilitate applications using PHP 5.4.
+Use of this feature is discouraged if you are using PHP 5.5 or above due to the native implementation added in 
+the language.
+
+```php
+namespace Acme\Bundle\BlogBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Mero\Bundle\BaseBundle\Helper\ClassNameTrait;
+
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="post")
+ */
+class Post
+{
+    use ClassNameTrait;
+}
+
+Post::className(); // Return "Post" using ClassNameTrait for PHP 5.4
+Post::class // Return "Post" if you are using PHP 5.5 or above
 ```

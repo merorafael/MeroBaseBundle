@@ -1,11 +1,13 @@
 <?php
-$finder = Symfony\CS\Finder\DefaultFinder::create()
-    ->in(__DIR__)
-    ->exclude('vendor')
-;
 
-return Symfony\CS\Config\Config::create()
-    ->fixers(array('-symfony'))
-    ->finder($finder)
-    ->setUsingCache(true)
-;
+$finder = PhpCsFixer\Finder::create()
+    ->exclude('vendor')
+    ->in(__DIR__);
+
+return PhpCsFixer\Config::create()
+    ->setRules([
+        '@Symfony' => true,
+        'full_opening_tag' => false,
+    ])
+    ->setFinder($finder)
+    ->setUsingCache(true);

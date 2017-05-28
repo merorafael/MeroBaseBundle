@@ -9,14 +9,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AbstractController extends Controller
 {
-
     /**
-     * Constant with webservice response type JSON
+     * Constant with webservice response type JSON.
      */
     const WS_RESPONSE_JSON = 'json';
 
     /**
-     * Constant with webservice response type XML
+     * Constant with webservice response type XML.
      */
     const WS_RESPONSE_XML = 'xml';
 
