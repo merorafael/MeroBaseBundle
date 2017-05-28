@@ -2,8 +2,6 @@
 
 namespace Mero\Bundle\BaseBundle\Twig;
 
-use Symfony\Component\Intl\Intl;
-
 /**
  * Language filter for Twig.
  *
