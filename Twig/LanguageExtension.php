@@ -47,8 +47,9 @@ class LanguageExtension extends \Twig_Extension
         }
         $language = explode('_', $isoCode);
 
-        // TODO Rollback is needed after fix getLanguageName in Symfony
-        return Intl::getLanguageBundle()->getLanguageName($language[0]);
+        return isset($language[1])
+            ? Intl::getLanguageBundle()->getLanguageName($isoCode, $language[0])
+            : Intl::getLanguageBundle()->getLanguageName($isoCode);
     }
 
     public function getName()
