@@ -23,11 +23,35 @@ Instalation with composer
 3. Open **my/project/dir/app/AppKernel.php**;
 4. Add `Mero\Bundle\BaseBundle\MeroBaseBundle()`.
 
-Validators in the new version
------------------------------
+Symfony validators
+------------------
 
-This feature has been migrated to the package [mero/br-validator-bundle](https://packagist.org/packages/mero/br-validator-bundle)
-because earlier versions contains only validators related to Brazilian locations.
+| Applies to         | Options | Class | Validator | Description |
+| -------------------| ------- | ----- | --------- | ----------- |
+| [property or method](http://symfony.com/doc/current/book/validation.html#validation-property-target) | message | [DateRange](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/DateRange.php)   | [DateRangeValidator](https://github.com/merorafael/MeroBaseBundle/blob/master/Validator/Constraints/DateRangeValidator.php)    | Validates date range  |
+
+### Basic usage
+
+```php
+<?php
+
+use Mero\Bundle\BaseBundle\Validator\Constraints as MeroAssert;
+
+class Payment
+{
+    /**
+     * @var \DateTime Payment date
+     *
+     * @MeroAssert\DateRange(min="2017-01-01", max="today")
+     */
+    private $date;
+}
+```
+
+Brazilian validators in the new version
+---------------------------------------
+
+The brazilian validators feature has been migrated to the package [mero/br-validator-bundle](https://packagist.org/packages/mero/br-validator-bundle).
 
 AbstractController to Symfony Controllers
 -----------------------------------------
