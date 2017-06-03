@@ -7,7 +7,7 @@ MeroBaseBundle
 [![Total Downloads](https://poser.pugx.org/mero/base-bundle/downloads.svg)](https://packagist.org/packages/mero/base-bundle) 
 [![License](https://poser.pugx.org/mero/base-bundle/license.svg)](https://packagist.org/packages/mero/base-bundle)
 
-Bundle with additional features for Symfony.
+Symfony Bundle with additional features.
 
 Requeriments
 ------------

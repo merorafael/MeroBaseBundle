@@ -1,7 +1,7 @@
 {
     "name": "mero/base-bundle",
     "type": "symfony-bundle",
-    "description": "Bundle with additional features for Symfony.",
+    "description": "Symfony Bundle with additional features.",
     "keywords": [ "SF", "Symfony", "Mero", "Base" ],
     "homepage": "https://github.com/merorafael/MeroBaseBundle",
     "license": "MIT",
@@ -17,17 +17,18 @@
     ],
     "require": {
         "php": ">=5.4.9",
-        "ext-intl": "*"
+        "ext-intl": "*",
+        "symfony/framework-bundle": "~2.7|~3.0|~4.0"
     },
     "require-dev": {
-        "symfony/symfony": "~2.8",
         "doctrine/orm": "^2.4.8",
         "satooshi/php-coveralls": "~1.0",
         "phpunit/phpunit": "~4.4"
     },
     "suggest": {
         "mero/telegram-handler": "Monolog handler to send log via Telegram",
-        "mero/br-validator-bundle": "Bundle for Symfony with validators for Brazilian location"
+        "mero/correios-bundle": "Symfony Bundle with Correios integration",
+        "mero/br-validator-bundle": "Symfony Bundle with validators for Brazilian location"
     },
     "autoload": {
         "psr-4": {"Mero\\Bundle\\BaseBundle\\": ""}
